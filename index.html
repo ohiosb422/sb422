@@ -239,6 +239,7 @@ a{color:var(--accent)}
   <p class="hint">This one-page summary is the most important thing you'll send. It explains the fix and is addressed to <strong id="amendto">your representative</strong>. Save it now so you can attach it to your email on the next page.</p>
   <div class="sheet" id="amendview"></div>
   <button class="btn big" type="button" id="dl-amend">Download amendment PDF</button>
+  <p class="note">On a phone, this opens your share menu. Choose <strong>Save to Files</strong> (iPhone) or <strong>Save</strong>/<strong>Drive</strong> (Android) so you can attach it to your email.</p>
   <div id="amendstatus"></div>
   <p class="note">Can't download files on this device? <button class="linkbtn" type="button" id="inline-amend">Add the summary to the end of my email instead.</button></p>
   <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need3"></span><button class="btn" type="button" data-next>Next: your email</button></div>
@@ -1138,6 +1139,14 @@ async function saveFile(filename, blob){
     if(!dlCap) throw {code:"unavailable"};
     return dlCap.save({filename,data:blob});
   }
+  const touch = window.matchMedia && window.matchMedia("(pointer:coarse)").matches;
+  if(touch && navigator.canShare && typeof File==="function"){
+    const file=new File([blob],filename,{type:"application/pdf"});
+    if(navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:filename}); return {status:"shared"}; }
+      catch(e){ if(e&&e.name==="AbortError") throw {code:"declined"}; /* otherwise fall through to a normal download */ }
+    }
+  }
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename;
   document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
   return {status:"saved"};
@@ -1187,10 +1196,10 @@ function renderAttach(){
   const last=s.t?s.t.last.replace(/\s+/g,"-"):"Representative";
   items.push(flow.amend==="inline"
     ? row(true,"Amendment summary","Already added to the end of the email.")
-    : row(flow.amend==="file","Amendment summary (PDF)",`Attach <span class="mono">SB422-Amendment-Request-Rep-${last}.pdf</span> from your downloads.`));
+    : row(flow.amend==="file","Amendment summary (PDF)",`Attach <span class="mono">SB422-Amendment-Request-Rep-${last}.pdf</span> from your Downloads folder, or the Files app on iPhone.`));
   if(s.storyYes){
     items.push(flow.impact==="inline" ? row(true,"Impact statement","Already added to the end of the email.")
-      : flow.impact==="file" ? row(true,"Impact statement (PDF)","Attach it from your downloads too.")
+      : flow.impact==="file" ? row(true,"Impact statement (PDF)","Attach it the same way.")
       : row(false,"Impact statement not saved yet","",` <button class="linkbtn" type="button" id="att-impact-inline">Add it to the end of the email</button>`));
   }
   $("attachlist").innerHTML=items.join("");
@@ -1274,9 +1283,9 @@ async function download(kind){
   const who=(s.name||"Supporter").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"");
   const fn = kind==="amend"?`SB422-Amendment-Request-Rep-${last}.pdf`:`SB422-Impact-Statement-${who}.pdf`;
   const text = kind==="amend"?out.amend:$("impactedit").value;
-  try{ await saveFile(fn, makePdf(text)); toast("PDF saved."); return true; }
+  try{ const r=await saveFile(fn, makePdf(text)); toast(r&&r.status==="shared"?"Done. If you chose Save to Files, it\u2019s in your Files app.":"PDF saved."); return true; }
   catch(err){
-    if(err&&err.code==="declined") toast("Download canceled.");
+    if(err&&err.code==="declined") toast("Canceled. Tap the button again when you\u2019re ready.");
     else toast("This device can't download here. Use the option below to add it to your email.");
     return false;
   }
