@@ -136,7 +136,7 @@ a{color:var(--accent)}
 
 
 <header class="top"><div class="wrap">
-  <div class="billref"><span><b>Sub. S.B. 422</b></span><span>136th General Assembly</span></div>
+  <div class="billref"><span><b>Senate Bill 422</b></span><span>136th General Assembly</span></div>
   <h1>Ask your Ohio House member to let schools say yes</h1>
   <div class="status"><i></i>Passed the Senate 33–0 on June 10, 2026 · now in the Ohio House</div>
 </div></header>
@@ -287,7 +287,7 @@ a{color:var(--accent)}
 
 <footer><div class="wrap">
   <div class="share" id="share" hidden><canvas id="qr" width="240" height="240" aria-label="QR code for this page"></canvas><div><strong style="color:var(--ink)">Pass it on.</strong><br>Point a phone camera here to open this page.<br><span class="mono" id="shareurl"></span></div></div>
-  <p>Read the bill: <a href="https://www.ohiohouse.gov/legislation/136/sb422" target="_blank" rel="noopener">Sub. S.B. 422 on ohiohouse.gov</a>. Member list from the Ohio House directory, October 2026. If an address bounces, check <a href="https://ohiohouse.gov/members/directory" target="_blank" rel="noopener">the member directory</a>.</p>
+  <p>Read the bill: <a href="https://www.ohiohouse.gov/legislation/136/sb422" target="_blank" rel="noopener">Senate Bill 422 on ohiohouse.gov</a>. Member list from the Ohio House directory, October 2026. If an address bounces, check <a href="https://ohiohouse.gov/members/directory" target="_blank" rel="noopener">the member directory</a>.</p>
   <p>Made by a Portage County parent. This page doesn't store or send what you type; your answers stay in this browser.</p>
 </div></footer>
 
@@ -658,10 +658,10 @@ function roleEmail(s,fixed){
 }
 
 const HELLO_V=[
- (dl,cp,s)=>`I am ${dl}${cp}, writing about Substitute Senate Bill 422, which passed the Ohio Senate 33-0 and is now before the House. I support the bill's goal of keeping children safe at school, and I am asking you to support one narrow amendment.`,
- (dl,cp,s)=>`My name is ${s.name||"[Your name]"}, and I am ${dl}${cp}. I am writing about Substitute Senate Bill 422, now before the House after passing the Senate 33-0. I support its goal of protecting children at school, and I would ask you to support a narrow amendment to it.`,
+ (dl,cp,s)=>`I am ${dl}${cp}, writing about Senate Bill 422, which passed the Ohio Senate 33-0 and is now before the House. I support the bill's goal of keeping children safe at school, and I am asking you to support one narrow amendment.`,
+ (dl,cp,s)=>`My name is ${s.name||"[Your name]"}, and I am ${dl}${cp}. I am writing about Senate Bill 422, now before the House after passing the Senate 33-0. I support its goal of protecting children at school, and I would ask you to support a narrow amendment to it.`,
  (dl,cp,s)=>`I am writing to you as ${dl}${cp} about Senate Bill 422. I agree with the bill's purpose of keeping children safe at school, and I hope you will consider a narrow amendment as it moves through the House.`,
- (dl,cp,s)=>`As ${dl}${cp}, I am reaching out about Substitute Senate Bill 422, which passed the Senate unanimously and is now in the House. I support what the bill sets out to do, and I am writing to ask for your support on a narrow amendment.`,
+ (dl,cp,s)=>`As ${dl}${cp}, I am reaching out about Senate Bill 422, which passed the Senate unanimously and is now in the House. I support what the bill sets out to do, and I am writing to ask for your support on a narrow amendment.`,
  (dl,cp,s)=>`Senate Bill 422 passed the Ohio Senate 33-0 and is now before the House. I am ${dl}${cp}, and while I support the bill's purpose, I am writing to ask you to support a narrow amendment.`,
  (dl,cp,s)=>`I am ${dl}${cp}. I support the goal of Senate Bill 422, keeping children safe at school, and I am writing to ask you to support a narrow amendment that keeps that goal intact.`
 ];
@@ -710,7 +710,7 @@ function genSubject(s){ s=s||state(); return pick("subj",SUBJ_V)(s); }
 function genEmail(s){
   const R=repName(s);
   const hello = s.t&&s.t.viaVacancy
-    ? `I live in Ohio House District ${s.t.home}, which is currently vacant, so I am writing to you as chair of the House Judiciary Committee about Substitute Senate Bill 422. I support the bill's goal of keeping children safe at school, and I am asking you to support one narrow amendment.`
+    ? `I live in Ohio House District ${s.t.home}, which is currently vacant, so I am writing to you as chair of the House Judiciary Committee about Senate Bill 422. I support the bill's goal of keeping children safe at school, and I am asking you to support one narrow amendment.`
     : pick("hello",HELLO_V)(districtLine(s), s.city?` (${s.city})`:"", s);
   const sits = s.sits.length ? `\n\nThis gap shows up in real ways:\n${s.sits.map(k=>"- "+SIT_SHORT[k]).join("\n")}` : "";
   const sig = [s.name||"[Your name]", s.street, [s.city,s.zip?`Ohio ${s.zip}`:(s.city?"Ohio":"")].filter(Boolean).join(", "), s.phone, s.email].filter(Boolean).join("\n");
@@ -897,7 +897,7 @@ function genImpact(s){
   const covered = s.role==="parent"||s.role==="spouse";
   const P=[];
   P.push(`# Impact Statement of ${who}`);
-  P.push(`> In support of a proposed amendment to Substitute Senate Bill 422`);
+  P.push(`> In support of a proposed amendment to Senate Bill 422`);
   P.push(`${[s.city,"Ohio"].filter(Boolean).join(", ")} · ${today()}`);
   P.push(`Dear ${R},`);
   if(covered) P.push(ipick("intro-"+s.role,I_INTRO[s.role])(s));
