@@ -103,9 +103,10 @@ legend{font-weight:600;font-size:.9rem;padding:0;margin-bottom:6px}
 .pager{display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:16px;flex-wrap:wrap}
 .pager .need{font-size:.85rem;color:var(--warn);flex:1 1 200px}
 .pager .spacer{flex:1}
-.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:24px 26px;font-family:var(--f-doc);font-size:.98rem;line-height:1.55;max-height:56vh;overflow:auto;min-width:0}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:24px 26px;font-family:var(--f-ui);font-size:.98rem;line-height:1.55;max-height:56vh;overflow:auto;min-width:0}
 @media (max-width:520px){.sheet{padding:18px 16px}}
-.sheet h3{font-size:1.2rem;margin:0 0 4px;text-wrap:balance}
+.sheet h3{font-size:1.3rem;margin:0 0 4px;text-wrap:balance;text-align:center}
+.sheet .sub{text-align:center;font-weight:700;font-style:normal!important;color:var(--ink)!important}
 .sheet h4{font-size:1rem;margin:16px 0 6px}
 .sheet p{margin:0 0 10px}
 .sheet ul{margin:0 0 10px;padding-left:1.2em}
@@ -993,29 +994,43 @@ function toHTML(text){
 const plain=text=>text.split("\n").map(l=>l.replace(/^#{1,2} /,"").replace(/^> /,"").replace(/^- /,"• ")).join("\n");
 
 function makePdf(text){
+  /* Same look as the amendment PDF: Helvetica, bold centered title and subtitle,
+     bold section labels, 11 pt text, dash bullets, half-inch margins. Flows onto more pages if needed. */
   const {jsPDF}=window.jspdf; const doc=new jsPDF({unit:"pt",format:"letter"});
-  const M=64, W=612-2*M, BOT=792-60; let y=70;
-  const put=(str,size,style,indent,gapAfter,color)=>{
-    doc.setFont("times",style); doc.setFontSize(size); doc.setTextColor(...(color||[22,33,58]));
-    const lh=size*1.32;
+  const PW=612, PH=792, M=36, TOP=34, BOT=PH-40, ink=[17,17,17];
+  let y=TOP;
+  const put=(str,size,style,indent,align)=>{
+    doc.setFont("helvetica",style); doc.setFontSize(size); doc.setTextColor(...ink);
+    const lh=size*1.33, width=PW-2*M-indent;
     str.split("\n").forEach(seg=>{
-      doc.splitTextToSize(seg||" ",W-indent).forEach(line=>{
-        if(y+lh>BOT){doc.addPage();y=70;}
-        doc.text(line,M+indent,y); y+=lh;
+      doc.splitTextToSize(seg||" ",width).forEach(line=>{
+        if(y+lh>BOT){doc.addPage();y=TOP;}
+        y+=lh;
+        if(align==="center") doc.text(line,PW/2,y-size*0.28,{align:"center"});
+        else doc.text(line,M+indent,y-size*0.28);
       });
     });
-    y+=gapAfter;
   };
-  blocks(text).forEach((b,i)=>{
-    if(b.t==="h1") put(b.x,18,"bold",0,4);
-    else if(b.t==="h2"){ if(y>BOT-60){doc.addPage();y=70;} y+=6; put(b.x,12.5,"bold",0,3); }
-    else if(b.t==="note") put(b.x,10.5,"italic",0,8,[90,100,120]);
-    else if(b.t==="li"){ doc.setFont("times","normal");doc.setFontSize(11);
-      if(y+15>BOT){doc.addPage();y=70;} doc.setTextColor(22,33,58); doc.text("•",M+6,y); put(b.x,11,"normal",18,3); }
-    else put(b.x,11,"normal",0,8);
+  const bl=blocks(text);
+  bl.forEach((b,i)=>{
+    const prev=bl[i-1];
+    if(b.t==="h1"){ put(b.x,20,"bold",0,"center"); y+=10; }
+    else if(b.t==="note"&&prev&&prev.t==="h1"){ put(b.x,11,"bold",0,"center"); y+=12; }
+    else if(b.t==="note"){ if(prev) y+=12; put(b.x,10,"italic",0); }
+    else if(b.t==="h2"){
+      if(y+60>BOT){doc.addPage();y=TOP;}   // keep a heading with the text under it
+      else if(prev) y+=12;
+      put(b.x,11,"bold",0); y+=10;
+    }
+    else if(b.t==="li"){
+      if(y+15>BOT){doc.addPage();y=TOP;}
+      const startY=y; put(b.x,11,"normal",36);
+      doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.text("-",M+18,startY+11*1.33-11*0.28);
+    }
+    else { if(prev&&prev.t!=="h2"&&!(prev.t==="note"&&bl[i-2]&&bl[i-2].t==="h1")) y+=12; put(b.x,11,"normal",0); }
   });
   const n=doc.getNumberOfPages();
-  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont("times","normal");doc.setFontSize(8.5);doc.setTextColor(120,128,145);doc.text(`Sub. S.B. 422 · page ${i} of ${n}`,612-M,792-34,{align:"right"});}
+  if(n>1) for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(110,110,110);doc.text(`Page ${i} of ${n}`,PW-M,PH-22,{align:"right"});}
   return doc.output("blob");
 }
 
