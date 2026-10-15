@@ -1,0 +1,1324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SB 422 Advocacy Kit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+
+/* Layout: a five-page walkthrough, one task per page, with a numbered progress rail (the order is real). Single dark theme by choice. */
+:root{
+  --paper:#0e131c; --card:#161d2a; --sheet:#1b2230;
+  --ink:#e5e9f0; --muted:#9ca7ba; --line:#2a3447; --line-strong:#3b475d;
+  --accent:#86afe8; --accent-ink:#0e131c; --accent-soft:#1d2b42;
+  --seal:#ec7482; --ok:#6cc79a; --ok-soft:#15291f; --warn:#e6b85c; --warn-soft:#2c2414;
+  color-scheme:dark;
+  --f-ui:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-doc:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --r:10px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{border-bottom:1px solid var(--line);background:var(--card)}
+header.top .wrap{padding-block:18px 16px;display:grid;gap:6px}
+.billref{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;flex-wrap:wrap;gap:4px 14px}
+.billref b{color:var(--seal)}
+h1{font-family:var(--f-doc);font-weight:700;font-size:clamp(1.45rem,4vw,1.95rem);line-height:1.15;margin:0;text-wrap:balance}
+.status{font-size:.84rem;color:var(--muted)}
+.status i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px;vertical-align:1px}
+
+.progress{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.progress li{display:grid;gap:6px;font-size:.74rem;font-weight:600;color:var(--muted);text-align:left;min-width:0}
+.progress li::before{content:"";height:4px;border-radius:2px;background:var(--line)}
+.progress li.done::before{background:var(--ok)}
+.progress li.opt-step::before{background:transparent;border-top:2px dashed var(--line-strong);height:2px}
+.progress li.opt-step.cur::before{border-top-color:var(--seal)}
+.extra{border:1px dashed var(--line-strong);border-radius:10px;padding:14px 16px;display:grid;gap:8px;background:var(--paper)}
+.extra b{font-size:1rem}
+.extra span{color:var(--muted);font-size:.9rem}
+.progress li.cur::before{background:var(--seal)}
+.progress li.cur{color:var(--ink)}
+.progress span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:460px){.progress li:not(.cur) span{visibility:hidden}}
+
+main .wrap{padding-block:20px 40px;display:grid;gap:18px}
+.page{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;display:grid;gap:16px;min-width:0}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--seal);font-weight:700;margin:0}
+.page h2{font-family:var(--f-doc);font-size:1.45rem;line-height:1.2;margin:0;text-wrap:balance}
+.page h2:focus{outline:none}
+.hint{margin:0;color:var(--muted);font-size:.95rem;max-width:60ch}
+label{font-weight:600;font-size:.9rem;display:block;margin-bottom:5px}
+.opt{font-weight:400;color:var(--muted)}
+.req{color:var(--seal)}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:8px;padding:10px 12px}
+textarea{min-height:96px;resize:vertical;line-height:1.45}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible,.chk:focus-within,.cand:focus-within,.choice:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.field{min-width:0}
+.cands{display:grid;gap:8px}
+.cand{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--paper)}
+.cand input{accent-color:var(--accent);width:18px;height:18px;flex:none}
+.cand .d{font-variant-numeric:tabular-nums;font-weight:700;min-width:4.6em;color:var(--accent)}
+.cand .n{font-weight:600}
+.cand .t{color:var(--muted);font-size:.86rem}
+.cand:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.repcard{border:1px solid var(--accent);border-radius:8px;padding:14px;display:grid;gap:6px;background:var(--accent-soft)}
+.repcard .who{font-family:var(--f-doc);font-size:1.25rem;font-weight:700}
+.meta{font-size:.86rem;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;word-break:break-all}
+.note{font-size:.86rem;color:var(--muted);margin:0}
+.warnbox{background:var(--warn-soft);color:var(--ink);border-left:3px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:.88rem}
+.tipbox{background:var(--accent-soft);color:var(--ink);border-left:3px solid var(--accent);padding:10px 12px;border-radius:6px;font-size:.9rem}
+.tipbox b{display:block;margin-bottom:2px}
+.okbox{background:var(--ok-soft);color:var(--ink);border-left:3px solid var(--ok);padding:10px 12px;border-radius:6px;font-size:.9rem}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.chk{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--paper);font-weight:500;font-size:.93rem;margin:0}
+.chk input{accent-color:var(--accent);width:18px;height:18px;flex:none;margin-top:2px}
+.chk:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.chk small{display:block;color:var(--muted);font-weight:400;font-size:.82rem}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.choice{display:grid;gap:4px;border:1px solid var(--line-strong);border-radius:10px;padding:14px 16px;cursor:pointer;background:var(--paper);margin:0}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice b{font-size:1rem}
+.choice span{color:var(--muted);font-size:.88rem;font-weight:400}
+.choice:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+fieldset{border:0;padding:0;margin:0;min-width:0;display:grid;gap:8px}
+legend{font-weight:600;font-size:.9rem;padding:0;margin-bottom:6px}
+.sub-h{font-size:1rem;margin:6px 0 0;font-weight:700}
+.btn{font:inherit;font-weight:600;font-size:.95rem;border-radius:8px;padding:10px 16px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.small{padding:5px 10px;font-size:.84rem}
+.btn.big{padding:14px 20px;font-size:1.02rem;width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font-size:.9rem}
+.pager{display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:16px;flex-wrap:wrap}
+.pager .need{font-size:.85rem;color:var(--warn);flex:1 1 200px}
+.pager .spacer{flex:1}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:24px 26px;font-family:var(--f-doc);font-size:.98rem;line-height:1.55;max-height:56vh;overflow:auto;min-width:0}
+@media (max-width:520px){.sheet{padding:18px 16px}}
+.sheet h3{font-size:1.2rem;margin:0 0 4px;text-wrap:balance}
+.sheet h4{font-size:1rem;margin:16px 0 6px}
+.sheet p{margin:0 0 10px}
+.sheet ul{margin:0 0 10px;padding-left:1.2em}
+.sheet .stage{font-family:var(--f-ui);font-size:.84rem;color:var(--muted);font-style:italic;margin:0 0 10px}
+.sheet .sub{font-style:italic;color:var(--muted);margin-bottom:14px}
+.mailhead{display:grid;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.mailhead .k{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.mailbody{font-family:var(--f-doc);min-height:380px;background:var(--sheet)}
+.attach{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.attach li{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--paper);font-size:.92rem}
+.attach .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:800}
+.attach .yes .ic{background:var(--ok);color:var(--paper)}
+.attach .no .ic{background:var(--warn);color:var(--paper)}
+.attach small{display:block;color:var(--muted)}
+details.call{border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+details.call summary{cursor:pointer;padding:12px 14px;font-weight:600}
+details.call .in{padding:0 14px 14px;display:grid;gap:10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);font-weight:600;font-size:.9rem;padding:9px 16px;border-radius:999px;max-width:calc(100% - 32px)}
+footer .wrap{padding-block:20px 36px;border-top:1px solid var(--line);color:var(--muted);font-size:.84rem;display:grid;gap:10px}
+.share{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.share canvas{width:112px;height:112px;background:#fff;padding:6px;border-radius:6px}
+a{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+
+<header class="top"><div class="wrap">
+  <div class="billref"><span><b>Sub. S.B. 422</b></span><span>136th General Assembly</span></div>
+  <h1>Ask your Ohio House member to let schools say yes</h1>
+  <div class="status"><i></i>Passed the Senate 33–0 on June 10, 2026 · now in the Ohio House</div>
+</div></header>
+
+<main><div class="wrap">
+<ol class="progress" id="progress" aria-label="Progress">
+  <li><span>Representative</span></li><li><span>About you</span></li><li><span>Amendment</span></li><li class="opt-step"><span>Your story (optional)</span></li><li><span>Send</span></li>
+</ol>
+
+<form id="f" autocomplete="on">
+
+<!-- PAGE 1 -->
+<section class="page" data-page="1">
+  <p class="eyebrow">Step 1 of 5</p>
+  <h2 tabindex="-1">Who represents you in the Ohio House?</h2>
+  <p class="hint">SB 422 keeps certain registered offenders off school property. As written, it gives a school no way to let a parent watch their own child's game, concert, or graduation, even with an escort. In about five minutes you'll send your state representative a short, polite request to fix that.</p>
+  <div class="grid2">
+    <div class="field"><label for="county">Your county</label>
+      <select id="county"><option value="">Choose a county…</option></select></div>
+    <div class="field"><label for="distnum">Or your House district <span class="opt">(1–99)</span></label>
+      <input type="number" id="distnum" min="1" max="99" inputmode="numeric" placeholder="e.g. 72"></div>
+  </div>
+  <div class="cands" id="cands"></div>
+  <p class="note" id="lookupnote" hidden>Your county is split between districts. Not sure which is yours? Enter your address on the <a href="https://www.legislature.ohio.gov/" target="_blank" rel="noopener">Ohio Legislature site</a> or check the <a href="https://ohiohouse.gov/members/district-map" target="_blank" rel="noopener">district map</a>, then pick it here.</p>
+  <div id="repcard"></div>
+  <div class="pager"><span class="need" id="need1"></span><button class="btn" type="button" data-next>Next</button></div>
+</section>
+
+<!-- PAGE 2 -->
+<section class="page" data-page="2" hidden>
+  <p class="eyebrow">Step 2 of 5</p>
+  <h2 tabindex="-1">About you</h2>
+  <p class="hint">Representatives give the most weight to their own constituents, so your name and town go in your signature. Nothing you type leaves this page; it only fills in your documents.</p>
+  <div class="grid2">
+    <div class="field"><label for="name">Full name <span class="req">*</span></label><input type="text" id="name" autocomplete="name"></div>
+    <div class="field"><label for="city">City or township <span class="req">*</span></label><input type="text" id="city" autocomplete="address-level2"></div>
+    <div class="field"><label for="street">Street address <span class="opt">(optional)</span></label><input type="text" id="street" autocomplete="street-address"></div>
+    <div class="field"><label for="zip">ZIP <span class="opt">(optional)</span></label><input type="text" id="zip" inputmode="numeric" autocomplete="postal-code"></div>
+    <div class="field"><label for="email">Your email <span class="opt">(optional)</span></label><input type="email" id="email" autocomplete="email"></div>
+    <div class="field"><label for="phone">Your phone <span class="opt">(optional)</span></label><input type="tel" id="phone" autocomplete="tel"></div>
+  </div>
+  <fieldset>
+    <legend>Which best describes you? <span class="req">*</span></legend>
+    <div class="roles" id="roles"></div>
+  </fieldset>
+  <div class="grid2" id="roleextra"></div>
+  <label class="chk" id="familywrap"><input type="checkbox" id="family"><span>This affects someone in my own family<small>Adds that to your message without naming anyone.</small></span></label>
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need2"></span><button class="btn" type="button" data-next>Next</button></div>
+</section>
+
+<!-- PAGE 3 -->
+<section class="page" data-page="4" hidden>
+  <p class="eyebrow">Step 4 of 5 · optional</p>
+  <h2 tabindex="-1">Want to add your story?</h2>
+  <p class="hint">You can skip this. A short impact statement makes it stronger by showing how the bill reaches real children. It takes about three minutes: check a few boxes and it's written for you.</p>
+  <div class="choices">
+    <label class="choice"><input type="radio" name="storyChoice" id="story-yes" value="yes"><b>Yes, build my impact statement</b><span>A one-to-two page PDF you attach to your email.</span></label>
+    <label class="choice"><input type="radio" name="storyChoice" id="story-no" value="no"><b>No thanks</b><span>Skip ahead and send your email as it is.</span></label>
+  </div>
+
+  <div id="storyfields" hidden style="display:grid;gap:16px">
+    <div class="grid2">
+      <div class="field"><label for="kids" id="kidslabel">Children involved and their ages <span class="opt">(names optional)</span></label><input type="text" id="kids" placeholder="e.g. a 9-year-old daughter and a 6-year-old son"></div>
+      <div class="field"><label for="acts">Their activities <span class="opt">(optional)</span></label><input type="text" id="acts" placeholder="e.g. softball, band, dance"></div>
+    </div>
+    <fieldset><legend>School events that matter</legend><div class="roles" id="events"></div></fieldset>
+    <fieldset><legend>How the gap shows up</legend><div class="roles" id="sits"></div></fieldset>
+    <h3 class="sub-h">A few specifics <span class="opt">(optional, but these make the biggest difference)</span></h3>
+    <div class="grid2">
+      <div class="field"><label for="kidschool">Their school or district</label><input type="text" id="kidschool" placeholder="e.g. Garfield Elementary"></div>
+      <div class="field"><label for="upcoming">An upcoming event held at a school</label><input type="text" id="upcoming" placeholder="e.g. Ava's spring band concert on May 9"></div>
+      <div class="field"><label for="whoGoes">When the parent who can attend isn't available, who usually goes?</label>
+        <select id="whoGoes"><option value="">Choose one…</option><option value="relative">A grandparent or other relative</option><option value="friend">A friend or neighbor</option><option value="noone">Usually no one</option><option value="depends">It depends on the day</option></select></div>
+      <div class="field"><label for="freq">How often do school events come up?</label>
+        <select id="freq"><option value="">Choose one…</option><option value="few">A few times a year</option><option value="monthly">Most months</option><option value="weekly">Almost every week in season</option></select></div>
+    </div>
+    <div class="field"><label for="story">In your own words <span class="opt">(one moment that shows why this matters)</span></label>
+      <textarea id="story" placeholder="e.g. Last spring our son's band concert was the same night his mom worked late…"></textarea></div>
+    <div class="warnbox">This goes to a public office. Share only what you're comfortable with. Details of anyone's past case don't help the request; the children and the events do.</div>
+
+    <h3 class="sub-h">Your impact statement</h3>
+    <div class="tipbox"><b>Read it over and make it yours.</b>This statement is a template built from your answers. Use Edit the text to fix anything that isn't accurate for your family and to add your own details before you download it.</div>
+    <div class="sheet" id="impactview"></div>
+    <textarea id="impactedit" aria-label="Edit impact statement" hidden style="min-height:420px;font-family:var(--f-doc)"></textarea>
+    <div class="row">
+      <button class="btn" type="button" id="dl-impact">Download statement PDF</button>
+      <button class="btn ghost" type="button" id="impacttoggle">Edit the text</button>
+      <button class="btn ghost" type="button" id="rerollImpact">Different wording</button>
+      <button class="btn ghost small" type="button" data-reset="impact" hidden>Undo my edits</button>
+    </div>
+    <div id="impactstatus"></div>
+  </div>
+  <div class="okbox" id="storyno" hidden>No problem. Next, you'll send your email as it is.</div>
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="spacer"></span><button class="btn" type="button" data-next>Next: your email</button></div>
+</section>
+
+<!-- PAGE 4 -->
+<section class="page" data-page="3" hidden>
+  <p class="eyebrow">Step 3 of 5</p>
+  <h2 tabindex="-1">Save the amendment summary</h2>
+  <p class="hint">This one-page summary is the most important thing you'll send. It explains the fix and is addressed to <strong id="amendto">your representative</strong>. Save it now so you can attach it to your email on the next page.</p>
+  <div class="sheet" id="amendview"></div>
+  <button class="btn big" type="button" id="dl-amend">Download amendment PDF</button>
+  <div id="amendstatus"></div>
+  <p class="note">Can't download files on this device? <button class="linkbtn" type="button" id="inline-amend">Add the summary to the end of my email instead.</button></p>
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need3"></span><button class="btn" type="button" data-next>Next: your email</button></div>
+</section>
+
+<!-- PAGE 5 -->
+<section class="page" data-page="5" hidden>
+  <p class="eyebrow">Step 5 of 5</p>
+  <h2 tabindex="-1">Send your email</h2>
+  <p class="hint">Check your attachments, read it over, and change anything you like. Then copy it into your email or open it in your mail app.</p>
+  <h3 class="sub-h">Attach before you send</h3>
+  <ul class="attach" id="attachlist"></ul>
+  <div class="mailhead">
+    <div><div class="k">To</div><div class="row"><span class="mono" id="toaddr"></span><button class="btn small ghost" type="button" data-copy="to">Copy</button></div></div>
+    <div><div class="k">Subject</div><div class="row"><span id="subj"></span><button class="btn small ghost" type="button" data-copy="subj">Copy</button></div></div>
+  </div>
+  <div class="tipbox"><b>Please proofread before you send.</b>This email is a starting template. Change anything that doesn't fit you, and add a sentence or two in your own words. Personal messages carry the most weight with legislators.</div>
+  <textarea class="mailbody" id="emailbody" aria-label="Email message"></textarea>
+  <div class="row">
+    <button class="btn" type="button" data-copy="email">Copy email</button>
+    <a class="btn ghost" id="gmail" href="#" target="_blank" rel="noopener">Open in Gmail</a>
+    <a class="btn ghost" id="mailto" href="#">Open in mail app</a>
+    <button class="btn ghost" type="button" id="reroll">Get different wording</button>
+    <button class="btn ghost small" type="button" data-reset="email" hidden>Undo my edits</button>
+  </div>
+  <p class="note">If a mail button does nothing on your device, use Copy email and paste it into a new message.</p>
+
+  <details class="call">
+    <summary>Want to call too? Here's a two-minute script</summary>
+    <div class="in">
+      <div class="sheet" id="callview"></div>
+      <div class="row"><button class="btn small" type="button" data-copy="call">Copy script</button><a class="btn small ghost" id="memberlink" href="https://ohiohouse.gov/members/directory" target="_blank" rel="noopener">Office phone number</a></div>
+    </div>
+  </details>
+
+  <div class="extra" id="storycard"></div>
+  <div class="okbox">Thank you. One email from a constituent matters. If you know someone else who should write, send them this page.</div>
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="spacer"></span><button class="btn ghost" type="button" id="startover">Start over</button></div>
+</section>
+</form>
+</div></main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<footer><div class="wrap">
+  <div class="share" id="share" hidden><canvas id="qr" width="240" height="240" aria-label="QR code for this page"></canvas><div><strong style="color:var(--ink)">Pass it on.</strong><br>Point a phone camera here to open this page.<br><span class="mono" id="shareurl"></span></div></div>
+  <p>Read the bill: <a href="https://www.ohiohouse.gov/legislation/136/sb422" target="_blank" rel="noopener">Sub. S.B. 422 on ohiohouse.gov</a>. Member list from the Ohio House directory, October 2026. If an address bounces, check <a href="https://ohiohouse.gov/members/directory" target="_blank" rel="noopener">the member directory</a>.</p>
+  <p>Made by a Portage County parent. This page doesn't store or send what you type; your answers stay in this browser.</p>
+</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+"use strict";
+/* ---------- Public link (set after publishing; empty hides the QR footer) ---------- */
+const SHARE_URL = "https://claude.ai/artifact/NcVqS4qrEzgpssT2PPQHM2";
+
+/* ---------- Ohio House, 136th GA (ohiohouse.gov directory, Oct 2026) ----------
+   district|display name|surname for salutation|ohiohouse.gov slug|home town|party */
+const RAW = `1|Dontavius Jarrells|Jarrells|dontavius-l-jarrells|Columbus|D
+2|Latyna Humphrey|Humphrey|latyna-m-humphrey|Columbus|D
+3|Ismail Mohamed|Mohamed|ismail-mohamed|Columbus|D
+4|Beryl Brown Piccolantonio|Piccolantonio|beryl-brown-piccolantonio|Gahanna|D
+5|Meredith Lawson-Rowe|Lawson-Rowe|meredith-r-lawson-rowe|Reynoldsburg|D
+6|Christine Cockley|Cockley|christine-cockley|Columbus|D
+7|Allison Russo|Russo|c-allison-russo|Upper Arlington|D
+8|Anita Somani|Somani|anita-somani|Dublin|D
+9|Munira Abdullahi|Abdullahi|munira-abdullahi|Columbus|D
+10|Mark Sigrist|Sigrist|mark-sigrist|Grove City|D
+11|Crystal Lett|Lett|crystal-lett|Columbus|D
+12|Brian Stewart|Stewart|brian-stewart|Ashville|R
+13|Tristan Rader|Rader|tristan-rader|Lakewood|D
+14|Sean Brennan|Brennan|sean-p-brennan|Parma|D
+15|Chris Glassburn|Glassburn|chris-glassburn|North Olmsted|D
+16|Bride Rose Sweeney|Sweeney|bride-rose-sweeney|Cleveland|D
+17|Mike Dovilla|Dovilla|michael-d-dovilla|Berea|R
+18|Juanita Brent|Brent|juanita-o-brent|Cleveland|D
+19|Phil Robinson|Robinson|phillip-m-robinson-jr|Solon|D
+20|Terrence Upchurch|Upchurch|terrence-upchurch|Cleveland|D
+21|Eric Synenberg|Synenberg|eric-synenberg|Beachwood|D
+22|Darnell Brewer|Brewer|darnell-t-brewer|Cleveland|D
+23|Daniel Troy|Troy|daniel-p-troy|Willowick|D
+24|Dani Isaacsohn|Isaacsohn|dani-isaacsohn|Cincinnati|D
+25|Cecil Thomas|Thomas|cecil-thomas|Cincinnati|D
+26|Ashley Bryant Bailey|Bryant Bailey|ashley-bryant-bailey|Cincinnati|D
+27|Rachel Baker|Baker|rachel-b-baker|Cincinnati|D
+28|Karen Brownlee|Brownlee|karen-brownlee|Symmes Township|D
+29|Cindy Abrams|Abrams|cindy-abrams|Harrison|R
+30|Mike Odioso|Odioso|mike-odioso|Green Township|R
+31|Bill Roemer|Roemer|bill-roemer|Richfield|R
+32|Jack Daniels|Daniels|jack-k-daniels|New Franklin|R
+33|Veronica Sims|Sims|veronica-r-sims|Akron|D
+34|Derrick Hall|Hall|derrick-hall|Akron|D
+35|Steve Demetriou|Demetriou|steve-demetriou|Chagrin Falls|R
+36|Andrea White|White|andrea-white|Kettering|R
+37|Tom Young|Young|tom-young|Miamisburg|R
+38|Desiree Tims|Tims|desiree-tims|Dayton|D
+39|Phil Plummer|Plummer|phil-plummer|Dayton|R
+40|Rodney Creech|Creech|rodney-creech|West Alexandria|R
+41|Erika White|White|erika-white|Springfield Township|D
+42|Elgin Rogers Jr.|Rogers|elgin-rogers-jr|Toledo|D
+43|Michele Grim|Grim|michele-grim|Toledo|D
+44|Josh Williams|Williams|josh-williams|Sylvania Township|R
+45|Jennifer Gross|Gross|jennifer-gross|West Chester|R
+46|Thomas Hall|Hall|thomas-hall|Madison Township|R
+47|Diane Mullins|Mullins|diane-mullins|Hamilton|R
+48|Scott Oelslager|Oelslager|scott-oelslager|North Canton|R
+49|Jim Thomas|Thomas|jim-thomas|Canton|R
+50|Matthew Kishman|Kishman|matthew-kishman|Minerva|R
+51|Jodi Salvo|Salvo|jodi-salvo|Bolivar|R
+52|Gayle Manning|Manning|gayle-manning|North Ridgeville|R
+53|Joe Miller|Miller|joseph-a-miller-iii|Amherst|D
+54|Kellie Deeter|Deeter|kellie-deeter|Norwalk|R
+55|Michelle Teska|Teska|michelle-teska|Clearcreek Township|R
+56|Adam Mathews|Mathews|adam-mathews|Lebanon|R
+57|Jamie Callender|Callender|jamie-callender|Concord Township|R
+58|Lauren McNally|McNally|lauren-mcnally|Youngstown|D
+59|Tex Fischer|Fischer|tex-fischer|Boardman|R
+60|Brian Lorenz|Lorenz|brian-lorenz|Powell|R
+61|Beth Lear|Lear|beth-lear|Galena|R
+62|Jean Schmidt|Schmidt|jean-schmidt|Loveland|R
+63|Adam Bird|Bird|adam-c-bird|New Richmond|R
+64|Nick Santucci|Santucci|nick-santucci|Howland Township|R
+65|David Thomas|Thomas|david-thomas|Jefferson|R
+66|Sean Hutson|Hutson|sean-hutson||R
+67|Melanie Miller|Miller|melanie-miller|Ashland|R
+68|Thad Claggett|Claggett|thaddeus-j-claggett|Newark|R
+69|Kevin Miller|Miller|kevin-d-miller|Newark|R
+70|Brian Lampton|Lampton|brian-lampton|Beavercreek|R
+71|Levi Dean|Dean|levi-dean|Xenia|R
+72|Heidi Workman|Workman|heidi-workman|Rootstown|R
+73|Jeff LaRe|LaRe|jeff-lare|Violet Township|R
+74|Bernard Willis|Willis|bernard-willis|Springfield|R
+75|Haraz Ghanbari|Ghanbari|haraz-n-ghanbari|Perrysburg|R
+76|Marilyn John|John|marilyn-john|Shelby|R
+77|Meredith Craig|Craig|meredith-craig|Wayne Township|R
+78|Matt Huffman|Huffman|matt-huffman|Lima|R
+79|Monica Robb Blasdel|Blasdel|monica-robb-blasdel|German Township|R
+80|Johnathan Newman|Newman|johnathan-newman|Troy|R
+81|Jim Hoops|Hoops|james-m-hoops|Napoleon|R
+82|Roy Klopfenstein|Klopfenstein|roy-klopfenstein|Haviland|R
+83|Ty Mathews|Mathews|ty-d-mathews|Findlay|R
+84|Angela King|King|angela-n-king|Celina|R
+85|Tim Barhorst|Barhorst|tim-barhorst|Fort Loramie|R
+86|Tracy Richardson|Richardson|tracy-m-richardson|Marysville|R
+87|Riordan McClain|McClain|riordan-t-mcclain|Upper Sandusky|R
+88|Gary Click|Click|gary-click|Fremont|R
+89|VACANT|||Erie and Ottawa counties|
+90|Justin Pizzulli|Pizzulli|justin-pizzulli|Franklin Furnace|R
+91|Bob Peterson|Peterson|bob-peterson|Washington Court House|R
+92|Mark Johnson|Johnson|mark-johnson|Chillicothe|R
+93|Jason Stephens|Stephens|jason-stephens|Kitts Hill|R
+94|Kevin Ritter|Ritter|kevin-ritter|Marietta|R
+95|Ty Moore|Moore|ty-moore|Caldwell|R
+96|Ron Ferguson|Ferguson|ron-ferguson|Wintersville|R
+97|Adam Holmes|Holmes|adam-holmes|Nashport|R
+98|Mark Hiner|Hiner|mark-hiner|Loudonville|R
+99|Sarah Fowler Arthur|Fowler Arthur|sarah-fowler-arthur|Geneva|R`;
+
+/* Counties per district (CCAO, 136th GA; * = only part of the county) */
+const DC = {
+ "1-11":"Franklin*", 12:"Madison,Pickaway,Franklin*", "13-22":"Cuyahoga*", 23:"Lake*,Cuyahoga*",
+ "24-30":"Hamilton*", "31-34":"Summit*", 35:"Geauga*,Portage*,Summit*", "36-39":"Montgomery*",
+ 40:"Preble,Butler*,Montgomery*", "41-43":"Lucas*", 44:"Lucas*,Wood*,Ottawa*", "45-47":"Butler*",
+ "48-50":"Stark*", 51:"Tuscarawas,Stark*", "52-53":"Lorain*", 54:"Huron*,Lorain*", "55-56":"Warren*",
+ 57:"Lake*", 58:"Mahoning*", 59:"Mahoning*,Columbiana*", 60:"Delaware*", 61:"Delaware*,Knox*",
+ 62:"Clermont*", 63:"Clermont*,Brown*", 64:"Trumbull*", 65:"Ashtabula*,Trumbull*", 66:"Medina*",
+ 67:"Ashland,Medina*", 68:"Licking*", 69:"Licking*,Perry*,Fairfield*", 70:"Greene*", 71:"Clinton,Greene*,Clark*",
+ 72:"Portage*", 73:"Fairfield*", 74:"Clark*", 75:"Wood*", 76:"Richland", 77:"Wayne", 78:"Allen,Auglaize*",
+ 79:"Carroll,Columbiana*", 80:"Miami,Darke*", 81:"Williams,Fulton,Henry,Defiance*", 82:"Paulding,Putnam,Van Wert,Defiance*",
+ 83:"Hancock,Hardin,Logan*", 84:"Mercer,Darke*,Auglaize*", 85:"Shelby,Logan*,Champaign", 86:"Union,Marion*",
+ 87:"Morrow,Marion*,Crawford,Wyandot", 88:"Sandusky,Seneca", 89:"Ottawa*,Erie,Huron*", 90:"Adams,Scioto,Brown*",
+ 91:"Fayette,Highland,Pike,Ross*", 92:"Hocking,Vinton,Perry*,Ross*", 93:"Jackson,Gallia,Lawrence",
+ 94:"Meigs,Athens*,Washington", 95:"Harrison,Belmont*,Guernsey*,Noble,Morgan,Athens*", 96:"Jefferson,Belmont*,Monroe",
+ 97:"Guernsey*,Muskingum", 98:"Holmes,Coshocton,Knox*", 99:"Ashtabula*,Geauga*"
+};
+const REPS = {};
+RAW.split("\n").forEach(l=>{const [d,name,last,slug,town,party]=l.split("|");REPS[+d]={d:+d,name,last,slug,town,party,vacant:name==="VACANT"};});
+const COUNTY = {};
+Object.entries(DC).forEach(([k,v])=>{
+  const [a,b]=String(k).split("-").map(Number); for(let d=a;d<=(b||a);d++){
+    v.split(",").forEach(c=>{c=c.replace("*","").trim();(COUNTY[c]=COUNTY[c]||[]).push(d);});
+  }});
+const pad = d=>String(d).padStart(2,"0");
+const repEmail = d=>`rep${pad(d)}@ohiohouse.gov`;
+const JUDICIARY_CHAIR = 49;
+
+/* ---------- Questions ---------- */
+const ROLES = [
+ ["parent","I'm a parent this bill would cover"],
+ ["spouse","My spouse or partner is covered"],
+ ["grandparent","Grandparent"],
+ ["relative","Other relative"],
+ ["teacher","Teacher or school staff"],
+ ["admin","Principal, superintendent, or school board"],
+ ["coach","Coach, activity leader, or event organizer"],
+ ["community","Friend, neighbor, or community member"],
+];
+const EVENTS = [
+ ["games","Games and athletic events"],["concerts","Concerts, plays, and recitals"],
+ ["grad","Graduations and promotions"],["awards","Award and recognition ceremonies"],
+ ["btsn","Meet-the-teacher and back-to-school nights"],["outside","Events outside groups hold in school buildings (dance, scouts, 4-H)"],
+];
+const SITS = [
+ ["otherparent","The other parent can't always go","Work, travel, illness, or a single-parent home"],
+ ["siblings","Brothers and sisters get left out","Little ones leave with the parent who can't stay"],
+ ["away","Events at other schools","Away games, tournaments, recitals out of town"],
+ ["outsidegrp","Outside groups renting school space","No exception at all, not even drop-off"],
+ ["resources","Help handed out at school events","Supplies, clothing, haircuts at back-to-school events"],
+ ["choices","Kids' activity choices","Families weigh which parent is allowed at the field"],
+];
+const EVENT_TEXT = {games:"games and athletic events",concerts:"concerts and school plays",grad:"graduations",awards:"award and recognition ceremonies",btsn:"meet-the-teacher and back-to-school nights",outside:"recitals and programs that outside groups hold in school buildings"};
+
+/* ---------- Role language ---------- */
+/* ---------- Wording variety ----------
+   Each visitor gets a random (but stable) pick from every list below, so emails from
+   different supporters don't read word-for-word the same. "Get different wording" re-rolls. */
+const SEED_KEY="sb422kit.seed";
+let SEED; try{SEED=localStorage.getItem(SEED_KEY);}catch(e){}
+if(!SEED){SEED=String(Math.floor(Math.random()*1e9)); try{localStorage.setItem(SEED_KEY,SEED);}catch(e){}}
+function reseed(){SEED=String(Math.floor(Math.random()*1e9)); try{localStorage.setItem(SEED_KEY,SEED);}catch(e){}}
+function pick(key,arr){let h=2166136261;const str=SEED+"|"+key;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return arr[(h>>>0)%arr.length];}
+const art=w=>(/^[aeiou]/i.test(w)?"an ":"a ")+w;
+const K=(s,a="",b="")=>s.kids?a+s.kids+b:"";
+
+const ROLE_V = {
+parent:[
+ s=>`I am one of the parents this bill would cover${K(s,". I have ")}. I am not asking for open access to schools. I am asking that my children's school be allowed to decide whether I may attend an event, on the school's terms.`,
+ s=>`I would be directly affected by SB 422 as a parent${K(s," of ")}. My request is simple: let my children's school decide, event by event, whether I can be there.`,
+ s=>`I am writing as one of the parents covered by this bill${K(s,". I have ")}. I do not expect to walk into a school whenever I want. I am asking only that the principal have the authority to approve me for events my children are part of, under whatever conditions the school sets.`,
+ s=>`This bill applies to me. I am a parent${K(s," of ")}, and as written, SB 422 means my children's school could never say yes to me being at their games, concerts, or graduations, no matter what precautions it was willing to take.`,
+ s=>`As a parent the bill would cover, I understand why lawmakers want firm rules around schools. I am not asking to loosen them. I am asking that a school have a way to let me watch my own children${K(s," (",")")}, with the school in charge.`,
+ s=>`I am one of the parents this bill is written about${K(s,". I have ")}. My children did nothing to be in this position, but as written, the bill means they would go through school without that parent in the audience.`,
+ s=>`I am a covered parent under SB 422${K(s,", with ")}. I fully expect to follow every rule the bill sets. What I am asking for is a process: written permission from the school for events involving my children, each approved on its own.`,
+ s=>`I am the parent of ${s.kids||"children in an Ohio school"}, and I would be covered by this bill. I am not asking you to change who the bill applies to. I am asking that schools be allowed to decide whether a parent like me can attend their child's events.`,
+ s=>`I want to be upfront about why I am writing: I am one of the parents this bill would cover. ${K(s,"I have ",". ")}I support keeping schools safe, and I believe the people best placed to decide whether I can safely attend my children's events are the principals who run them.`,
+ s=>`Under SB 422 as written, I could drop my children off at school but never stay to watch them${K(s," (",")")}. I am one of the parents it covers, and I am asking only that the school be given the choice.`,
+ s=>`I am a parent this bill would apply to${K(s,", and I have ")}. Every milestone my children have in school, from awards to graduation, would happen without me, with no way for anyone to make an exception. I am asking that the school be allowed to make that call.`,
+ s=>`I write as a parent who is subject to this bill${K(s,". I have ")}. I am not seeking unsupervised access or any special treatment. I am asking that a principal be able to approve my attendance at my own children's events, with escorts, seating limits, or any other conditions the school chooses.`,
+ s=>`I am a parent covered by SB 422${K(s," and I am raising ")}. I accept the bill's restrictions. What I ask is that my children's school not be legally barred from saying yes when it believes my attendance at an event is appropriate.`,
+ s=>`I am one of the parents SB 422 would affect. ${K(s,"I have ",". ")}The bill lets me drop my kids off, but not stand at the back of a gym for their game or sit in an auditorium for their concert. I am asking you to support a way for schools to approve that, on their own terms.`,
+ s=>`My children${K(s," (",")")} are the reason I am writing. I am a parent the bill would cover, and as written they would go without me at their school games, concerts, and ceremonies. I am asking that their school be allowed to decide otherwise, event by event.`,
+ s=>`I am a parent subject to this bill${K(s,". I have ")}. I am not asking you to take my side over the school's. I am asking you to give the school the final word on whether I may attend my children's events.`,
+ s=>`I am among the parents SB 422 would cover${K(s,". I have ")}. I have no objection to strict rules. My concern is that the bill leaves no process at all, so even a principal who is comfortable with me attending under supervision would have no legal way to allow it.`,
+ s=>`As someone the bill would apply to, and as a parent${K(s," of ")}, I am asking for something narrow: written permission from the school for events my children take part in, with whatever conditions the school decides.`,
+ s=>`I am a parent who would be covered by SB 422${K(s,", with ")}. My kids should not have to wonder why their parent is never at their games or programs. I am asking that their school be allowed to approve my attendance, each event on its own.`,
+ s=>`I am writing as a parent covered by this bill${K(s," and the parent of ")}. I respect the purpose of SB 422. I am asking that it include a way for a school to say yes, under its own conditions, so my children are not the ones who pay for the gap.`
+],
+spouse:[
+ s=>`My ${s.spouseword} is a parent who would be covered by this bill. We share the work of raising our children${K(s," (",")")}. When I am working, traveling, or sick, our children have no parent who can go with them to a school event, because the school has no way to approve my ${s.spouseword}, even under supervision.`,
+ s=>`My ${s.spouseword} would be covered by SB 422. Right now, whether our children${K(s," (",")")} have a parent at their school events depends entirely on my schedule. If I cannot make it, no one goes.`,
+ s=>`I am writing about my family. My ${s.spouseword} is a parent covered by this bill, and I am the only one of us who could attend our children's school events${K(s,". We have ")}. I cannot be at every one of them, and I do not want our kids to be alone when I am not.`,
+ s=>`My ${s.spouseword} and I are raising our children together${K(s,": ")}. Under SB 422 as written, my ${s.spouseword} could drop them off but never stay to watch, and the school would have no way to make an exception, even with an escort.`,
+ s=>`My ${s.spouseword} is covered by SB 422. I support the bill's purpose, but I have seen how the current wording falls on our children${K(s,", ")}, not on the adults.`,
+ s=>`Our family includes a parent covered by this bill: my ${s.spouseword}. I work, I travel, and I get sick like anyone else. On those days, our children${K(s," (",")")} would have no parent at their game or concert, because the school would have no legal way to let my ${s.spouseword} come.`,
+ s=>`I share parenting with my ${s.spouseword}, who would be covered by SB 422. The bill puts every school event on my shoulders alone. When I cannot be there, our children${K(s," (",")")} simply miss out.`,
+ s=>`My ${s.spouseword} is a parent this bill would cover. We are not asking for open access to schools. We are asking that our children's school be allowed to decide, on its own terms, whether my ${s.spouseword} may attend events our kids${K(s," (",")")} are part of.`,
+ s=>`I am writing because my ${s.spouseword} would fall under SB 422${K(s,", and we have ")}. I want our children to grow up seeing both parents care about their school. As written, the bill gives their school no way to allow that, even under the strictest conditions.`,
+ s=>`My ${s.spouseword} is covered by this bill. If I get sick or have to work on the night of a concert or a game, our children${K(s," (",")")} will either miss it or go without a parent in the audience. The school should at least be able to say yes.`,
+ s=>`Our children${K(s," (",")")} have two parents who love them, and one who would be barred from their school events under SB 422: my ${s.spouseword}. I am asking that the school be given a way to approve my ${s.spouseword}'s attendance when it decides it is appropriate.`,
+ s=>`My ${s.spouseword} would be covered by SB 422. I am not asking for any exception to the bill's purpose. I am asking for a backup plan for our children, so their school can approve my ${s.spouseword} for events I cannot make.`,
+ s=>`I am the other parent in a home this bill affects. My ${s.spouseword} is covered by SB 422${K(s,", and we have ")}. The bill makes me the only parent who can ever attend our children's school events, with no fallback when I cannot.`,
+ s=>`My ${s.spouseword} is a parent covered by this bill. Every award, every recital, and every graduation our children${K(s," (",")")} have would depend on my being available. A school should be able to approve the other parent when I am not.`,
+ s=>`I am writing on behalf of my family. My ${s.spouseword} would be covered by SB 422. We support the bill's goal. We are asking only that our kids' school be allowed to grant written permission for events they are part of, under the school's own conditions.`,
+ s=>`My ${s.spouseword} is one of the parents this bill would reach, but our children${K(s," (",")")} are the ones who would feel it most. On any day I am not available, they lose their only parent at the event.`,
+ s=>`In our home, my ${s.spouseword} is the parent SB 422 would cover. That means the bill decides our children${K(s," (",")")} will have one parent at school events at most, and none when I am unavailable. I am asking that their school be allowed to decide differently.`,
+ s=>`My ${s.spouseword} would be covered by this bill. I have no wish to weaken it. But I would like our children's school to have the authority to approve my ${s.spouseword} for their events, with an escort or any other condition the school chooses.`,
+ s=>`I am raising our children${K(s," (",")")} with my ${s.spouseword}, who is covered by SB 422. When work or illness keeps me away, there is no one else. The amendment would give the school a way to let my ${s.spouseword} attend instead, on the school's terms.`,
+ s=>`My ${s.spouseword} is a parent this bill would cover, and I am writing so you can hear from the parent who would carry every school event alone. I support the bill. I ask that schools be given a way to say yes when they believe it is safe.`
+],
+grandparent:[
+ s=>`As a grandparent, I know what it means to a child to look out from the stage or the field and see family there. Under SB 422 as written, some children would have a parent who is barred from school games, concerts, and graduations, with no way for the school to make an exception, even under supervision.`,
+ s=>`I am a grandparent, and I have spent a lot of time in school gyms and auditoriums. A child looks for family in the crowd. Under SB 422 as written, some children would never find a parent there, because their school would have no way to make an exception.`,
+ s=>`As a grandparent, I support keeping children safe at school. I also know that the children in these families did nothing wrong. As written, the bill leaves their schools no option to let a parent attend, even under supervision.`,
+ s=>`I am writing as a grandparent. Children remember who showed up for their concerts, their games, and their graduations. SB 422 as written would make sure some of them never see a parent there, with no way for the school to decide otherwise.`,
+ s=>`As a grandparent, I care about two things here: that children are safe at school, and that they are not punished for something they did not do. The amendment protects both by leaving the decision with the school.`,
+ s=>`I want every child in our schools to be safe. I also want every child to have family at the events that matter to them. As a grandparent, I can tell you those two goals do not have to compete, but SB 422 as written gives schools no way to balance them.`,
+ s=>`As a grandparent, I have watched how much a child's school events mean to the whole family. The bill as written would bar some parents from all of them, without any process for the school to review a family's situation.`,
+ s=>`I am a grandparent who supports SB 422's goal. I am asking for a change so that children are not the ones who lose out: let the school decide whether a parent may attend an event, under whatever conditions it sets.`,
+ s=>`Grandparents fill in for a lot of things, but we cannot replace a parent in the audience. As written, SB 422 would leave some children without that at school events, with no exception possible.`,
+ s=>`As a grandparent, I would like to see this bill pass with a sensible fix. Schools already supervise their events. They should be allowed to decide, event by event, whether a parent may come watch their own child.`,
+ s=>`I am writing as a grandparent and a voter in this district. Children should not lose their parent at school games, concerts, and graduations because the bill leaves no room for a school's judgment.`,
+ s=>`I am a grandparent, and I have learned that the small moments at school, a recital or an awards night, are the ones children carry with them. SB 422 as written takes those away from some children and gives their school no way to step in.`,
+ s=>`As a grandparent, I trust our local principals. If a principal believes a parent can safely attend an event with an escort or other conditions, the law should not stand in the way.`,
+ s=>`I am a grandparent who wants children protected. I also do not want any child on a stage scanning the crowd for a parent who is not allowed to come. The amendment would let schools prevent that, case by case.`,
+ s=>`As a grandparent, I am asking you to look at this bill from a child's point of view. A child does not understand why a parent can drop them off but never stay to watch.`,
+ s=>`I am a grandparent writing in support of a narrow amendment. SB 422 keeps certain adults off school property, and I agree with that goal. But as written, it also keeps some children from ever having a parent at their school events.`,
+ s=>`As a grandparent, I have sat through a lot of school programs. I would hate to think of a child in one of them with no parent there because the law left the school no choice.`,
+ s=>`I write as a grandparent. Families depend on more than one adult to get children to everything they do, and this bill, as written, removes one of those adults from school events with no way back.`,
+ s=>`As a grandparent, I support SB 422 and I support this amendment. They work together: the bill sets the rule, and the amendment lets a school make a careful, supervised exception for a child's sake.`,
+ s=>`I am a grandparent, and I know children do better when their family shows up for them. The amendment would let a school allow that under its own rules, rather than ruling it out for every family.`
+],
+relative:[
+ (s,w)=>`As ${w}, I have seen how much school events mean to children. As written, SB 422 leaves a school no way to let a parent attend, even with an escort.`,
+ (s,w)=>`I am writing as ${w}. I support keeping children safe at school, and I also want children to have their parents at the events that matter to them. The bill as written gives schools no way to allow both.`,
+ (s,w)=>`As ${w}, I help with the kids in our family when I can, but I cannot replace a parent at a concert or a graduation. As written, the bill would bar some parents from all of them, with no exception possible.`,
+ (s,w)=>`I am ${w} who cares about the children in my family. SB 422's goal is sound. Its wording, though, leaves no way for a school to approve a parent for a child's event, no matter the conditions.`,
+ (s,w)=>`As ${w}, I would like to see children protected and families kept whole at school milestones. The amendment does both by putting the decision in the school's hands.`,
+ (s,w)=>`I write as ${w}. When a parent cannot attend school events, the rest of the family tries to fill the gap, and often we cannot. The school should be allowed to decide whether that parent may come.`,
+ (s,w)=>`As ${w}, I know what it means to a child to see family in the stands. As written, SB 422 would take that away from some children for their entire time in school.`,
+ (s,w)=>`I am ${w}, and I am asking for a narrow fix to SB 422. Let a principal decide whether a parent may attend an event involving their own child, under whatever supervision the school wants.`,
+ (s,w)=>`As ${w}, I support this bill's purpose. I also think the children affected by it deserve a process, so their school can look at a family's situation and decide.`,
+ (s,w)=>`I am writing as ${w}. The children in these families have done nothing wrong, and they are the ones who lose out when no exception is possible.`,
+ (s,w)=>`As ${w}, I have watched the kids in my family perform and compete, and I know how much they want their parents there. The amendment would let schools allow that when they judge it safe.`,
+ (s,w)=>`I am ${w} and a voter in this district. I would like SB 422 to pass with a way for schools to say yes to a parent, event by event, under their own conditions.`,
+ (s,w)=>`As ${w}, I trust local principals to make careful decisions. The bill as written does not let them make any decision at all about a parent attending a child's event.`,
+ (s,w)=>`I write as ${w}. A child should not have to perform or compete knowing their parent is not allowed to come, when the school itself might be willing to allow it with supervision.`,
+ (s,w)=>`As ${w}, I am asking you to support a small but important change: written permission from the school for specific events involving a parent's own child, each approved on its own.`,
+ (s,w)=>`I am ${w}, and I see this from the children's side. As written, the bill lets a parent drop a child off but never stay to watch, not even for a graduation.`,
+ (s,w)=>`As ${w}, I want schools safe and I want children supported. The amendment keeps the bill's protections and adds a controlled way for schools to make exceptions.`,
+ (s,w)=>`I am writing as ${w} who helps with school pickups and events. There are many days when no one else can go, and the bill gives the school no way to let the parent attend instead.`,
+ (s,w)=>`As ${w}, I believe the school is the right one to decide who attends its events. This amendment would give principals that authority instead of a ban no one can adjust.`,
+ (s,w)=>`I am ${w}, writing because children should not miss every school milestone with a parent because of how one section of a bill is worded.`
+],
+teacher:[
+ (s,a)=>`I work in a school${a}. We plan concerts, ceremonies, and recognition nights for every child. As written, the bill gives our principal no way to approve a parent for an event, even with staff supervision. This amendment gives schools a tool, not an obligation.`,
+ (s,a)=>`As a teacher${a}, I want my students safe, and I want them to have family at their events. SB 422 as written takes the decision out of our hands entirely. The amendment puts it back with the principal.`,
+ (s,a)=>`I am an educator${a}. Our staff already supervise every event we hold. If a principal is comfortable allowing a parent to attend with conditions, the law should let that happen.`,
+ (s,a)=>`As someone who works in a school${a}, I see what it means to a child when a parent is in the audience. I also see what it means when no one comes. The amendment would let schools prevent the second where it is safe to do so.`,
+ (s,a)=>`I teach${a}, and I support SB 422's goal. My concern is that it leaves our administrators no discretion at all, even for a graduation, even with an escort.`,
+ (s,a)=>`As a school employee${a}, I would much rather know a parent is coming, with a plan and supervision in place, than have that parent barred with no option at all.`,
+ (s,a)=>`I work with children every day${a}. Children whose parent cannot attend school events notice, and it affects them. This amendment would let schools make careful, supervised exceptions.`,
+ (s,a)=>`As a teacher${a}, I think principals are well placed to decide these questions. SB 422 as written does not let them decide anything. The amendment gives them that authority without requiring them to use it.`,
+ (s,a)=>`I am an educator${a} writing in support of a narrow amendment. Schools would decide, in writing, whether a parent may attend specific events involving their own child, and could set any conditions they need.`,
+ (s,a)=>`As school staff${a}, I want to be clear that this amendment would not make our jobs harder. It gives us a process we control, instead of a ban we cannot adjust for any family.`,
+ (s,a)=>`I teach${a}, and every year I watch students look for their families at concerts and award nights. SB 422 as written would make sure some of them never find a parent there.`,
+ (s,a)=>`As a teacher${a}, I see the students behind this bill: children who did nothing wrong. The amendment would let their school decide whether their parent may attend their events, with whatever safeguards it chooses.`,
+ (s,a)=>`I work in a school${a} and support keeping students safe. That is exactly why I would like the decision to rest with the people who run the building and know the families.`,
+ (s,a)=>`As an educator${a}, I believe family involvement helps children succeed. The bill as written cuts one parent off from school events with no review. The amendment allows a supervised exception when the school agrees.`,
+ (s,a)=>`I am a teacher${a}. We already manage visitors, escorts, and seating at our events. Giving principals the option to approve a parent under those same controls is a reasonable fix.`,
+ (s,a)=>`As a school employee${a}, I am asking you to support this amendment. It keeps SB 422's protections and lets the school, not the parent, decide whether attendance is appropriate.`,
+ (s,a)=>`I teach${a}, and I have seen what it does to a child when no family shows up. I would like our principal to have the legal option to approve a parent, event by event, when it is safe.`,
+ (s,a)=>`As someone who works in a school${a}, I appreciate that this amendment adds no mandate. A school can say no every time. It simply can say yes when it believes that is right.`,
+ (s,a)=>`I am an educator${a}. Back-to-school nights, award ceremonies, and graduations are planned for every student. The law should not make it impossible for a school to include a student's parent under supervision.`,
+ (s,a)=>`As a teacher${a}, I would like to see SB 422 pass with this amendment. It respects the bill's purpose and gives schools the same judgment they already use for every other visitor question.`
+],
+admin:[
+ (s,t)=>`As ${t}, I value that this amendment leaves the decision with the building. We already plan supervision for school events. This lets us use that judgment for an individual family, instead of a ban we have no way to adjust.`,
+ (s,t)=>`I am ${t}. The amendment does not require schools to admit anyone. It gives administrators the authority to approve a parent for specific events, in writing, under conditions we set.`,
+ (s,t)=>`As ${t}, I support SB 422's purpose. I would also like the law to trust local administrators with a decision we are equipped to make: whether a parent may attend a child's event under supervision.`,
+ (s,t)=>`Speaking as ${t}, a ban with no way to review a family's situation leaves us unable to respond to the families in front of us. A written-permission process keeps control with the school and keeps students safe.`,
+ (s,t)=>`I am ${t}. We manage access to our buildings every day. This amendment would let us apply that same judgment to a parent who wants to see their own child perform, compete, or graduate.`,
+ (s,t)=>`As ${t}, I appreciate that the amendment puts no new obligation on schools. We can decline any request. It simply gives us a legal way to approve a request when we believe it is appropriate.`,
+ (s,t)=>`I write as ${t}. Graduations and award ceremonies are some of the most important days in a student's life. The law should let us decide whether a parent may attend them under our supervision.`,
+ (s,t)=>`As ${t}, I would prefer a clear, written process to an all-or-nothing rule. The amendment provides one: the school decides, event by event, and sets the conditions.`,
+ (s,t)=>`I am ${t}. I have read the amendment, and it is narrow. Permission is in writing, limited to the events and dates the school names, and subject to any safety measures we choose.`,
+ (s,t)=>`As ${t}, I want to keep students safe, and I want to support every student's family. This amendment lets us do both instead of choosing one.`,
+ (s,t)=>`Speaking as ${t}, schools are already the ones accountable for safety at our events. It makes sense that we would be the ones to decide whether a parent may attend.`,
+ (s,t)=>`I am ${t}, writing in support of an amendment to SB 422. It gives principals the authority to grant written, event-by-event permission, which is the kind of local control schools work best with.`,
+ (s,t)=>`As ${t}, I can tell you that families in these situations exist in our schools. The amendment would let us handle each one carefully, rather than having no options at all.`,
+ (s,t)=>`I am ${t}. SB 422 as written would bar a parent from even an escorted visit to a child's graduation. I would like the law to leave that judgment to us.`,
+ (s,t)=>`As ${t}, I support SB 422 with this amendment. The bill sets a clear rule. The amendment gives the people who run the building a controlled way to make exceptions for a child's sake.`,
+ (s,t)=>`I write as ${t}. A school can supervise a parent at an event far more easily than it can explain to a child why that parent is never allowed to come.`,
+ (s,t)=>`As ${t}, I am comfortable with the responsibility this amendment gives schools. We already decide who may be on our campuses and under what conditions.`,
+ (s,t)=>`I am ${t}. The amendment is permissive, not mandatory, and it keeps every decision local. I would ask you to support it.`,
+ (s,t)=>`As ${t}, I would welcome the flexibility to approve a parent for specific events involving their child, each approved on its own, with whatever supervision we determine is necessary.`,
+ (s,t)=>`Speaking as ${t}, I believe this change makes SB 422 stronger, not weaker. Every exception would be in writing, approved by the school, and limited to the events it names.`
+],
+coach:[
+ (s,o)=>`I ${o.run}. Our events are often held in school gyms, fields, and auditoriums. Under SB 422 as written, a covered parent could not even drop a child off at an event an outside group runs on school property, because the bill's drop-off exception for events covers only school-sponsored events. The amendment would let the host school decide, and would let organizers like me request permission for a family.`,
+ (s,o)=>`As a coach${o.with}, I see how much it matters to kids when their parents are in the stands. Under SB 422 as written, a covered parent could not watch any game held on school property, and the school would have no way to allow it.`,
+ (s,o)=>`I organize youth activities${o.for}, and many of our events happen in school buildings. The bill's drop-off exception for events covers only school-sponsored events, so for groups like ours, a covered parent could not even drop a child off.`,
+ (s,o)=>`As someone who ${o.run3}, I would like to be able to request permission from the host school on behalf of a family. The amendment allows exactly that, and the school keeps the final word.`,
+ (s,o)=>`I ${o.run}. We use school gyms, fields, and auditoriums for practices, games, and recitals. As written, SB 422 offers no exception for a parent at any of those events, not even drop-off.`,
+ (s,o)=>`As a coach${o.with}, I am asking for a narrow change. Let the school hosting an event decide whether a parent may attend, in writing, with any supervision it wants.`,
+ (s,o)=>`I ${o.run}, and our kids play and perform in school facilities all over the area. When an event is at another school, the bill's exceptions do not even clearly apply. The host school should be able to decide.`,
+ (s,o)=>`As an organizer${o.for}, I would much prefer a clear permission process to telling a child their parent cannot come to the recital, the tournament, or the banquet.`,
+ (s,o)=>`I ${o.run}. Kids choose activities based on what they love. They should not have to choose based on which parent is allowed at the field. The amendment would let schools approve a parent, event by event.`,
+ (s,o)=>`As a coach${o.with}, I support keeping kids safe, and I already work within school rules for every event. Giving the host school authority to approve a parent fits right into that.`,
+ (s,o)=>`I ${o.run}. Our families depend on both parents for rides, support, and cheering. The bill as written keeps one parent from attending any event held on school property, with no way for anyone to make an exception.`,
+ (s,o)=>`As someone who ${o.run3}, I like that the amendment lets coaches and organizers submit the request. The decision still belongs entirely to the school.`,
+ (s,o)=>`I ${o.run}, and many of our events are open to families. Under SB 422 as written, a covered parent could never attend, even one the host school would be perfectly willing to approve under supervision.`,
+ (s,o)=>`As a coach${o.with}, I have watched kids look to the stands after a big play. I would like the law to let a school decide whether a parent can be there.`,
+ (s,o)=>`I ${o.run}. Our groups use school space because it is what our communities have. That should not mean an outright ban on a parent attending, with no process for the school to review.`,
+ (s,o)=>`As an organizer${o.for}, I am writing in support of an amendment that would let the host school grant written permission for specific events, each approved on its own, under its own conditions.`,
+ (s,o)=>`I ${o.run}. Away games and tournaments put families in unfamiliar towns. As written, the bill leaves a parent waiting somewhere nearby while their child plays, with no way for the host school to allow them in.`,
+ (s,o)=>`As a coach${o.with}, I would like SB 422 to pass with this fix. It keeps the protections and gives schools and organizers a workable process.`,
+ (s,o)=>`I ${o.run}. Recitals and banquets are often a child's proudest moments. The amendment would let the school hosting them decide whether a parent may attend, rather than ruling it out.`,
+ (s,o)=>`As someone who ${o.run3}, I support this amendment because it keeps decisions local. The school knows its building and its event, and it should be the one to say yes or no.`
+],
+community:[
+ s=>`I support protecting children at school. I also believe children should not lose their parent in the audience because of a gap in the bill's wording.`,
+ s=>`As a member of this community, I want children safe at school. I also want them to have their families at the events that matter. The amendment lets schools make that call carefully.`,
+ s=>`I am writing as a neighbor and a voter. SB 422 has a good purpose, and I would like it to pass with a way for schools to approve a parent for a child's event under supervision.`,
+ s=>`I live in this district and care about the kids in it. Children should not lose a parent at school games and graduations because the bill leaves no room for a school's judgment.`,
+ s=>`As a community member, I trust our principals to make careful decisions. The bill as written does not let them decide at all whether a parent may attend a child's event.`,
+ s=>`I support SB 422's goal. I am asking for a narrow fix that lets the school, not the parent, decide whether attendance at an event is appropriate.`,
+ s=>`As someone in this community, I think about the children in families this bill affects. They did nothing wrong, and they deserve a process.`,
+ s=>`I am writing as a friend and neighbor to families in our schools. A child should not have to perform or compete with no parent in the audience when the school itself might allow it.`,
+ s=>`As a voter in this district, I would like to see SB 422 strengthened by giving schools a controlled, written way to make exceptions for a child's sake.`,
+ s=>`I care about safe schools and strong families. This amendment protects both: the bill's rules stay in place, and the school decides, event by event, whether a parent may attend.`,
+ s=>`As a member of this community, I believe the people running a school building are best placed to decide who attends its events. The amendment gives them that authority.`,
+ s=>`I am writing in support of an amendment to SB 422 that would allow written permission from the host school for specific events involving a parent's own child, under the school's conditions.`,
+ s=>`As a neighbor, I have seen how much our community turns out for school games and concerts. Every child deserves the chance to have their family there when it can be done safely.`,
+ s=>`I think this is a common-sense fix. The bill keeps certain adults off school grounds; the amendment simply lets a school make a supervised exception for a parent.`,
+ s=>`As a community member, I worry about the children caught in the middle of this bill. They would go through every school milestone without one parent, with no exception possible.`,
+ s=>`I am writing as a resident who supports both child safety and local control. This amendment keeps the safety protections and gives the decision to the school.`,
+ s=>`As someone who cares about kids in our area, I would ask you to support this amendment. It adds no mandate on schools; it just allows them to say yes.`,
+ s=>`I think SB 422 is close to right. What it needs is a way for schools to approve a parent, in writing, for events involving their own child.`,
+ s=>`As a member of this community, I would rather trust a principal with this decision than write a rule into law that no school can ever adjust.`,
+ s=>`I am writing because I believe children should not be the ones who pay for a gap in a bill's wording. The amendment would let schools decide, carefully and in writing, whether a parent may attend.`
+]};
+const FAMILY_V=["This affects my own family.","I am writing partly because this affects someone in my own family.","This is personal for me; it affects my own family.","I know this firsthand, because it affects my own family.","This is not abstract for me. It touches my own family."];
+
+function roleEmail(s,fixed){
+  const list=ROLE_V[s.role]||ROLE_V.community, f=fixed?ipick("role-"+s.role,list):pick("role-"+s.role,list);
+  let txt;
+  if(s.role==="relative") txt=f(s, s.relword?art(s.relword.toLowerCase()):"a relative");
+  else if(s.role==="teacher") txt=f(s, s.school?` at ${s.school}`:"");
+  else if(s.role==="admin") txt=f(s, (s.title?art(s.title.toLowerCase()):"a school leader")+(s.school?` with ${s.school}`:""));
+  else if(s.role==="coach") txt=f(s,{run:s.org?`help run ${s.org}`:"coach and organize youth activities", run3:s.org?`helps run ${s.org}`:"coaches and organizes youth activities", with:s.org?` with ${s.org}`:"", for:s.org?` for ${s.org}`:""});
+  else txt=f(s);
+  const covered=s.role==="parent"||s.role==="spouse";
+  return txt + (s.family&&!covered ? " "+(fixed?ipick("family",FAMILY_V):pick("family",FAMILY_V)) : "");
+}
+
+const HELLO_V=[
+ (dl,cp,s)=>`I am ${dl}${cp}, writing about Substitute Senate Bill 422, which passed the Ohio Senate 33-0 and is now before the House. I support the bill's goal of keeping children safe at school, and I am asking you to support one narrow amendment.`,
+ (dl,cp,s)=>`My name is ${s.name||"[Your name]"}, and I am ${dl}${cp}. I am writing about Substitute Senate Bill 422, now before the House after passing the Senate 33-0. I support its goal of protecting children at school, and I would ask you to support a narrow amendment to it.`,
+ (dl,cp,s)=>`I am writing to you as ${dl}${cp} about Senate Bill 422. I agree with the bill's purpose of keeping children safe at school, and I hope you will consider a narrow amendment as it moves through the House.`,
+ (dl,cp,s)=>`As ${dl}${cp}, I am reaching out about Substitute Senate Bill 422, which passed the Senate unanimously and is now in the House. I support what the bill sets out to do, and I am writing to ask for your support on a narrow amendment.`,
+ (dl,cp,s)=>`Senate Bill 422 passed the Ohio Senate 33-0 and is now before the House. I am ${dl}${cp}, and while I support the bill's purpose, I am writing to ask you to support a narrow amendment.`,
+ (dl,cp,s)=>`I am ${dl}${cp}. I support the goal of Senate Bill 422, keeping children safe at school, and I am writing to ask you to support a narrow amendment that keeps that goal intact.`
+];
+const GAP_V=[
+ `As written, the bill lets a covered parent drop off or pick up a child, but not attend the event itself. That includes graduations, award ceremonies, concerts, and games. Events that outside groups hold in school buildings have no exception at all. The school has no way to say yes, even once.`,
+ `Under the bill's current wording, a covered parent may drop off or pick up a child but may not stay for the event itself, whether it is a game, a concert, an awards night, or a graduation. Events that outside groups hold in school buildings have no exception at all, and the school has no way to say yes.`,
+ `The gap is in the bill's list of "legitimate purposes." It allows drop-off and pick-up, but nothing that lets a parent attend and watch their own child, even under supervision. Events run by outside groups in school buildings are not covered at all.`,
+ `As SB 422 reads now, a principal who is comfortable with a parent attending a child's graduation under escort would have no legal way to allow it. For events, the bill covers drop-off and pick-up only, and it offers no exception for events outside groups hold on school property.`,
+ `Right now the bill draws the line at drop-off: a covered parent can bring a child to an event and pick them up afterward, but cannot stay to see the concert, the game, or the graduation. For events outside groups hold in school buildings, there is no exception at all. Schools are left with no option.`,
+ `For school events, the bill's exceptions cover getting a child there and back, but not being there for the child. A covered parent could not attend a graduation, an award ceremony, or a game, and the school could not approve it under any conditions.`
+];
+const ASK_V=[
+ `The amendment would let the principal (or designee) of the school hosting an event give a parent or guardian prior written permission to attend specific events involving their own child. Each event would be approved on its own, under any safety or supervision conditions the school sets. It grants no general access to school property, and the decision stays entirely with the school.`,
+ `The amendment is narrow. The principal or designee of the school hosting an event could grant a parent or guardian prior written permission to attend specific events involving their own child. Each permission would name its events and dates, carry any conditions the school sets, and give no general access to school property. The school would decide every time.`,
+ `What I am asking for is a written-permission process. A parent or guardian could attend specific events involving their own child only with prior written approval from the principal or designee of the host school, with each event approved on its own and under whatever supervision the school requires. The school keeps full control.`,
+ `The fix would let the school hosting an event approve, in writing and in advance, a parent's attendance at specific events involving their own child. Each approval would be limited to the events and dates the school names and could include escorts, seating, or any other condition. It would not open the building to anyone, and the school could always say no.`,
+ `Under the proposed amendment, the decision belongs to the school. Its principal or designee could give a parent or guardian prior written permission for specific events involving their own child, each approved on its own, under any safety or supervision conditions. No general access would be granted.`,
+ `The amendment adds one tool for schools: prior written permission, from the principal or designee of the school hosting an event, for a parent or guardian to attend specific events involving their own child. Each event would be approved separately and could carry any conditions the school chooses. Nothing about it is automatic.`
+];
+const CLOSE_V=[
+ `Would you support this amendment, or ask the Legislative Service Commission to draft it? I would welcome a reply from you or your staff whenever it is convenient.`,
+ `I would be grateful if you would support this amendment, or ask the Legislative Service Commission to prepare language for it. A reply from you or your office, whenever convenient, would be appreciated.`,
+ `Would you consider supporting this amendment as SB 422 moves through the House? If it helps, the Legislative Service Commission could draft the precise language. I would appreciate hearing back from your office when you have a chance.`,
+ `I hope you will support this amendment and, if appropriate, request drafting from the Legislative Service Commission. I would welcome a reply at your convenience.`,
+ `Could I count on your support for this amendment? Your office could ask the Legislative Service Commission to draft it. I would be glad to hear from you or your staff whenever your schedule allows.`
+];
+const THANKS_V=[
+ d=>`Thank you for your time and your service${d?` to District ${d}`:""}.`,
+ d=>`Thank you for considering this, and for your service${d?` to District ${d}`:""}.`,
+ d=>`Thank you for your time and attention to this.`,
+ d=>`I appreciate your time and your work${d?` for District ${d}`:""}.`
+];
+const SIGNOFF_V=["Respectfully,","Sincerely,","Thank you,","With appreciation,"];
+const SUBJ_V=[
+ s=>"Please support a parent-access amendment to SB 422",
+ s=>"SB 422: a narrow amendment for parents at school events",
+ s=>"Constituent request: amendment to Senate Bill 422",
+ s=>"Asking your support for an SB 422 amendment",
+ s=>"SB 422 and children's school events",
+ s=>"A small fix to SB 422 for children's milestones",
+ s=>s.t&&!s.t.viaVacancy?`SB 422 amendment request from a District ${s.t.d} constituent`:"SB 422 amendment request"
+];
+
+/* ---------- Generators ---------- */
+function genSubject(s){ s=s||state(); return pick("subj",SUBJ_V)(s); }
+function genEmail(s){
+  const R=repName(s);
+  const hello = s.t&&s.t.viaVacancy
+    ? `I live in Ohio House District ${s.t.home}, which is currently vacant, so I am writing to you as chair of the House Judiciary Committee about Substitute Senate Bill 422. I support the bill's goal of keeping children safe at school, and I am asking you to support one narrow amendment.`
+    : pick("hello",HELLO_V)(districtLine(s), s.city?` (${s.city})`:"", s);
+  const sits = s.sits.length ? `\n\nThis gap shows up in real ways:\n${s.sits.map(k=>"- "+SIT_SHORT[k]).join("\n")}` : "";
+  const sig = [s.name||"[Your name]", s.street, [s.city,s.zip?`Ohio ${s.zip}`:(s.city?"Ohio":"")].filter(Boolean).join(", "), s.phone, s.email].filter(Boolean).join("\n");
+  const d = s.t&&!s.t.viaVacancy ? s.t.d : null;
+  const att = attachLine(s);
+  return `Dear ${R},
+
+${hello}
+
+${roleEmail(s)}
+
+${pick("gap",GAP_V)}${sits}
+
+${pick("ask",ASK_V)}
+
+${att?att+" ":""}${pick("close",CLOSE_V)}
+
+${pick("thanks",THANKS_V)(d)}
+
+${pick("signoff",SIGNOFF_V)}
+${sig}${inlineAppend(s)}`;
+}
+
+function roleShort(s){
+  switch(s.role){
+    case "parent": return "I'm one of the parents the bill would cover, and I'm asking only that my kids' school be allowed to decide.";
+    case "spouse": return `My ${s.spouseword} is covered by the bill, and when I can't go, our kids have no parent at their events at all.`;
+    case "grandparent": return "I'm a grandparent, and I don't want children losing their parent in the audience over a drafting gap.";
+    case "relative": return "I have family this touches, and the kids are the ones who miss out.";
+    case "teacher": return "I work in a school, and right now our principal would have no way to say yes, even with an escort.";
+    case "admin": return "I'm a school leader, and this keeps the decision with us, where it belongs.";
+    case "coach": return "I run youth activities that use school buildings, and the bill as written doesn't even allow drop-off at our events.";
+    default: return "I'm a community member who wants kids protected and wants schools to have this one tool.";
+  }
+}
+const SIT_SHORT = {
+  otherparent:"When the other parent can't go because of work, travel, or illness, the children miss the event entirely.",
+  siblings:"Younger brothers and sisters who can't stay home alone end up leaving with the covered parent, so a child performs with no family in the audience.",
+  away:"Away games, tournaments, and recitals at other schools may not be covered at all, because the bill's exception for parents applies only to a child who attends “the related school.”",
+  outsidegrp:"Events that outside groups hold in school buildings, like dance recitals, scouts, or 4-H, have no exception at all, not even drop-off.",
+  resources:"Some school events hand out supplies, clothing, or other help, and children miss that too when no parent can bring them.",
+  choices:"Families end up choosing a child's activities around which parent is allowed at the field."
+};
+
+function genCall(s){
+  const R=repName(s), n=s.name||"[your name]", where=s.city||"[your city]";
+  const d = s.t?(s.t.viaVacancy?`District ${s.t.home}`:`District ${s.t.d}`):"[your district]";
+  const em = s.t?repEmail(s.t.d):"[their email]";
+  return `# Call script: SB 422 amendment
+> About two minutes. Be brief and polite. Staff tally calls by bill and position.
+## When someone answers
+Hi, my name is ${n}. I live in ${where}, in House ${d}. I'm calling about Senate Bill 422. Is the staff member who handles criminal justice or education bills available?
+> If not, keep going. The person who answers can take the message.
+## Your message
+I support SB 422's goal of keeping kids safe at school. I'm calling to ask ${R} to support one narrow amendment.
+As written, the bill lets a covered parent drop a child off at school but never attend the event itself, not even a graduation. Events that outside groups hold in school buildings have no exception at all.
+The amendment would let the principal of the host school give written permission for specific events, approved event by event, with whatever supervision the school wants. The school stays in control.
+${roleShort(s)}
+Could I send the one-page amendment summary to ${em}?
+## Before you hang up
+Does ${R} have a position on SB 422 yet?
+Thank you for your time.
+> Leave your name, street address, and phone number so they can confirm you are a constituent.
+## If you get voicemail
+Hi, this is ${n} from ${where}, in House ${d}. I'm asking ${R} to support a narrow amendment to Senate Bill 422 that lets a school give a parent written permission to attend specific events involving their own child, approved event by event, on the school's terms. I'm sending a one-page summary by email.${s.phone?` My number is ${s.phone}.`:""} Thank you.`;
+}
+/* ---------- Impact statement wording ----------
+   Its own random seed, separate from the email, so re-rolling the email never changes a statement
+   someone already saved. "Different wording" on the story page re-rolls it until it's saved. */
+const ISEED_KEY="sb422kit.iseed";
+let ISEED; try{ISEED=localStorage.getItem(ISEED_KEY);}catch(e){}
+if(!ISEED){ISEED=String(Math.floor(Math.random()*1e9)); try{localStorage.setItem(ISEED_KEY,ISEED);}catch(e){}}
+function reseedImpact(){ISEED=String(Math.floor(Math.random()*1e9)); try{localStorage.setItem(ISEED_KEY,ISEED);}catch(e){}}
+function ipick(key,arr){let h=2166136261;const str=ISEED+"|"+key;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return arr[(h>>>0)%arr.length];}
+
+const I_INTRO = {
+ parent:[
+  s=>`I am a parent${K(s," of ")}, and I am one of the parents SB 422 would cover. I am writing to describe, in practical terms, how the bill's current language affects my children. I support the bill's purpose. My concern is a gap that falls on them, not on me.`,
+  s=>`I am one of the parents SB 422 would cover${K(s,", and I have ")}. I support what the bill is trying to do. This statement explains, as plainly as I can, how its current wording would affect my children, who have done nothing wrong.`,
+  s=>`This statement comes from a parent the bill would cover${K(s,". I have ")}. I am not writing to argue against SB 422. I am writing so you can see how one gap in its language would play out in my children's lives.`,
+  s=>`I am a parent${K(s," of ")} and one of the people SB 422 is written about. I accept the bill's restrictions. I want to show you, in practical terms, what its current wording would mean for my kids.`,
+  s=>`I am writing as a parent covered by SB 422${K(s,", and I have ")}. I agree that children need to be safe at school. This statement describes how the bill, as written, affects the children of parents like me.`
+ ],
+ spouse:[
+  s=>`My ${s.spouseword} and I are raising our children${K(s," (",")")} together, and my ${s.spouseword} is one of the parents SB 422 would cover. I support the bill's purpose. I am writing to describe a gap in its language that falls on our children.`,
+  s=>`My ${s.spouseword} is a parent SB 422 would cover. We share the work of raising our children${K(s," (",")")}. This statement explains how the bill's current wording would affect them, and me as the only parent able to attend their school events.`,
+  s=>`I am writing about my family. My ${s.spouseword} would be covered by SB 422, and together we are raising our children${K(s," (",")")}. I support the bill's goal. I want to show you, in practical terms, what one gap in its wording would mean for our kids.`,
+  s=>`Our family includes a parent covered by SB 422: my ${s.spouseword}. We are raising our children${K(s," (",")")} together. I am not writing to oppose the bill. I am writing because, as written, it places every school event on my shoulders alone.`,
+  s=>`I am the other parent in a home SB 422 would affect. My ${s.spouseword} is covered by the bill${K(s,", and we have ")}. This statement describes how its current language would shape our children's school years.`
+ ],
+ other:[
+  s=>`I am writing to describe, in practical terms, how the bill's current language affects children${K(s," like ")}.`,
+  s=>`This statement describes how the bill's current wording affects children${K(s," like ")}, and what a narrow amendment would change.`,
+  s=>`I want to show you, in practical terms, what this gap means for the children it reaches${K(s,", like ")}.`
+ ]
+};
+const I_EVENTS_T=["What these events mean","Why these events matter","School is more than the school day","The events children count on","What children miss"];
+const I_EVENTS=[
+ (C,acts,ev,sch)=>`${C} ${acts?`take part in ${acts}. They `:""}count on a parent being there for ${ev}${sch}. Young children cannot attend most of these on their own. SB 422 lists "legitimate purposes" that let a covered parent drop off or pick up a child, but none covers attending the event. When no other adult can go, the child misses the event.`,
+ (C,acts,ev,sch)=>`${acts?`${C} take part in ${acts}. `:""}Events like ${ev}${sch} are where children see that their family cares about their school. Most young children cannot attend them alone. The bill's "legitimate purposes" cover dropping a child off and picking them up, but nothing that lets a covered parent stay and watch.`,
+ (C,acts,ev,sch)=>`${C} ${acts?`are involved in ${acts}, and they `:""}look forward to ${ev}${sch}. Under SB 422 as written, a covered parent can drop a child off and pick them up, but cannot stay for the event. If no other adult is free, a young child simply does not go.`,
+ (C,acts,ev,sch)=>`${acts?`${C} take part in ${acts}. `:""}Events like ${ev}${sch} are moments families plan around. For events, the bill's list of legitimate purposes stops at drop-off and pick-up, so a covered parent cannot attend, and the school cannot make an exception.`,
+ (C,acts,ev,sch)=>`${acts?`${C} take part in ${acts}. `:""}For young children, ${ev}${sch} only happen if an adult takes them. SB 422 lets a covered parent drop a child off or pick them up, but not attend. When that parent is the one who is available, the child misses out.`
+];
+const I_SITS = {
+ otherparent:[
+  [`When the other parent cannot go`,c=>`${c?"One parent":"The other parent"} cannot always be there. People work, travel, and get sick, and some children have only one parent at home. As written, whether a child has a parent at a school event depends on one person's schedule. There is no backup, because the school has no way to approve the covered parent, even under supervision.`],
+  [`No backup when plans fall through`,c=>`Families plan around work shifts, travel, and illness, and plans fall through. Under SB 422 as written, only one parent can attend school events, so when that parent is unavailable, the child goes without. The school cannot step in to approve the other parent.`],
+  [`Everything rests on one parent's schedule`,c=>`As written, the bill makes one parent responsible for every school event a child will ever have. That parent works, gets sick, and sometimes travels. On those days the child either misses the event or attends with no parent there.`],
+  [`When the parent who can attend is not available`,c=>`Some children live with only one parent, and in two-parent homes schedules still conflict. The bill leaves no fallback: if the parent who is allowed to attend cannot make it, the school has no way to let the other parent come instead.`],
+  [`One parent, every event`,c=>`No parent can be at every event. Under SB 422 as written, a child with a covered parent has exactly one parent who may attend school events, and when that parent cannot, there is no one the school can approve in their place.`]
+ ],
+ siblings:[
+  [`Brothers and sisters are left out too`,c=>`A covered parent can drop one child off but cannot stay, so younger siblings who are too young to be home alone have to leave with that parent. If no one else is free, the brothers and sisters never see the performance, and the child on stage has no family in the audience.`],
+  [`Siblings miss out too`,c=>`A covered parent can drop one child off but cannot stay. Younger brothers and sisters who are too young to be home alone have to leave with that parent, so they never see their sibling play or perform.`],
+  [`The whole family is kept out`,c=>`When one child has an event, the younger children usually come along. Under the bill as written, a covered parent has to leave after drop-off and take the little ones along. Unless someone else is free, the child on stage or on the field has no family watching.`],
+  [`Younger children have nowhere to go`,c=>`Small children cannot be left home alone, and they cannot stay at the school without a parent. So when the covered parent is the one available, the younger siblings leave, and the older child is alone at their own event.`],
+  [`Brothers and sisters cannot cheer each other on`,c=>`Children want to see their brothers and sisters perform and compete. As written, the bill means the covered parent and any younger siblings leave after drop-off, so the family misses the moment together.`]
+ ],
+ away:[
+  [`Events at other schools`,c=>`Away games, tournaments, and recitals are often held at schools in other towns, sometimes an hour or more from home. The bill's exception for parents applies only to a child who attends "the related school," so it is not clear a parent could even drop a child off at another school's building. The parent and any siblings end up waiting somewhere in an unfamiliar town while the child plays or performs alone.`],
+  [`Away games and out-of-town events`,c=>`Tournaments, away games, and recitals are often held at other schools, sometimes an hour or more from home. The bill's exception for parents refers to a child who attends "the related school," so it is unclear whether a covered parent could even drop a child off at another school's building. The parent, and any younger children, end up waiting somewhere unfamiliar until pickup.`],
+  [`Events at schools in other towns`,c=>`Many events are hosted by other schools. Because SB 422's exception for parents is tied to a child who attends "the related school," a covered parent may not be able to drop a child off at all when the event is somewhere else. The host school would also have no way to approve them.`],
+  [`When the event is not close to home`,c=>`Away events mean long drives to unfamiliar towns. Under the bill as written, a covered parent may not be able to drop a child off at a host school, since the bill's exception for parents names "the related school," and could not stay in any case. Young children are left to compete or perform with no family nearby.`],
+  [`Host schools have no way to say yes`,c=>`When a game or recital is hosted by another school, that school has no say under the bill. The bill's exception for parents refers only to "the related school," so a covered parent may not even be able to drop a child off. An approval process would let the host school decide.`]
+ ],
+ outsidegrp:[
+  [`Events run by outside groups on school property`,c=>`Many private groups, such as dance studios, scouts, and 4-H, rent school auditoriums and gyms. Because these events are not school-sponsored, none of the bill's legitimate purposes applies, not even drop-off or pick-up. The ban follows the building, not the event, so a private recital is treated more strictly than a school day, when drop-off is at least allowed.`],
+  [`Recitals and programs run by outside groups`,c=>`Dance studios, scouts, 4-H, and youth leagues often rent school auditoriums and gyms. These events are not school-sponsored, so none of the bill's legitimate purposes apply, not even drop-off or pick-up. A private recital is treated more strictly than a school day, when drop-off is at least allowed.`],
+  [`Private events in school buildings`,c=>`Many community groups use school space because it is what their towns have. Under SB 422 as written, a covered parent could not even drop a child off at a dance recital or scout meeting held in a school, because the bill's drop-off and pick-up exception for events covers only school-sponsored activities.`],
+  [`The ban follows the building, not the event`,c=>`When an outside group holds an event in a school building, SB 422 offers no exception at all. A parent could not drop off, pick up, or attend a private recital or league game simply because of where it is held.`],
+  [`Outside groups using school space`,c=>`Scouts, 4-H, dance studios, and youth sports often meet in schools. Because those events are not school-sponsored, the bill's legitimate purposes do not apply to them in any way. An event organizer has no way to ask, and the school has no way to approve.`]
+ ],
+ resources:[
+  [`Help that children miss`,c=>`Some school events do more than celebrate. Back-to-school events can provide free supplies, haircuts, and clothing so every child starts the year ready. A child who cannot attend without a parent loses those resources along with the event.`],
+  [`Help handed out at school events`,c=>`Back-to-school nights and similar events often provide free supplies, clothing, haircuts, or information families need. A young child who cannot attend without a parent misses those resources along with the event.`],
+  [`More than a celebration`,c=>`Some school events exist to help families: free school supplies, clothing drives, and health or enrollment information. Under the bill as written, a child whose available parent is covered can lose access to that help.`],
+  [`Children lose access to resources`,c=>`Schools use events to get supplies, clothing, and services to the families who need them most. When a child cannot attend without a parent, that help does not reach them.`],
+  [`Back-to-school help`,c=>`At many schools, back-to-school events are where children get free supplies and clothing to start the year ready. A child who has to miss the event because no allowed parent can bring them misses that help as well.`]
+ ],
+ choices:[
+  [`How it shapes children's choices`,c=>`Practices and games move onto school fields and into gyms as children get older. Families now have to weigh whether to commit a child to a sport or activity knowing one parent will not be allowed to watch games and practices on school grounds. A child should choose an activity based on what they love, not on which parent is allowed at the field.`],
+  [`Choosing activities around the law`,c=>`When a family considers a sport, a team, or a performing group, they now have to weigh whether one parent will be allowed to watch when the team plays at a school. A child should choose based on what they love, not on which parent is allowed at the field.`],
+  [`Kids' activities should not depend on this`,c=>`As children get older, practices, games, and performances move onto school fields and stages. Families end up steering children away from activities held at schools, which a covered parent could never attend. That is a choice no child should have to make.`],
+  [`What children sign up for`,c=>`Children sign up for sports and activities hoping their parents will be there. Under SB 422 as written, families have to factor in that one parent cannot attend games or performances held on school grounds, and that shapes what children choose to try.`],
+  [`Long-term commitments`,c=>`Joining a team or a music program is a commitment of years. Families have to consider whether a parent will be shut out of every game and concert held at a school along the way. The amendment would let schools approve that parent event by event, so children can choose freely.`]
+ ]
+};
+const I_NEXT_T=["What's coming up","The next event","On the calendar"];
+const I_NEXT=[
+ (up,w)=>`Coming up next is ${up}. As SB 422 is written, ${w.subj} would not be allowed to attend, and the school would have no way to approve it.`,
+ (up,w)=>`The next event on the calendar is ${up}. Under the bill as written, ${w.subj} could not be there, no matter what conditions the school was willing to set.`,
+ (up,w)=>`One of the next events is ${up}. As written, SB 422 would keep ${w.obj} away, and the school would have no say.`
+];
+const I_WHO={
+ relative:[we=>`When the parent who can attend is not available, a grandparent or another relative tries to fill in. That is not always possible, and it is not the same for a child as having a parent there.`,
+           we=>`On days the allowed parent cannot go, ${we} ${we==="we"?"call":"calls"} on grandparents or other relatives. They help when they can, but they cannot always be there, and they are not a parent.`],
+ friend:[we=>`When the parent who can attend is not available, ${we} ${we==="we"?"lean":"leans"} on friends and neighbors. That is not always possible, and it is not the same as a parent being there.`,
+         we=>`On days the allowed parent cannot go, ${we} ${we==="we"?"ask":"asks"} friends or neighbors to step in. Sometimes they can. Sometimes no one can.`],
+ noone:[we=>`When the parent who can attend is not available, usually no one goes. The child either misses the event or attends without any family there.`,
+        we=>`On days the allowed parent cannot go, there is usually no one else. The child misses the event, or goes without family in the audience.`],
+ depends:[we=>`When the parent who can attend is not available, it depends on who is free that day, and too often no one is.`,
+          we=>`Who goes when the allowed parent cannot depends on the day. Too often the answer is no one.`]
+};
+const I_FREQ={few:"a few times a year, and each one is a milestone",monthly:"most months of the school year",weekly:"almost every week during the season"};
+const I_FREQ_V=[f=>`This is not a rare situation. School events come up ${f}.`, f=>`These events come up ${f}, so the gap is felt again and again.`];
+const I_ASK=[
+ [`I am asking you to support an amendment that would let the principal or designee of the school hosting an event give a parent or guardian prior written permission to attend specific events involving their own child. Each permission would cover the events and dates the school names, would give no general access to school property, and could carry any safety, supervision, or location conditions the school sets.`,
+  `The school would decide whether to say yes. I am only asking that the school be allowed to.`],
+ [`I am asking you to support an amendment that gives schools a way to say yes. The principal or designee of the school hosting an event could grant a parent or guardian prior written permission to attend specific events involving their own child, each approved on its own, under whatever safety or supervision conditions the school sets.`,
+  `It would not create general access to school property, and it would not require any school to say yes. It would only make yes possible.`],
+ [`The fix I am asking for is narrow: prior written permission, from the principal or designee of the host school, for a parent or guardian to attend specific events involving their own child. Each permission would name its events and dates and could include escorts, seating, or any other condition.`,
+  `The school would remain in full control of every decision.`],
+ [`I am asking you to support an amendment that lets the school decide. Under it, a parent or guardian could attend specific events involving their own child only with prior written permission from the principal or designee of the school hosting the event, with each event approved separately and any conditions the school requires.`,
+  `No general access would be granted, and a school could decline any request.`],
+ [`What would help these children is a written-permission process. The principal or designee of the school hosting an event could approve a parent or guardian, in advance and in writing, to attend specific events involving their own child, each approved on its own and under the school's own conditions.`,
+  `The decision would stay with the school every time. I am only asking that the school be allowed to make it.`]
+];
+const I_ASK_T=["What I am asking for","The change I am asking for","What would help"];
+const I_THANKS=["Thank you for your time and your service.","Thank you for reading this, and for your service.","Thank you for considering these children.","I appreciate your time and your attention to this."];
+
+function genImpact(s){
+  const R=repName(s), who = s.name||"[Your name]";
+  const covered = s.role==="parent"||s.role==="spouse";
+  const P=[];
+  P.push(`# Impact Statement of ${who}`);
+  P.push(`> In support of a proposed amendment to Substitute Senate Bill 422`);
+  P.push(`${[s.city,"Ohio"].filter(Boolean).join(", ")} · ${today()}`);
+  P.push(`Dear ${R},`);
+  if(covered) P.push(ipick("intro-"+s.role,I_INTRO[s.role])(s));
+  else P.push(`${roleEmail(s,true)} ${ipick("intro-other",I_INTRO.other)(s)}`);
+
+  const evList = s.events.length?listJoin(s.events.map(e=>EVENT_TEXT[e])):"games, concerts, and ceremonies";
+  const sch = s.kidschool?` at ${s.kidschool}`:"";
+  const we = covered?"we":"the family";
+  if(s.events.length||s.acts||s.kidschool||s.whoGoes||s.freq){
+    P.push(`## ${ipick("evt-t",I_EVENTS_T)}`);
+    P.push(ipick("evt",I_EVENTS)(covered?"Our children":"Children", s.acts, evList, sch));
+    const extra=[];
+    if(s.whoGoes&&I_WHO[s.whoGoes]) extra.push(ipick("who",I_WHO[s.whoGoes])(we));
+    if(s.freq&&I_FREQ[s.freq]) extra.push(ipick("freq",I_FREQ_V)(I_FREQ[s.freq]));
+    if(extra.length) P.push(extra.join(" "));
+  }
+  if(s.upcoming){
+    const w = s.role==="parent"?{subj:"I",obj:"me"}:s.role==="spouse"?{subj:`my ${s.spouseword}`,obj:`my ${s.spouseword}`}:{subj:"the children's parent",obj:"the children's parent"};
+    P.push(`## ${ipick("next-t",I_NEXT_T)}`);
+    P.push(ipick("next",I_NEXT)(s.upcoming.replace(/[.\s]+$/,""),w));
+  }
+  s.sits.forEach(k=>{const [t,f]=ipick("sit-"+k,I_SITS[k]); P.push(`## ${t}`); P.push(f(covered));});
+  if(s.story){P.push(`## In my own words`); s.story.split(/\n\s*\n/).forEach(x=>P.push(x.trim()));}
+  const [a1,a2]=ipick("ask",I_ASK);
+  P.push(`## ${ipick("ask-t",I_ASK_T)}`); P.push(a1); P.push(a2);
+  P.push(ipick("thanks",I_THANKS));
+  P.push(`Respectfully submitted,`);
+  P.push([who, s.street, [s.city,s.zip?`Ohio ${s.zip}`:"Ohio"].filter(Boolean).join(", "), s.phone, s.email].filter(Boolean).join("\n"));
+  return P.join("\n\n");
+}
+
+function genAmend(s){
+  const rep = s.t ? `Representative ${s.t.name}` : "Representative [Name]";
+  const by = s.name ? `\n\n> Submitted by ${s.name}${s.city?`, ${s.city}, Ohio`:""}${s.t&&!s.t.viaVacancy?` · constituent of Ohio House District ${s.t.d}`:""}${s.t&&s.t.viaVacancy?` · resident of Ohio House District ${s.t.home}`:""}` : "";
+  return `# Proposed Amendment to SB 422
+> Parent/Guardian Access for Specific Child-Related Events
+
+## Purpose:
+Creates a narrow, controlled exception allowing a parent or legal guardian who is otherwise subject to the restrictions of SB 422 to attend a specific event on school premises involving their own child.
+
+## Proposed Approach:
+A parent or legal guardian would be permitted to be physically present on school premises, or at a school-affiliated ticketed event, for a specific event involving their own child only when:
+- The parent or guardian has received prior written permission from the principal or designee of the school hosting the event.
+- The request may be submitted by the parent or guardian, a coach or other official responsible for the event, or, for events run by outside groups on school property, the event organizer.
+- The written permission would apply only to the specific event and dates identified in the permission.
+- The permission would not provide general or unrestricted access to school property.
+- The parent or guardian would remain subject to any reasonable safety, supervision, location or other conditions established by the school.
+
+## Examples:
+This narrowly tailored provision could allow a parent or guardian, with prior written permission, to attend an important milestone involving their own child, such as:
+- An athletic event or competition
+- A school performance
+- A graduation or commencement
+- An award or recognition ceremony
+- Another significant school-sponsored event involving the parent's or guardian's child
+- Events run by outside groups on school property in which the child participates, such as scouts, 4-H, or a dance recital
+
+## Why This Amendment
+SB 422 establishes important restrictions concerning the presence of certain registered offenders on school premises. The proposed amendment would preserve those restrictions while creating a controlled process for a school to determine, on an individual event-by-event basis, whether a parent or guardian may attend an important event involving their own child.
+
+The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued.
+
+## Requested Action:
+I am asking ${rep} to consider this narrowly tailored amendment and, if appropriate, work with legislative staff and the Legislative Service Commission to develop the precise statutory language for consideration in SB 422.${by}`;
+}
+
+/* ---------- Mini-markup → HTML / PDF blocks ---------- */
+function blocks(text){
+  const out=[]; let para=[];
+  const flush=()=>{if(para.length){out.push({t:"p",x:para.join("\n")});para=[];}};
+  text.split("\n").forEach(line=>{
+    const l=line.trimEnd();
+    if(!l.trim()){flush();return;}
+    if(l.startsWith("# ")){flush();out.push({t:"h1",x:l.slice(2)});}
+    else if(l.startsWith("## ")){flush();out.push({t:"h2",x:l.slice(3)});}
+    else if(l.startsWith("> ")){flush();out.push({t:"note",x:l.slice(2)});}
+    else if(l.startsWith("- ")){flush();out.push({t:"li",x:l.slice(2)});}
+    else para.push(l);
+  });
+  flush(); return out;
+}
+const esc=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toHTML(text){
+  let h="",inUl=false;
+  blocks(text).forEach((b,i,a)=>{
+    if(b.t!=="li"&&inUl){h+="</ul>";inUl=false;}
+    if(b.t==="h1")h+=`<h3>${esc(b.x)}</h3>`;
+    else if(b.t==="h2")h+=`<h4>${esc(b.x)}</h4>`;
+    else if(b.t==="note")h+=`<p class="${i===1?"sub":"stage"}">${esc(b.x)}</p>`;
+    else if(b.t==="li"){if(!inUl){h+="<ul>";inUl=true;}h+=`<li>${esc(b.x)}</li>`;}
+    else h+=`<p>${esc(b.x).replace(/\n/g,"<br>")}</p>`;
+  });
+  if(inUl)h+="</ul>"; return h;
+}
+const plain=text=>text.split("\n").map(l=>l.replace(/^#{1,2} /,"").replace(/^> /,"").replace(/^- /,"• ")).join("\n");
+
+function makePdf(text){
+  const {jsPDF}=window.jspdf; const doc=new jsPDF({unit:"pt",format:"letter"});
+  const M=64, W=612-2*M, BOT=792-60; let y=70;
+  const put=(str,size,style,indent,gapAfter,color)=>{
+    doc.setFont("times",style); doc.setFontSize(size); doc.setTextColor(...(color||[22,33,58]));
+    const lh=size*1.32;
+    str.split("\n").forEach(seg=>{
+      doc.splitTextToSize(seg||" ",W-indent).forEach(line=>{
+        if(y+lh>BOT){doc.addPage();y=70;}
+        doc.text(line,M+indent,y); y+=lh;
+      });
+    });
+    y+=gapAfter;
+  };
+  blocks(text).forEach((b,i)=>{
+    if(b.t==="h1") put(b.x,18,"bold",0,4);
+    else if(b.t==="h2"){ if(y>BOT-60){doc.addPage();y=70;} y+=6; put(b.x,12.5,"bold",0,3); }
+    else if(b.t==="note") put(b.x,10.5,"italic",0,8,[90,100,120]);
+    else if(b.t==="li"){ doc.setFont("times","normal");doc.setFontSize(11);
+      if(y+15>BOT){doc.addPage();y=70;} doc.setTextColor(22,33,58); doc.text("•",M+6,y); put(b.x,11,"normal",18,3); }
+    else put(b.x,11,"normal",0,8);
+  });
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont("times","normal");doc.setFontSize(8.5);doc.setTextColor(120,128,145);doc.text(`Sub. S.B. 422 · page ${i} of ${n}`,612-M,792-34,{align:"right"});}
+  return doc.output("blob");
+}
+
+
+/* ---------- Build the form controls ---------- */
+const $ = id=>document.getElementById(id);
+function chk(container,type,name,items){
+  container.innerHTML = items.map(([v,l,s])=>`<label class="chk"><input type="${type}" name="${name}" id="${name}-${v}" value="${v}"><span>${l}${s?`<small>${s}</small>`:""}</span></label>`).join("");
+}
+chk($("roles"),"radio","role",ROLES);
+chk($("events"),"checkbox","ev",EVENTS);
+chk($("sits"),"checkbox","sit",SITS);
+Object.keys(COUNTY).sort().forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c+" County";$("county").appendChild(o);});
+
+const EXTRA = {
+  teacher:[["school","School name","optional"]],
+  admin:[["school","School or district",""],["title","Your title","e.g. Principal"]],
+  coach:[["org","Team, group, or studio",""]],
+  spouse:[["spouseword","What you call them","e.g. husband, wife, partner"]],
+  relative:[["relword","Your relationship","e.g. aunt, uncle, sister"]],
+  grandparent:[], parent:[], community:[]
+};
+const STORE_KEY="sb422kit.v4";
+let saved={}; try{saved=JSON.parse(localStorage.getItem(STORE_KEY)||"{}")||{};}catch(e){saved={};}
+function curRole(){return (document.querySelector('input[name=role]:checked')||{}).value||"";}
+function renderExtra(role){
+  const box=$("roleextra"); const fields=EXTRA[role]||[];
+  box.innerHTML = fields.map(([id,l,ph])=>`<div class="field"><label for="x-${id}">${l} <span class="opt">(optional)</span></label><input type="text" id="x-${id}" placeholder="${ph}"></div>`).join("");
+  fields.forEach(([id])=>{ if(saved["x-"+id]) $("x-"+id).value=saved["x-"+id]; });
+  const covered = role==="parent"||role==="spouse";
+  $("familywrap").hidden = covered || !role;
+  $("kidslabel").firstChild.textContent = covered ? "Your children and their ages " : "Children involved and their ages ";
+}
+
+/* ---------- District selection ---------- */
+let chosen = null;
+function renderCands(){
+  const c=$("county").value, box=$("cands");
+  if(!c){box.innerHTML="";$("lookupnote").hidden=true;return;}
+  const ds=COUNTY[c]||[];
+  box.innerHTML = ds.map(d=>{const r=REPS[d];return `<label class="cand"><input type="radio" name="cand" value="${d}" ${chosen===d?"checked":""}><span class="d">Dist. ${d}</span><span><span class="n">${r.vacant?"Seat vacant":r.name}</span>${r.town&&!r.vacant?` <span class="t">· ${r.town}</span>`:""}</span></label>`;}).join("");
+  $("lookupnote").hidden = ds.length<2;
+  if(ds.length===1 && chosen!==ds[0]) setDistrict(ds[0]);
+}
+function setDistrict(d){
+  d=Number(d); const prev=chosen; chosen = REPS[d]?d:null;
+  if(chosen && String($("distnum").value)!==String(chosen)) $("distnum").value=chosen;
+  document.querySelectorAll('input[name=cand]').forEach(i=>i.checked=Number(i.value)===chosen);
+  if(prev!==chosen && flow.amend==="file") flow.amend=null; // the saved PDF names the old rep
+  renderRep(); update();
+}
+function target(){
+  if(!chosen) return null;
+  const r=REPS[chosen];
+  if(r.vacant) return {...REPS[JUDICIARY_CHAIR], viaVacancy:true, home:chosen};
+  return {...r, home:chosen};
+}
+function renderRep(){
+  const box=$("repcard"); const t=target();
+  if(!t){box.innerHTML="";return;}
+  const url=`https://ohiohouse.gov/members/${t.slug}`;
+  box.innerHTML = `<div class="repcard">
+    ${t.viaVacancy?`<div class="warnbox">District ${t.home}'s House seat is vacant right now. Your message will go to the chair of the House Judiciary Committee, where a bill like SB 422 is likely to be assigned.</div>`:""}
+    <div class="meta">${t.viaVacancy?"House Judiciary Committee Chair":"Your representative · Ohio House District "+t.d}</div>
+    <div class="who">Rep. ${t.name}${t.party?` <span class="meta">(${t.party})</span>`:""}</div>
+    <div class="row"><span class="mono">${repEmail(t.d)}</span><a class="btn small ghost" href="${url}" target="_blank" rel="noopener">Member page</a></div>
+  </div>`;
+  $("memberlink").href=url;
+}
+
+/* ---------- Flow state ---------- */
+const flow = {page:1, story:null, amend:null, impact:null}; // amend/impact: null | "file" | "inline"
+
+/* ---------- Read state ---------- */
+const v=id=>{const e=$(id);return e?e.value.trim():"";};
+function state(){
+  const role=curRole()||"community";
+  return {
+    role, name:v("name"), city:v("city"), street:v("street"), zip:v("zip"), email:v("email"), phone:v("phone"),
+    family:$("family").checked && !$("familywrap").hidden,
+    school:v("x-school"), title:v("x-title"), org:v("x-org"), spouseword:v("x-spouseword")||"spouse", relword:v("x-relword"),
+    storyYes: flow.story==="yes",
+    kids: flow.story==="yes"?v("kids"):"", acts:v("acts"), story: flow.story==="yes"?v("story"):"",
+    kidschool: flow.story==="yes"?v("kidschool"):"", upcoming: flow.story==="yes"?v("upcoming"):"", whoGoes: flow.story==="yes"?v("whoGoes"):"", freq: flow.story==="yes"?v("freq"):"",
+    events: flow.story==="yes"?[...document.querySelectorAll('input[name=ev]:checked')].map(i=>i.value):[],
+    sits: flow.story==="yes"?[...document.querySelectorAll('input[name=sit]:checked')].map(i=>i.value):[],
+    att:{amend:flow.amend, impact:flow.story==="yes"?flow.impact:null},
+    t:target()
+  };
+}
+const today=()=>new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+function listJoin(a){return a.length<2?a.join(""):a.length===2?a.join(" and "):a.slice(0,-1).join(", ")+", and "+a[a.length-1];}
+function repName(s){return s.t?`Representative ${s.t.last}`:"Representative [Name]";}
+function districtLine(s){
+  if(!s.t) return "a constituent";
+  return s.t.viaVacancy?`a resident of Ohio House District ${s.t.home}`:`a constituent in House District ${s.t.d}`;
+}
+function attachLine(s){
+  const files=[], inline=[];
+  const AM="a one-page summary of the proposed amendment", IM="a short statement about how the bill affects children";
+  (s.att.amend==="inline"?inline:files).push(AM);
+  if(s.storyYes){ if(s.att.impact==="inline") inline.push(IM); else files.push(IM); }
+  let line="";
+  if(files.length) line+=`I have attached ${listJoin(files)}.`;
+  if(inline.length) line+=`${line?" ":""}I have included ${listJoin(inline)} below my signature.`;
+  return line;
+}
+function inlineAppend(s){
+  let x="";
+  if(s.att.amend==="inline") x+="\n\n------------------------------\n\n"+plain(genAmend(s));
+  if(s.storyYes && s.att.impact==="inline") x+="\n\n------------------------------\n\n"+plain($("impactedit").value);
+  return x;
+}
+
+/* ---------- Saving files: claude.ai viewer capability, else a normal browser download ---------- */
+let dlCap;
+async function saveFile(filename, blob){
+  if(window.claude && typeof window.claude.use==="function"){
+    if(dlCap===undefined){ try{dlCap=await window.claude.use("downloads");}catch(e){dlCap=null;} }
+    if(!dlCap) throw {code:"unavailable"};
+    return dlCap.save({filename,data:blob});
+  }
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
+  return {status:"saved"};
+}
+
+/* ---------- Render ---------- */
+const out={};
+const edited={email:false,impact:false};
+function update(){
+  const s=state();
+  out.amend=genAmend(s); out.call=genCall(s);
+  const gi=genImpact(s);
+  out._genImpact=gi;
+  if(!edited.impact) $("impactedit").value=gi;
+  $("impactview").innerHTML=toHTML($("impactedit").value);
+  const ge=genEmail(state()); // after impact text is current
+  out._genEmail=ge;
+  if(!edited.email) $("emailbody").value=ge;
+  $("amendview").innerHTML=toHTML(out.amend);
+  $("callview").innerHTML=toHTML(out.call);
+  $("amendto").textContent = s.t?`Rep. ${s.t.name}`:"your representative";
+  $("subj").textContent=genSubject();
+  $("toaddr").textContent=s.t?repEmail(s.t.d):"";
+  $("storyfields").hidden = flow.story!=="yes";
+  $("storyno").hidden = flow.story!=="no";
+  renderStoryCard();
+  renderStatus(); renderAttach(); refreshMailLinks(); validate(); persist();
+}
+function renderStatus(){
+  $("amendstatus").innerHTML = flow.amend==="file" ? `<div class="okbox">Saved. You'll attach it on the next page.</div>`
+    : flow.amend==="inline" ? `<div class="okbox">The summary will be added to the end of your email.</div>` : "";
+  $("dl-amend").textContent = flow.amend==="file" ? "Download again" : "Download amendment PDF";
+  $("rerollImpact").hidden = !!flow.impact;
+  $("impactstatus").innerHTML = flow.impact==="file" ? `<div class="okbox">Statement saved. You'll attach it with the amendment.</div>`
+    : flow.impact==="inline" ? `<div class="okbox">Your statement will be added to the end of your email.</div>`
+    : `<p class="note">Can't download files here? <button class="linkbtn" type="button" id="inline-impact">Add the statement to the end of my email instead.</button></p>`;
+}
+function renderStoryCard(){
+  const st = flow.story!=="yes" ? null : flow.impact==="file" ? "saved as a PDF to attach" : flow.impact==="inline" ? "added to the end of your email" : "not saved yet";
+  $("storycard").hidden = !st;
+  $("storycard").innerHTML = st
+    ? `<b>Your story: ${st}</b><span>You can change it any time.</span><div class="row"><button class="btn small ghost" type="button" id="addstory">Edit my story</button></div>` : "";
+}
+function renderAttach(){
+  const s=state(), items=[];
+  const row=(ok,title,detail,action)=>`<li class="${ok?"yes":"no"}"><span class="ic" aria-hidden="true">${ok?"✓":"!"}</span><span>${title}<small>${detail}</small>${action||""}</span></li>`;
+  const last=s.t?s.t.last.replace(/\s+/g,"-"):"Representative";
+  items.push(flow.amend==="inline"
+    ? row(true,"Amendment summary","Already added to the end of the email.")
+    : row(flow.amend==="file","Amendment summary (PDF)",`Attach <span class="mono">SB422-Amendment-Request-Rep-${last}.pdf</span> from your downloads.`));
+  if(s.storyYes){
+    items.push(flow.impact==="inline" ? row(true,"Impact statement","Already added to the end of the email.")
+      : flow.impact==="file" ? row(true,"Impact statement (PDF)","Attach it from your downloads too.")
+      : row(false,"Impact statement not saved yet","",` <button class="linkbtn" type="button" id="att-impact-inline">Add it to the end of the email</button>`));
+  }
+  $("attachlist").innerHTML=items.join("");
+}
+function refreshMailLinks(){
+  const s=state(); const to=s.t?repEmail(s.t.d):""; const body=$("emailbody").value, sub=genSubject();
+  $("gmail").href=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+  $("mailto").href=`mailto:${to}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+}
+
+/* ---------- Page flow ---------- */
+function missing(p){
+  if(p===1) return chosen?"":"Pick your county or district to continue.";
+  if(p===2){ const m=[]; if(!v("name"))m.push("your name"); if(!v("city"))m.push("your city or township"); if(!curRole())m.push("which best describes you");
+    return m.length?`Still needed: ${listJoin(m)}.`:""; }
+  if(p===3) return flow.amend?"":"Save the amendment PDF (or add it to your email) to continue.";
+  return "";
+}
+function validate(){
+  [1,2,3].forEach(p=>{
+    const sec=document.querySelector(`.page[data-page="${p}"]`), m=missing(p);
+    sec.querySelector("[data-next]").disabled=!!m;
+    $("need"+p).textContent=m;
+  });
+}
+function go(p){
+  flow.page=Math.max(1,Math.min(5,p));
+  document.querySelectorAll(".page").forEach(sec=>sec.hidden=Number(sec.dataset.page)!==flow.page);
+  [...$("progress").children].forEach((li,i)=>{const base=i===3?"opt-step ":"";li.className=base+(i+1<flow.page?((i===3&&flow.story!=="yes")?"":"done"):i+1===flow.page?"cur":""); if(i+1===flow.page)li.setAttribute("aria-current","step");else li.removeAttribute("aria-current");});
+  window.scrollTo(0,0);
+  const h=document.querySelector(`.page[data-page="${flow.page}"] h2`); if(h) h.focus({preventScroll:true});
+  persist();
+}
+
+/* ---------- Persist (this browser only) ---------- */
+function persist(){
+  const keep={};
+  document.querySelectorAll("#f input[type=text],#f input[type=email],#f input[type=tel],#f input[type=number],#f select,#f textarea").forEach(e=>{if(e.id&&e.id!=="emailbody"&&e.id!=="impactedit")keep[e.id]=e.value;});
+  document.querySelectorAll("#f input[type=checkbox],#f input[type=radio]").forEach(e=>{if(e.checked&&e.id)keep["c:"+e.id]=1;});
+  keep.chosen=chosen; keep.flow={page:flow.page,story:flow.story,amend:flow.amend,impact:flow.impact};
+  try{localStorage.setItem(STORE_KEY,JSON.stringify(keep));}catch(e){}
+  saved=keep;
+}
+function restore(){
+  Object.entries(saved).forEach(([k,val])=>{
+    if(k.startsWith("c:")){const e=$(k.slice(2)); if(e)e.checked=true;}
+    else if(k!=="chosen"&&k!=="flow"&&!k.startsWith("x-")){const e=$(k); if(e&&typeof val==="string")e.value=val;}
+  });
+  if(saved.flow) Object.assign(flow,saved.flow);
+  if(flow.amend==="file") flow.amend=null;   // a download from a past visit may be gone; ask again
+  if(flow.impact==="file") flow.impact=null;
+  renderExtra(curRole());
+  renderCands();
+  if(saved.chosen){ chosen=null; setDistrict(saved.chosen); } else update();
+  go(flow.page||1);
+}
+
+/* ---------- Events ---------- */
+function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,3200);}
+$("county").addEventListener("change",()=>{renderCands();if(chosen&&!(COUNTY[$("county").value]||[]).includes(chosen)){setDistrict(0);}});
+$("cands").addEventListener("change",e=>{if(e.target.name==="cand")setDistrict(e.target.value);});
+$("distnum").addEventListener("input",e=>{const d=Number(e.target.value); if(d>=1&&d<=99) setDistrict(d); else if(!e.target.value) setDistrict(0);});
+$("f").addEventListener("input",e=>{
+  const id=e.target.id;
+  if(id==="county"||id==="distnum"||e.target.name==="cand"||id==="emailbody"||id==="impactedit")return;
+  if(e.target.name==="role") renderExtra(e.target.value);
+  if(e.target.name==="storyChoice") flow.story=e.target.value;
+  if(flow.impact==="file" && $("storyfields").contains(e.target)) flow.impact=null; // statement changed after saving
+  update();
+});
+$("f").addEventListener("submit",e=>e.preventDefault());
+$("f").addEventListener("change",e=>{ if(e.target.name==="storyChoice" && flow.story!==e.target.value){ flow.story=e.target.value; update(); } });
+$("emailbody").addEventListener("input",()=>{edited.email=$("emailbody").value!==out._genEmail;document.querySelector('[data-reset=email]').hidden=!edited.email;refreshMailLinks();});
+$("impactedit").addEventListener("input",()=>{edited.impact=$("impactedit").value!==out._genImpact;document.querySelector('[data-reset=impact]').hidden=!edited.impact;if(flow.impact==="file")flow.impact=null;update();});
+$("impacttoggle").addEventListener("click",()=>{const ed=$("impactedit");ed.hidden=!ed.hidden;$("impactview").hidden=!ed.hidden;$("impacttoggle").textContent=ed.hidden?"Edit the text":"Show preview";});
+
+async function download(kind){
+  if(!window.jspdf){toast("The PDF tool didn't load. Check your connection and reload.");return false;}
+  const s=state();
+  const last=s.t?s.t.last.replace(/\s+/g,"-"):"Representative";
+  const who=(s.name||"Supporter").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const fn = kind==="amend"?`SB422-Amendment-Request-Rep-${last}.pdf`:`SB422-Impact-Statement-${who}.pdf`;
+  const text = kind==="amend"?out.amend:$("impactedit").value;
+  try{ await saveFile(fn, makePdf(text)); toast("PDF saved."); return true; }
+  catch(err){
+    if(err&&err.code==="declined") toast("Download canceled.");
+    else toast("This device can't download here. Use the option below to add it to your email.");
+    return false;
+  }
+}
+document.addEventListener("click",async e=>{
+  const el=e.target.closest("button,a"); if(!el) return;
+  if(el.matches("[data-next]")){ if(!el.disabled) go(flow.page+1); return; }
+  if(el.matches("[data-back]")){ go(flow.page-1); return; }
+  if(el.id==="addstory"){ go(4); return; }
+  if(el.id==="rerollImpact"){ const had=edited.impact; reseedImpact(); edited.impact=false; document.querySelector('[data-reset=impact]').hidden=true; update(); toast(had?"New wording. Your edits were replaced.":"New wording."); return; }
+  if(el.id==="reroll"){ const had=edited.email; reseed(); edited.email=false; document.querySelector('[data-reset=email]').hidden=true; update(); toast(had?"New wording. Your edits were replaced.":"New wording."); return; }
+  if(el.id==="backtoemail"){ go(4); return; }
+  if(el.id==="dl-amend"){ if(await download("amend")){flow.amend="file";update();} return; }
+  if(el.id==="inline-amend"){ flow.amend="inline"; update(); toast("Added to your email."); return; }
+  if(el.id==="dl-impact"){ if(await download("impact")){flow.impact="file";update();} return; }
+  if(el.id==="inline-impact"||el.id==="att-impact-inline"){ flow.impact="inline"; update(); toast("Added to your email."); return; }
+  if(el.id==="startover"){ try{localStorage.removeItem(STORE_KEY);}catch(_){} saved={}; $("f").reset(); chosen=null; Object.assign(flow,{story:null,amend:null,impact:null}); edited.email=edited.impact=false; renderCands(); renderRep(); renderExtra(""); update(); go(1); return; }
+  if(el.dataset.reset){ const k=el.dataset.reset; edited[k]=false; el.hidden=true; update(); toast("Back to the written-for-you text."); return; }
+  if(el.dataset.copy){
+    const k=el.dataset.copy, s=state();
+    const text={to:s.t?repEmail(s.t.d):"",subj:genSubject(),email:$("emailbody").value,call:plain(out.call)}[k];
+    if(!text){toast("Pick your district first.");return;}
+    try{await navigator.clipboard.writeText(text);toast("Copied.");}
+    catch(_){
+      const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+      let ok=false;try{ok=document.execCommand("copy");}catch(__){} ta.remove();
+      toast(ok?"Copied.":"Copying is blocked here. Select the text and copy it by hand.");
+    }
+  }
+});
+
+/* ---------- Share QR ---------- */
+if(SHARE_URL && window.qrcode){
+  const q=qrcode(0,"M"); q.addData(SHARE_URL); q.make();
+  const cv=$("qr"), ctx=cv.getContext("2d"), n=q.getModuleCount(), cell=Math.floor(240/(n+4)), off=Math.floor((240-cell*n)/2);
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,240,240);ctx.fillStyle="#000";
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(q.isDark(r,c))ctx.fillRect(off+c*cell,off+r*cell,cell,cell);
+  $("shareurl").textContent=SHARE_URL; $("share").hidden=false;
+}
+
+restore();
+</script>
+
+</body>
+</html>
