@@ -929,8 +929,7 @@ function genImpact(s){
 }
 
 function genAmend(s){
-  const rep = s.t ? `Representative ${s.t.name}` : "Representative [Name]";
-  const by = s.name ? `\n\n> Submitted by ${s.name}${s.city?`, ${s.city}, Ohio`:""}${s.t&&!s.t.viaVacancy?` · constituent of Ohio House District ${s.t.d}`:""}${s.t&&s.t.viaVacancy?` · resident of Ohio House District ${s.t.home}`:""}` : "";
+  const rep = s.t ? `Representative ${s.t.last}` : "Representative [Name]";
   return `# Proposed Amendment to SB 422
 > Parent/Guardian Access for Specific Child-Related Events
 
@@ -951,7 +950,7 @@ This narrowly tailored provision could allow a parent or guardian, with prior wr
 - A school performance
 - A graduation or commencement
 - An award or recognition ceremony
-- Another significant school-sponsored event involving the parent's or guardian's child
+- Another significant school-sponsored event involving the parent’s or guardian’s child
 - Events run by outside groups on school property in which the child participates, such as scouts, 4-H, or a dance recital
 
 ## Why This Amendment
@@ -960,7 +959,7 @@ SB 422 establishes important restrictions concerning the presence of certain reg
 The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued.
 
 ## Requested Action:
-I am asking ${rep} to consider this narrowly tailored amendment and, if appropriate, work with legislative staff and the Legislative Service Commission to develop the precise statutory language for consideration in SB 422.${by}`;
+I am asking ${rep} to consider this narrowly tailored amendment and, if appropriate, work with legislative staff and the Legislative Service Commission to develop the precise statutory language for consideration in SB 422.`;
 }
 
 /* ---------- Mini-markup → HTML / PDF blocks ---------- */
@@ -1131,6 +1130,68 @@ function inlineAppend(s){
   return x;
 }
 
+
+/* ---------- Amendment PDF: mirrors the original one-page Word layout ---------- */
+function makeAmendPdf(s){
+  const rep = s.t ? `Representative ${s.t.last}` : "Representative [Name]";
+  const B=[
+    {t:"title",x:"Proposed Amendment to SB 422"},
+    {t:"sub",x:"Parent/Guardian Access for Specific Child-Related Events"},
+    {t:"h",x:"Purpose:"},
+    {t:"p",x:"Creates a narrow, controlled exception allowing a parent or legal guardian who is otherwise subject to the restrictions of SB 422 to attend a specific event on school premises involving their own child."},
+    {t:"h",x:"Proposed Approach:"},
+    {t:"p",x:"A parent or legal guardian would be permitted to be physically present on school premises, or at a school-affiliated ticketed event, for a specific event involving their own child only when:"},
+    {t:"gap"},
+    {t:"li",x:"The parent or guardian has received prior written permission from the principal or designee of the school hosting the event."},
+    {t:"li",x:"The request may be submitted by the parent or guardian, a coach or other official responsible for the event, or, for events run by outside groups on school property, the event organizer."},
+    {t:"li",x:"The written permission would apply only to the specific event and dates identified in the permission."},
+    {t:"li",x:"The permission would not provide general or unrestricted access to school property."},
+    {t:"li",x:"The parent or guardian would remain subject to any reasonable safety, supervision, location or other conditions established by the school."},
+    {t:"h",x:"Examples:"},
+    {t:"p",x:"This narrowly tailored provision could allow a parent or guardian, with prior written permission, to attend an important milestone involving their own child, such as:",tight:true},
+    {t:"li",x:"An athletic event or competition"},
+    {t:"li",x:"A school performance"},
+    {t:"li",x:"A graduation or commencement"},
+    {t:"li",x:"An award or recognition ceremony"},
+    {t:"li",x:"Another significant school-sponsored event involving the parent’s or guardian’s child"},
+    {t:"li",x:"Events run by outside groups on school property in which the child participates, such as scouts, 4-H, or a dance recital"},
+    {t:"h",x:"Why This Amendment"},
+    {t:"p",x:"SB 422 establishes important restrictions concerning the presence of certain registered offenders on school premises. The proposed amendment would preserve those restrictions while creating a controlled process for a school to determine, on an individual event-by-event basis, whether a parent or guardian may attend an important event involving their own child."},
+    {t:"p",x:"The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued."},
+    {t:"h",x:"Requested Action:"},
+    {t:"p",x:`I am asking ${rep} to consider this narrowly tailored amendment and, if appropriate, work with legislative staff and the Legislative Service Commission to develop the precise statutory language for consideration in SB 422.`,last:true}
+  ];
+  const {jsPDF}=window.jspdf;
+  const W=612, H=792, M=36, TOP=34, BOTTOM=H-30;
+  // lay out once at a given scale; draw only when asked. Shrinks slightly if a long name ever pushes past one page.
+  function run(doc,k,draw){
+    let y=TOP; const fs=11*k, lh=fs*1.33, ink=[17,17,17];
+    const txt=(str,x,size,style,width,align)=>{
+      doc.setFont("helvetica",style); doc.setFontSize(size);
+      const lines=doc.splitTextToSize(str,width);
+      lines.forEach(line=>{ y+=size*1.33; if(draw){doc.setTextColor(...ink); if(align==="center") doc.text(line,W/2,y-size*0.28,{align:"center"}); else doc.text(line,x,y-size*0.28);} });
+    };
+    B.forEach((b,i)=>{
+      const prev=B[i-1];
+      if(b.t==="title"){ txt(b.x,M,20*k,"bold",W-2*M,"center"); y+=10*k; }
+      else if(b.t==="sub"){ txt(b.x,M,11*k,"bold",W-2*M,"center"); y+=12*k; }
+      else if(b.t==="h"){ if(i>2) y+=12*k; txt(b.x,M,fs,"bold",W-2*M); y+=10*k; }
+      else if(b.t==="p"){ if(prev&&prev.t==="p") y+=12*k; txt(b.x,M,fs,"normal",W-2*M); }
+      else if(b.t==="gap"){ y+=12*k; }
+      else if(b.t==="li"){
+        doc.setFont("helvetica","normal"); doc.setFontSize(fs);
+        const startY=y; txt(b.x,M+36,fs,"normal",W-2*M-36);
+        if(draw){ doc.setTextColor(...ink); doc.text("-",M+18,startY+lh-fs*0.28); }
+      }
+    });
+    return y;
+  }
+  let k=1, doc=new jsPDF({unit:"pt",format:"letter"});
+  while(k>0.8 && run(doc,k,false)>BOTTOM) k-=0.02;
+  run(doc,k,true);
+  return doc.output("blob");
+}
+
 /* ---------- Saving files: claude.ai viewer capability, else a normal browser download ---------- */
 let dlCap;
 async function saveFile(filename, blob){
@@ -1283,7 +1344,7 @@ async function download(kind){
   const who=(s.name||"Supporter").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"");
   const fn = kind==="amend"?`SB422-Amendment-Request-Rep-${last}.pdf`:`SB422-Impact-Statement-${who}.pdf`;
   const text = kind==="amend"?out.amend:$("impactedit").value;
-  try{ const r=await saveFile(fn, makePdf(text)); toast(r&&r.status==="shared"?"Done. If you chose Save to Files, it\u2019s in your Files app.":"PDF saved."); return true; }
+  try{ const r=await saveFile(fn, kind==="amend"?makeAmendPdf(state()):makePdf(text)); toast(r&&r.status==="shared"?"Done. If you chose Save to Files, it\u2019s in your Files app.":"PDF saved."); return true; }
   catch(err){
     if(err&&err.code==="declined") toast("Canceled. Tap the button again when you\u2019re ready.");
     else toast("This device can't download here. Use the option below to add it to your email.");
