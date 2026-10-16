@@ -79,6 +79,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .warnbox{background:var(--warn-soft);color:var(--ink);border-left:3px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:.88rem}
 .tipbox{background:var(--accent-soft);color:var(--ink);border-left:3px solid var(--accent);padding:10px 12px;border-radius:6px;font-size:.9rem}
 .tipbox b{display:block;margin-bottom:2px}
+.urgent{background:var(--warn-soft);border:1px solid var(--warn);border-left:5px solid var(--warn);border-radius:8px;padding:12px 14px;display:grid;gap:4px;font-size:.93rem;line-height:1.45}
+.urgent b.dl{font-size:1.02rem;color:var(--warn)}
+.more{display:grid;gap:12px}
+.more h3{font-family:var(--f-doc);font-size:1.3rem;margin:4px 0 0}
+.morecard{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:14px 16px;display:grid;gap:8px}
+.morecard h4{margin:0;font-size:1rem}
+.morecard p{margin:0;font-size:.92rem;color:var(--muted)}
+.morecard .num{font-family:var(--f-doc);color:var(--seal);font-weight:700;margin-right:6px}
 .okbox{background:var(--ok-soft);color:var(--ink);border-left:3px solid var(--ok);padding:10px 12px;border-radius:6px;font-size:.9rem}
 .roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
 .chk{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--paper);font-weight:500;font-size:.93rem;margin:0}
@@ -139,6 +147,11 @@ a{color:var(--accent)}
   <div class="billref"><span><b>Senate Bill 422</b></span><span>136th General Assembly</span></div>
   <h1>Ask your Ohio House member to let schools say yes</h1>
   <div class="status"><i></i>Passed the Senate 33–0 on June 10, 2026 · now in the Ohio House</div>
+  <div class="urgent" role="note">
+    <b class="dl">Please act before November 9.</b>
+    <span>SB 422 is expected to be assigned to a House committee as early as November 9 or 10. The best time to fix the bill is before that committee starts its work. Once a bill moves forward, there are fewer chances to change it.</span>
+    <span>If SB 422 passes as written, parents on Ohio's registry whom the bill restricts would be barred from their children's school events for as long as they remain registered: 25 years for Tier II, and for life for Tier III. Schools would have no way to make an exception. This takes about five minutes.</span>
+  </div>
 </div></header>
 
 <main><div class="wrap">
@@ -268,15 +281,37 @@ a{color:var(--accent)}
   </div>
   <p class="note">If a mail button does nothing on your device, use Copy email and paste it into a new message.</p>
 
-  <details class="call">
-    <summary>Want to call too? Here's a two-minute script</summary>
-    <div class="in">
-      <div class="sheet" id="callview"></div>
-      <div class="row"><button class="btn small" type="button" data-copy="call">Copy script</button><a class="btn small ghost" id="memberlink" href="https://ohiohouse.gov/members/directory" target="_blank" rel="noopener">Office phone number</a></div>
-    </div>
-  </details>
-
   <div class="extra" id="storycard"></div>
+
+  <section class="more" aria-labelledby="moreh">
+    <h3 id="moreh">What more can I do?</h3>
+
+    <div class="morecard">
+      <h4><span class="num">1</span>Call your representative's office</h4>
+      <p>A short call after your email adds to its impact. Staff keep a count of calls on each bill. This takes about two minutes.</p>
+      <details class="call">
+        <summary>Show the call script</summary>
+        <div class="in">
+          <div class="sheet" id="callview"></div>
+          <div class="row"><button class="btn small" type="button" data-copy="call">Copy script</button><a class="btn small ghost" id="memberlink" href="https://ohiohouse.gov/members/directory" target="_blank" rel="noopener">Office phone number</a></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="morecard">
+      <h4><span class="num">2</span>Speak at the committee hearing, or send written testimony</h4>
+      <p>When the House committee schedules a hearing on SB 422, members of the public may testify. You can speak in person at the Statehouse in Columbus, or submit written testimony without making the trip. Testimony and a witness form are due about 24 hours before the hearing. A clear, respectful two-minute statement from a parent, grandparent, teacher, or neighbor carries real weight.</p>
+      <p id="hearinginfo" hidden></p>
+      <div class="row" id="notifyrow" hidden><a class="btn" id="notifybtn" href="#" target="_blank" rel="noopener">Notify me when testimony opens</a></div>
+      <p id="notifyfallback">Hearing dates will be posted on this page as soon as they are announced. Please check back after November 10.</p>
+    </div>
+
+    <div class="morecard">
+      <h4><span class="num">3</span>Share this page</h4>
+      <p>Send it to one or two people who care about kids and schools. Every email from a different constituent counts.</p>
+      <div class="row"><button class="btn small" type="button" data-copy="share">Copy link to this page</button></div>
+    </div>
+  </section>
   <div class="okbox">Thank you. One email from a constituent matters. If you know someone else who should write, send them this page.</div>
   <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="spacer"></span><button class="btn ghost" type="button" id="startover">Start over</button></div>
 </section>
@@ -297,6 +332,11 @@ a{color:var(--accent)}
 "use strict";
 /* ---------- Public link (set after publishing; empty hides the QR footer) ---------- */
 const SHARE_URL = "https://ohiosb422.github.io/sb422/";
+/* Fill these in later and re-upload:
+   NOTIFY_URL  = link to a sign-up form (e.g. a Google Form) for testimony alerts. Leave "" to hide the button.
+   HEARING_INFO = one line about the hearing once it's scheduled, e.g. "House Judiciary Committee hearing: Tuesday, Nov. 18, 10:00 a.m., Statehouse Room 121." */
+const NOTIFY_URL = "";
+const HEARING_INFO = "";
 
 /* ---------- Ohio House, 136th GA (ohiohouse.gov directory, Oct 2026) ----------
    district|display name|surname for salutation|ohiohouse.gov slug|home town|party */
@@ -1382,7 +1422,7 @@ document.addEventListener("click",async e=>{
   if(el.dataset.reset){ const k=el.dataset.reset; edited[k]=false; el.hidden=true; update(); toast("Back to the written-for-you text."); return; }
   if(el.dataset.copy){
     const k=el.dataset.copy, s=state();
-    const text={to:s.t?repEmail(s.t.d):"",subj:genSubject(),email:$("emailbody").value,call:plain(out.call)}[k];
+    const text={to:s.t?repEmail(s.t.d):"",subj:genSubject(),email:$("emailbody").value,call:plain(out.call),share:SHARE_URL||location.href}[k];
     if(!text){toast("Pick your district first.");return;}
     try{await navigator.clipboard.writeText(text);toast("Copied.");}
     catch(_){
@@ -1392,6 +1432,10 @@ document.addEventListener("click",async e=>{
     }
   }
 });
+
+/* ---------- Testimony notice ---------- */
+if(NOTIFY_URL){ $("notifybtn").href=NOTIFY_URL; $("notifyrow").hidden=false; $("notifyfallback").hidden=true; }
+if(HEARING_INFO){ $("hearinginfo").textContent=HEARING_INFO; $("hearinginfo").hidden=false; $("hearinginfo").style.color="var(--ink)"; $("hearinginfo").style.fontWeight="600"; $("notifyfallback").hidden=true; }
 
 /* ---------- Share QR ---------- */
 if(SHARE_URL && window.qrcode){
