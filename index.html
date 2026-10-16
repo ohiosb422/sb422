@@ -161,7 +161,7 @@ a{color:var(--accent)}
 
 <main><div class="wrap">
 <ol class="progress" id="progress" aria-label="Progress">
-  <li><span>Representative</span></li><li><span>About you</span></li><li><span>Amendment</span></li><li class="opt-step"><span>Your story (optional)</span></li><li><span>Send</span></li>
+  <li><span>Representative</span></li><li><span>About you</span></li><li><span>Amendment</span></li><li class="opt-step"><span>Your story (optional)</span></li><li><span>Review email</span></li>
 </ol>
 
 <form id="f" autocomplete="on">
@@ -212,7 +212,7 @@ a{color:var(--accent)}
   <p class="hint">You can skip this. A short impact statement makes it stronger by showing how the bill reaches real children. It takes about three minutes: check a few boxes and it's written for you.</p>
   <div class="choices">
     <label class="choice"><input type="radio" name="storyChoice" id="story-yes" value="yes"><b>Yes, build my impact statement</b><span>A one-to-two page PDF you attach to your email.</span></label>
-    <label class="choice"><input type="radio" name="storyChoice" id="story-no" value="no"><b>No thanks</b><span>Skip ahead and send your email as it is.</span></label>
+    <label class="choice"><input type="radio" name="storyChoice" id="story-no" value="no"><b>No thanks</b><span>Skip ahead and review your email.</span></label>
   </div>
 
   <div id="storyfields" hidden style="display:grid;gap:16px">
@@ -247,8 +247,8 @@ a{color:var(--accent)}
     </div>
     <div id="impactstatus"></div>
   </div>
-  <div class="okbox" id="storyno" hidden>No problem. Next, you'll send your email as it is.</div>
-  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="spacer"></span><button class="btn" type="button" data-next>Next: your email</button></div>
+  <div class="okbox" id="storyno" hidden>No problem. Next, you'll review your email.</div>
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="spacer"></span><button class="btn" type="button" data-next>Next: review your email</button></div>
 </section>
 
 <!-- PAGE 4 -->
@@ -261,13 +261,13 @@ a{color:var(--accent)}
   <p class="note">On a phone, this opens your share menu. Choose <strong>Save to Files</strong> (iPhone) or <strong>Save</strong>/<strong>Drive</strong> (Android) so you can attach it to your email.</p>
   <div id="amendstatus"></div>
   <p class="note">Can't download files on this device? <button class="linkbtn" type="button" id="inline-amend">Add the summary to the end of my email instead.</button></p>
-  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need3"></span><button class="btn" type="button" data-next>Next: your email</button></div>
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need3"></span><button class="btn" type="button" data-next>Next: review your email</button></div>
 </section>
 
 <!-- PAGE 5 -->
 <section class="page" data-page="5" hidden>
   <p class="eyebrow">Step 5 of 5</p>
-  <h2 tabindex="-1">Send your email</h2>
+  <h2 tabindex="-1">Review your email</h2>
   <p class="hint">Check your attachments, read it over, and change anything you like. Then copy it into your email or open it in your mail app.</p>
   <h3 class="sub-h">Attach before you send</h3>
   <ul class="attach" id="attachlist"></ul>
