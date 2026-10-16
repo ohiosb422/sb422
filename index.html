@@ -141,6 +141,15 @@ legend{font-weight:600;font-size:.9rem;padding:0;margin-bottom:6px}
 .attach .yes .ic{background:var(--ok);color:var(--paper)}
 .attach .no .ic{background:var(--warn);color:var(--paper)}
 .attach small{display:block;color:var(--muted)}
+.attachbox{border:2px dashed var(--warn);background:var(--warn-soft);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.attachbox .ah{display:flex;gap:10px;align-items:center;font-weight:800;font-size:1.02rem;color:var(--warn)}
+.attachbox .ah svg{flex:none}
+.attachbox .bang{flex:none;width:24px;height:24px;border-radius:50%;background:var(--warn);color:var(--paper);display:grid;place-items:center;font-weight:900;font-size:.95rem}
+.attachbox ol{margin:0;padding-left:1.3em;display:grid;gap:4px;font-size:.92rem}
+.attachbox .fname{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 6px;word-break:break-all}
+.attachbox.inl{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.attachbox.inl .ah{color:var(--ok)}
+.sendremind{display:flex;gap:8px;align-items:flex-start;color:var(--warn);font-weight:700;font-size:.9rem;margin:6px 0 2px}
 details.call{border:1px solid var(--line);border-radius:8px;background:var(--paper)}
 details.call summary{cursor:pointer;padding:12px 14px;font-weight:600}
 details.call .in{padding:0 14px 14px;display:grid;gap:10px}
@@ -238,7 +247,6 @@ a{color:var(--accent)}
   <button class="btn big" type="button" id="dl-amend">Download amendment PDF</button>
   <p class="note">On a phone, this opens your share menu. Choose <strong>Save to Files</strong> (iPhone) or <strong>Save</strong>/<strong>Drive</strong> (Android) so you can attach it to your email.</p>
   <div id="amendstatus"></div>
-  <p class="note">Can't download files on this device? <button class="linkbtn" type="button" id="inline-amend">Add the summary to the end of my email instead.</button></p>
   <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need3"></span><button class="btn" type="button" data-next>Next: review your email</button></div>
 </section>
 
@@ -247,14 +255,14 @@ a{color:var(--accent)}
   <p class="eyebrow">Step 4 of 4</p>
   <h2 tabindex="-1">Review your email</h2>
   <p class="hint">Check your attachments, read it over, and change anything you like. Then copy it into your email or open it in your mail app.</p>
-  <h3 class="sub-h">Attach before you send</h3>
-  <ul class="attach" id="attachlist"></ul>
+  <div id="attachlist"></div>
   <div class="mailhead">
     <div><div class="k">To</div><div class="row"><span class="mono" id="toaddr"></span><button class="btn small ghost" type="button" data-copy="to">Copy</button></div></div>
     <div><div class="k">Subject</div><div class="row"><span id="subj"></span><button class="btn small ghost" type="button" data-copy="subj">Copy</button></div></div>
   </div>
   <div class="tipbox"><b>Please proofread before you send.</b>This email is a starting template. Change anything that doesn't fit you, and add a sentence or two in your own words. Personal messages carry the most weight with legislators.</div>
   <textarea class="mailbody" id="emailbody" aria-label="Email message"></textarea>
+  <p class="sendremind" id="sendremind" hidden></p>
   <div class="row">
     <button class="btn" type="button" data-copy="email">Copy email</button>
     <a class="btn ghost" id="gmail" href="#" target="_blank" rel="noopener">Open in Gmail</a>
@@ -1236,7 +1244,7 @@ function renderRep(){
 }
 
 /* ---------- Flow state ---------- */
-const flow = {page:1, amend:null}; // amend: null | "file" | "inline"
+const flow = {page:1, amend:null}; // amend: null | "file"
 
 /* ---------- Read state ---------- */
 const v=id=>{const e=$(id);return e?e.value.trim():"";};
@@ -1264,18 +1272,10 @@ function districtLine(s){
   return s.t.viaVacancy?`a resident of Ohio House District ${s.t.home}`:`a constituent in House District ${s.t.d}`;
 }
 function attachLine(s){
-  const files=[], inline=[];
-  const AM="a one-page summary of the proposed amendment";
-  (s.att.amend==="inline"?inline:files).push(AM);
-  let line="";
-  if(files.length) line+=`I have attached ${listJoin(files)}.`;
-  if(inline.length) line+=`${line?" ":""}I have included ${listJoin(inline)} below my signature.`;
-  return line;
+  return "I have attached a one-page summary of the proposed amendment.";
 }
 function inlineAppend(s){
-  let x="";
-  if(s.att.amend==="inline") x+="\n\n------------------------------\n\n"+plain(genAmend(s));
-  return x;
+  return "";
 }
 
 
@@ -1380,17 +1380,17 @@ function update(){
 }
 function renderStatus(){
   $("amendstatus").innerHTML = flow.amend==="file" ? `<div class="okbox">Saved. You'll attach it on the next page.</div>`
-    : flow.amend==="inline" ? `<div class="okbox">The summary will be added to the end of your email.</div>` : "";
+    : "";
   $("dl-amend").textContent = flow.amend==="file" ? "Download again" : "Download amendment PDF";
 }
 function renderAttach(){
-  const s=state(), items=[];
-  const row=(ok,title,detail,action)=>`<li class="${ok?"yes":"no"}"><span class="ic" aria-hidden="true">${ok?"✓":"!"}</span><span>${title}<small>${detail}</small>${action||""}</span></li>`;
+  const s=state();
   const last=s.t?s.t.last.replace(/\s+/g,"-"):"Representative";
-  items.push(flow.amend==="inline"
-    ? row(true,"Amendment summary","Already added to the end of the email.")
-    : row(flow.amend==="file","Amendment summary (PDF)",`Attach <span class="mono">SB422-Amendment-Request-Rep-${last}.pdf</span> from your Downloads folder, or the Files app on iPhone.`));
-  $("attachlist").innerHTML=items.join("");
+  const fname=`SB422-Amendment-Request-Rep-${last}.pdf`;
+  const clip=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg>`;
+  $("attachlist").innerHTML=`<div class="attachbox" role="note"><div class="ah"><span class="bang" aria-hidden="true">!</span><span>You still need to attach the amendment PDF.</span></div></div>`;
+  $("sendremind").hidden=false;
+  $("sendremind").innerHTML=`${clip}<span>Before you press Send: attach ${fname}</span>`;
 }
 /* Gmail rejects compose links longer than about 8,000 characters (HTTP 400), and some mail apps cut long
    mailto links off. When the email is that long (usually because the amendment or statement was added
@@ -1439,7 +1439,7 @@ function missing(p){
       else { const k=readKids(); if(k.some(x=>!x.sex)) m.push("girl or boy for each child"); if(k.some(x=>!x.age)) m.push("each child's age"); }
     }
     return m.length?`Still needed: ${listJoin(m)}.`:""; }
-  if(p===3) return flow.amend?"":"Save the amendment PDF (or add it to your email) to continue.";
+  if(p===3) return flow.amend?"":"Download the amendment PDF to continue.";
   return "";
 }
 function validate(){
@@ -1473,7 +1473,7 @@ function restore(){
     else if(k!=="chosen"&&k!=="flow"&&!k.startsWith("x-")&&!k.startsWith("kid-")&&k!=="milestone"){const e=$(k); if(e&&typeof val==="string")e.value=val;}
   });
   if(saved.flow) Object.assign(flow,{page:saved.flow.page||1, amend:saved.flow.amend||null});
-  if(flow.amend==="file") flow.amend=null;   // a download from a past visit may be gone; ask again
+  if(flow.amend!==null) flow.amend=null;   // a download from a past visit may be gone; ask again
   renderExtra(curRole()); renderKids(); applyRules();
   if(saved.milestone){ $("milestone").value=saved.milestone; applyRules(); }
   renderCands();
@@ -1506,7 +1506,7 @@ async function download(kind){
   try{ const r=await saveFile(fn, makeAmendPdf(state())); toast(r&&r.status==="shared"?"Done. If you chose Save to Files, it\u2019s in your Files app.":"PDF saved."); return true; }
   catch(err){
     if(err&&err.code==="declined") toast("Canceled. Tap the button again when you\u2019re ready.");
-    else toast("This device can't download here. Use the option below to add it to your email.");
+    else toast("The download didn't start. Try again, or open this page in Chrome or Safari.");
     return false;
   }
 }
@@ -1523,8 +1523,7 @@ document.addEventListener("click",async e=>{
   if(el.matches("[data-next]")){ if(!el.disabled) go(flow.page+1); return; }
   if(el.matches("[data-back]")){ go(flow.page-1); return; }
   if(el.id==="reroll"){ const had=edited.email; reseed(); edited.email=false; document.querySelector('[data-reset=email]').hidden=true; update(); toast(had?"New wording. Your edits were replaced.":"New wording."); return; }
-  if(el.id==="dl-amend"){ if(await download("amend")){flow.amend="file";update();} return; }
-  if(el.id==="inline-amend"){ flow.amend="inline"; update(); toast("Added to your email."); return; }
+  if(el.id==="dl-amend"||el.id==="dl-amend2"){ if(await download("amend")){flow.amend="file";update();} return; }
   if(el.id==="startover"){ try{localStorage.removeItem(STORE_KEY);}catch(_){} saved={}; $("f").reset(); chosen=null; Object.assign(flow,{amend:null}); edited.email=false; renderCands(); renderRep(); renderExtra(""); renderKids(); applyRules(); update(); go(1); return; }
   if(el.dataset.reset){ const k=el.dataset.reset; edited[k]=false; el.hidden=true; update(); toast("Back to the written-for-you text."); return; }
   if(el.dataset.copy){
