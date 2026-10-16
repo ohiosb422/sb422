@@ -284,6 +284,7 @@ a{color:var(--accent)}
     <button class="btn ghost" type="button" id="reroll">Get different wording</button>
     <button class="btn ghost small" type="button" data-reset="email" hidden>Undo my edits</button>
   </div>
+  <div class="tipbox" id="longnote" hidden><b>Your email is too long to open directly.</b>Because the attachment text was added to the end, the mail buttons will open a new message with the address and subject filled in, and copy your full email. Paste it into the message body (Ctrl+V, or press and hold, then Paste).</div>
   <p class="note">If a mail button does nothing on your device, use Copy email and paste it into a new message.</p>
 
   <div class="extra" id="storycard"></div>
@@ -1331,10 +1332,38 @@ function renderAttach(){
   }
   $("attachlist").innerHTML=items.join("");
 }
+/* Gmail rejects compose links longer than about 8,000 characters (HTTP 400), and some mail apps cut long
+   mailto links off. When the email is that long (usually because the amendment or statement was added
+   to the end), the buttons open a message with just the address and subject, and copy the full email
+   so the person can paste it in. */
+const MAIL_LINK_LIMIT = 6000;
 function refreshMailLinks(){
   const s=state(); const to=s.t?repEmail(s.t.d):""; const body=$("emailbody").value, sub=genSubject();
-  $("gmail").href=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
-  $("mailto").href=`mailto:${to}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+  const gFull=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+  const mFull=`mailto:${to}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+  const long = gFull.length > MAIL_LINK_LIMIT;
+  $("gmail").href = long ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(sub)}` : gFull;
+  $("mailto").href = long ? `mailto:${to}?subject=${encodeURIComponent(sub)}` : mFull;
+  $("gmail").dataset.needcopy = $("mailto").dataset.needcopy = long ? "1" : "";
+  $("longnote").hidden = !long;
+}
+function copyNow(text){
+  /* synchronous copy so it happens before the mail app or Gmail takes focus */
+  let ok=false;
+  const ta=document.createElement("textarea"); ta.value=text; ta.setAttribute("readonly","");
+  ta.style.position="fixed"; ta.style.top="0"; ta.style.opacity="0"; document.body.appendChild(ta);
+  ta.focus(); ta.select(); ta.setSelectionRange(0,text.length);
+  try{ ok=document.execCommand("copy"); }catch(_){}
+  ta.remove();
+  try{ navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{}); ok=true; }catch(_){}
+  return ok;
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(_){
+    const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+    let ok=false;try{ok=document.execCommand("copy");}catch(__){} ta.remove(); return ok;
+  }
 }
 
 /* ---------- Page flow ---------- */
@@ -1419,6 +1448,14 @@ async function download(kind){
 }
 document.addEventListener("click",async e=>{
   const el=e.target.closest("button,a"); if(!el) return;
+  if((el.id==="gmail"||el.id==="mailto") && el.dataset.needcopy){
+    e.preventDefault();
+    const ok = copyNow($("emailbody").value);           // copy first, while this tab still has focus
+    toast(ok ? "Email copied. Paste it into the message body." : "Use Copy email, then paste it into the message body.");
+    if(el.id==="gmail"){ const w=window.open(el.href,"_blank"); if(w){ try{w.opener=null;}catch(_){} } else location.href=el.href; }
+    else location.href=el.href;
+    return;
+  }
   if(el.matches("[data-next]")){ if(!el.disabled) go(flow.page+1); return; }
   if(el.matches("[data-back]")){ go(flow.page-1); return; }
   if(el.id==="addstory"){ go(4); return; }
