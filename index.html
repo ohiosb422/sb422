@@ -190,12 +190,15 @@ a{color:var(--accent)}
   <div class="grid2">
     <div class="field"><label for="county">Your county</label>
       <select id="county"><option value="">Choose a county…</option></select></div>
-    <div class="field"><label for="distnum">Or your House district <span class="opt">(1–99)</span></label>
-      <input type="number" id="distnum" min="1" max="99" inputmode="numeric" placeholder="e.g. 72"></div>
+    <div class="field" id="townfield"><label for="town">Your city, village or township <span class="opt">(optional)</span></label>
+      <select id="town" disabled><option value="">Pick a county first</option></select></div>
   </div>
+  <p class="note" id="townnote" hidden style="margin:-4px 0 0">This narrows the list. If you live inside a city or village, pick it rather than the township around it.</p>
+  <p class="sub-h" id="candhead" hidden></p>
   <div class="cands" id="cands"></div>
-  <p class="note" id="lookupnote" hidden>Your county is split between districts. Not sure which is yours? Enter your address on the <a href="https://www.legislature.ohio.gov/" target="_blank" rel="noopener">Ohio Legislature site</a> or check the <a href="https://ohiohouse.gov/members/district-map" target="_blank" rel="noopener">district map</a>, then pick it here.</p>
+  <input type="hidden" id="distnum">
   <div id="repcard"></div>
+  <p class="note" id="lookupnote"><span id="lookupwhy"></span>Still not sure who represents you? Use the <a href="https://www.ohiohouse.gov/" target="_blank" rel="noopener">Who Represents Me? tool on ohiohouse.gov</a>.</p>
   <div class="pager"><span class="need" id="need1"></span><button class="btn" type="button" data-next>Next</button></div>
 </section>
 
@@ -223,15 +226,23 @@ a{color:var(--accent)}
     <p class="hint">These answers fill in your email. Choices that don't fit your answers are turned off, so everything stays accurate. No names needed.</p>
     <div class="grid2">
       <div class="field"><label for="kidcount" id="kidcountlabel">How many children? <span class="req">*</span></label>
-        <select id="kidcount"><option value="">Choose…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
-      <div class="field"><label for="kidschool">Their school or district <span class="opt">(optional)</span></label><input type="text" id="kidschool" placeholder="e.g. Garfield Elementary"></div>
+        <select id="kidcount"><option value="">Choose…</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option disabled class="futopt">──────────</option><option value="expecting" class="futopt">Expecting our first child</option><option value="planning" class="futopt">Planning to have children</option><option value="none" class="futopt noneopt">No, and not planning to</option></select></div>
+      <div class="field" id="kidschoolfield"><label for="kidschool">Their school or district <span class="opt">(optional)</span></label><input type="text" id="kidschool" placeholder="e.g. Garfield Elementary"></div>
     </div>
     <div class="kidrows" id="kidrows"></div>
-    <fieldset><legend>Activities they take part in <span class="opt">(optional)</span></legend><div class="roles" id="acts"></div></fieldset>
-    <div class="field"><label for="milestone">A milestone coming up <span class="opt">(optional)</span></label>
+    <label class="chk" id="kidexpectwrap" hidden><input type="checkbox" id="kidexpect"><span>We're also expecting a baby<small>Adds a line about the new baby to your message.</small></span></label>
+    <div class="field" id="duefield" hidden style="max-width:18rem"><label for="duemonth">Baby's due date <span class="opt">(optional)</span></label><select id="duemonth"></select></div>
+    <fieldset id="actsfs"><legend>Activities they take part in <span class="opt">(optional)</span></legend>
+      <p class="note" style="margin:0 0 6px">School activities</p>
+      <div class="roles" id="acts"></div>
+      <p class="note" style="margin:12px 0 6px">Outside activities held at a school</p>
+      <label class="chk"><input type="checkbox" id="outside"><span>An outside group that meets or performs at a school<small>Dance studio, scouts, 4-H, youth league, church group…</small></span></label>
+      <div class="field" id="outsidenamefield" hidden style="margin-top:8px"><label for="outsidename">Name of the group <span class="opt">(optional)</span></label><input type="text" id="outsidename" placeholder="e.g. Miss Lisa's Dance Studio"></div>
+    </fieldset>
+    <div class="field" id="msfield"><label for="milestone">A milestone coming up <span class="opt">(optional)</span></label>
       <select id="milestone"></select>
       <p class="note" id="milestonenote">Options match the ages you entered.</p></div>
-    <fieldset><legend>How the bill would affect your family <span class="opt">(optional)</span></legend><div class="roles" id="sits"></div></fieldset>
+    <fieldset id="sitsfs"><legend>How the bill would affect your family <span class="opt">(optional)</span></legend><div class="roles" id="sits"></div></fieldset>
   </div>
 
   <label class="chk" id="familywrap"><input type="checkbox" id="family"><span>This affects someone in my own family<small>Adds that to your message without naming anyone.</small></span></label>
@@ -245,7 +256,7 @@ a{color:var(--accent)}
   <p class="hint">This one-page summary is the most important thing you'll send. It explains the fix and is addressed to <strong id="amendto">your representative</strong>. Save it now so you can attach it to your email on the next page.</p>
   <div class="sheet" id="amendview"></div>
   <button class="btn big" type="button" id="dl-amend">Download amendment PDF</button>
-  <p class="note">On a phone, this opens your share menu. Choose <strong>Save to Files</strong> (iPhone) or <strong>Save</strong>/<strong>Drive</strong> (Android) so you can attach it to your email.</p>
+  <p class="note">On Android, it saves to your <strong>Downloads</strong> folder. On iPhone, it opens your share menu: choose <strong>Save to Files</strong> so you can attach it to your email.</p>
   <div id="amendstatus"></div>
   <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need3"></span><button class="btn" type="button" data-next>Next: review your email</button></div>
 </section>
@@ -457,13 +468,109 @@ Object.entries(DC).forEach(([k,v])=>{
   const [a,b]=String(k).split("-").map(Number); for(let d=a;d<=(b||a);d++){
     v.split(",").forEach(c=>{c=c.replace("*","").trim();(COUNTY[c]=COUNTY[c]||[]).push(d);});
   }});
+/* Cities, villages, townships and communities per county, with their Ohio House districts.
+   Built from Census TIGER/Line 2024 (State House districts, county subdivisions, places).
+   Format: name|type|districts ; type c=city v=village t=township (area outside its cities/villages) u=unincorporated community */
+const TOWNS={
+"Adams":"Bentonville|u|90;Bratton|t|90;Brush Creek|t|90;Cherry Fork|u|90;Franklin|t|90;Green|t|90;Jefferson|t|90;Liberty|t|90;Manchester|v|90;Manchester|t|90;Meigs|t|90;Monroe|t|90;Oliver|t|90;Peebles|v|90;Rome|u|90;Scott|t|90;Seaman|v|90;Sprigg|t|90;Tiffin|t|90;Wayne|t|90;West Union|v|90;Winchester|v|90;Winchester|t|90",
+"Allen":"Amanda|t|78;American|t|78;Auglaize|t|78;Bath|t|78;Beaverdam|v|78;Bluffton|v|78;Cairo|v|78;Delphos|c|78;Elida|v|78;Fort Shawnee|u|78;Gomer|u|78;Harrod|v|78;Jackson|t|78;Lafayette|v|78;Lima|c|78;Marion|t|78;Monroe|t|78;Perry|t|78;Richland|t|78;Shawnee|t|78;Spencer|t|78;Spencerville|v|78;Sugar Creek|t|78;Westminster|u|78",
+"Ashland":"Ashland|c|67;Bailey Lakes|v|67;Cinnamon Lake|u|67;Clear Creek|t|67;Green|t|67;Hanover|t|67;Hayesville|v|67;Jackson|t|67;Jeromesville|v|67;Lake|t|67;Loudonville|v|67;Mifflin|v|67;Mifflin|t|67;Milton|t|67;Mohican|t|67;Montgomery|t|67;Nankin|u|67;Orange|t|67;Perry|t|67;Perrysville|v|67;Polk|v|67;Ruggles|t|67;Savannah|v|67;Sullivan|t|67;Sullivan|u|67;Troy|t|67;Vermillion|t|67",
+"Ashtabula":"Andover|v|65;Andover|t|65;Ashtabula|c|99;Ashtabula|t|99;Austinburg|t|65.99;Austinburg|u|65;Cherry Valley|t|65;Colebrook|t|65;Conneaut|c|99;Denmark|t|65;Dorset|t|65;Edgewood|u|99;Geneva|c|65;Geneva|t|65.99;Geneva-on-the-Lake|v|99;Harpersfield|t|65.99;Hartsgrove|t|65;Jefferson|v|65;Jefferson|t|65;Kingsville|t|65.99;Kingsville|u|65;Lenox|t|65;Monroe|t|65.99;Morgan|t|65;New Lyme|t|65;North Kingsville|v|65.99;Orwell|v|65;Orwell|t|65;Pierpont|t|65;Plymouth|t|65.99;Richmond|t|65;Roaming Shores|v|65;Rock Creek|v|65;Rome|t|65;Saybrook|t|99;Saybrook-on-the-Lake|u|99;Sheffield|t|65;Trumbull|t|65.99;Wayne|t|65;Williamsfield|t|65;Windsor|t|65",
+"Athens":"Albany|v|94;Alexander|t|94;Ames|t|94;Amesville|v|94;Athens|c|94.95;Athens|t|94.95;Bern|t|95;Buchtel|v|94;Canaan|t|95;Carthage|t|94;Chauncey|v|94;Coolville|v|94;Dover|t|94;Glouster|v|94;Hockingport|u|94;Jacksonville|v|94;Lee|t|94;Lodi|t|94;Millfield|u|94;Nelsonville|c|94;New Marshfield|u|94;Rome|t|95;Stewart|u|95;The Plains|u|94;Trimble|v|94;Trimble|t|94;Troy|t|94;Waterloo|t|94;York|t|94",
+"Auglaize":"Buckland|v|78;Clay|t|84;Cridersville|v|78;Duchouquet|t|78.84;German|t|84;Goshen|t|78;Jackson|t|84;Logan|t|78;Minster|v|84;Moulton|t|78;New Bremen|v|84;New Hampshire|u|78;New Knoxville|v|84;Noble|t|84;Pusheta|t|84;Salem|t|78;St. Johns|u|78.84;St. Marys|c|84;St. Marys|t|84;Union|t|78;Uniopolis|u|78;Wapakoneta|c|78.84;Washington|t|84;Wayne|t|78;Waynesfield|v|78",
+"Belmont":"Bannock|u|95;Barnesville|v|95;Bellaire|v|96;Belmont|v|95;Bethesda|v|95;Blaine|u|96;Bridgeport|v|96;Brookside|v|96;Colerain|t|96;Flushing|v|95;Flushing|t|95;Glencoe|u|95;Goshen|t|95;Holloway|v|95;Kirkwood|t|95;Lafferty|u|95;Lansing|u|96;Lloydsville|u|95;Martins Ferry|c|96;Mead|t|96;Morristown|v|95;Neffs|u|96;Pease|t|96;Powhatan Point|v|96;Pultney|t|96;Richland|t|95;Shadyside|v|96;Smith|t|95;Somerset|t|96;St. Clairsville|c|95;Union|t|95;Warren|t|95;Washington|t|96;Wayne|t|96;Wheeling|t|95;Wilson|v|96;Wolfhurst|u|96;York|t|96;Yorkville|v|96",
+"Brown":"Aberdeen|v|90;Byrd|t|90;Clark|t|63;Eagle|t|90;Fayetteville|v|63;Franklin|t|90;Georgetown|v|63;Green|t|63;Hamersville|v|63;Higginsport|v|63;Huntington|t|90;Jackson|t|90;Jefferson|t|90;Lake Lorelei|u|63;Lake Waynoka|u|90;Lewis|t|63;Mount Orab|v|63;Perry|t|63;Pike|t|63;Pleasant|t|63;Ripley|v|90;Russellville|v|90;Sardinia|v|90;Scott|t|63;St. Martin|u|63;Sterling|t|63;Union|t|90;Washington|t|90",
+"Butler":"Beckett Ridge|u|45;College Corner|v|47;Darrtown|u|40;Fairfield|c|45;Fairfield|t|45.47;Four Bridges|u|45.46;Hamilton|c|47;Hanover|t|47;Jacksonburg|v|40;Lemon|t|46;Liberty|t|46;Madison|t|40.46;Middletown|c|46;Milford|t|40;Millville|v|47;Monroe|c|46;Morgan|t|45;New Miami|v|46;Olde West Chester|u|45;Oxford|c|47;Oxford|t|47;Reily|t|47;Ross|t|45;Ross|u|45;Seven Mile|v|40;Sharonville|c|45;Somerville|u|40;St. Clair|t|46.47;Trenton|c|40.46;Wayne|t|40;West Chester|t|45;Wetherington|u|45;Williamsdale|u|46;Woodsdale|u|46",
+"Carroll":"Augusta|t|79;Brown|t|79;Carrollton|v|79;Center|t|79;Dellroy|v|79;East|t|79;Fox|t|79;Harrison|t|79;Lake Mohawk|u|79;Lee|t|79;Leesville|v|79;Loudon|t|79;Magnolia|v|79;Malvern|v|79;Minerva|v|79;Monroe|t|79;Orange|t|79;Pekin|u|79;Perry|t|79;Rose|t|79;Sherrodsville|v|79;Union|t|79;Washington|t|79",
+"Champaign":"Adams|t|85;Christiansburg|v|85;Concord|t|85;Goshen|t|85;Harrison|t|85;Jackson|t|85;Johnson|t|85;Mad River|t|85;Mechanicsburg|v|85;Mutual|v|85;North Lewisburg|v|85;Rosewood|u|85;Rush|t|85;Salem|t|85;St. Paris|v|85;Union|t|85;Urbana|c|85;Urbana|t|85;Wayne|t|85;Woodstock|v|85",
+"Clark":"Bethel|t|74;Catawba|v|74;Clifton|v|71;Crystal Lakes|u|74;Donnelsville|v|74;Enon|v|71;German|t|74;Green|t|71;Green Meadows|u|71;Harmony|t|71;Holiday Valley|u|71;Lawrenceville|u|74;Mad River|t|71;Madison|t|71;Medway|u|74;Moorefield|t|74;New Carlisle|c|74;North Hampton|v|74;Northridge|u|74;Park Layne|u|74;Pike|t|74;Pleasant|t|74;South Charleston|v|71;South Vienna|v|71;Springfield|c|74;Springfield|t|74;Tremont City|v|74",
+"Clermont":"Amelia|u|63;Batavia|v|63;Batavia|t|63;Bethel|v|63;Chilo|v|63;Day Heights|u|62;Felicity|v|63;Franklin|t|63;Goshen|t|62;Goshen|u|62;Jackson|t|63;Loveland|c|62;Marathon|u|63;Miami|t|62;Miamiville|u|62;Milford|c|62;Monroe|t|63;Moscow|v|63;Mount Carmel|u|62;Mount Repose|u|62;Mulberry|u|62;Neville|v|63;New Richmond|v|63;Ohio|t|63;Owensville|v|62;Pierce|t|63;Stonelick|t|62;Summerside|u|62;Tate|t|63;Union|t|62;Washington|t|63;Wayne|t|63;Williamsburg|v|63;Williamsburg|t|63;Withamsville|u|62.63",
+"Clinton":"Adams|t|71;Blanchester|v|71;Chester|t|71;Clark|t|71;Clarksville|v|71;Green|t|71;Jefferson|t|71;Liberty|t|71;Lynchburg|v|71;Marion|t|71;Martinsville|v|71;Midland|v|71;New Vienna|v|71;Port William|v|71;Richland|t|71;Sabina|v|71;Union|t|71;Vernon|t|71;Washington|t|71;Wayne|t|71;Wilmington|c|71;Wilson|t|71",
+"Columbiana":"Butler|t|59;Calcutta|u|79;Center|t|79;Columbiana|c|79;Damascus|u|59;East Liverpool|c|79;East Palestine|v|79;East Rochester|u|79;Elkrun|t|79;Fairfield|t|79;Franklin|t|79;Glenmoor|u|79;Guilford Lake|u|79;Hanover|t|79;Hanoverton|v|79;Homeworth|u|59;Knox|t|59;La Croft|u|79;Lake Tomahawk|u|79;Leetonia|v|79;Lisbon|v|79;Liverpool|t|79;Madison|t|79;Middleton|t|79;Minerva|v|79;Negley|u|79;New Waterford|v|79;Perry|t|79;Rogers|v|79;Salem|c|79;Salem|t|79;Salem Heights|u|79;Salineville|v|79;St. Clair|t|79;Summitville|v|79;Unity|t|79;Washington|t|79;Washingtonville|v|79;Wayne|t|79;Wellsville|v|79;West|t|79;Yellow Creek|t|79",
+"Coshocton":"Adams|t|98;Bedford|t|98;Bethlehem|t|98;Canal Lewisville|u|98;Clark|t|98;Conesville|v|98;Coshocton|c|98;Crawford|t|98;Franklin|t|98;Fresno|u|98;Jackson|t|98;Jefferson|t|98;Keene|t|98;Lafayette|t|98;Linton|t|98;Mill Creek|t|98;Monroe|t|98;Nellie|v|98;Newcastle|t|98;Oxford|t|98;Perry|t|98;Pike|t|98;Plainfield|v|98;Tiverton|t|98;Tuscarawas|t|98;Virginia|t|98;Warsaw|v|98;Washington|t|98;West Lafayette|v|98;White Eyes|t|98",
+"Crawford":"Auburn|t|87;Bucyrus|c|87;Bucyrus|t|87;Chatfield|v|87;Chatfield|t|87;Cranberry|t|87;Crestline|v|87;Dallas|t|87;Galion|c|87;Holmes|t|87;Jackson|t|87;Jefferson|t|87;Liberty|t|87;Lykens|t|87;New Washington|v|87;North Robinson|v|87;Oceola|u|87;Polk|t|87;Sandusky|t|87;Sulphur Springs|u|87;Texas|t|87;Tiro|v|87;Tod|t|87;Vernon|t|87;Whetstone|t|87",
+"Cuyahoga":"Bay Village|c|16;Beachwood|c|21;Bedford|c|22;Bedford Heights|c|22;Bentleyville|v|19;Berea|c|17;Bratenahl|v|20;Brecksville|c|19;Broadview Heights|c|17;Brook Park|c|15;Brooklyn|c|15;Brooklyn Heights|v|19;Chagrin Falls|v|19;Chagrin Falls|t|19;Cleveland|c|13.14.15.16.18.19.20.21.22;Cleveland Heights|c|18;Cuyahoga Heights|v|19;East Cleveland|c|18;Euclid|c|21;Fairview Park|c|16;Garfield Heights|c|22;Gates Mills|v|23;Glenwillow|v|19;Highland Heights|c|19;Highland Hills|v|18;Hunting Valley|v|19;Independence|c|19;Lakewood|c|13;Linndale|v|15;Lyndhurst|c|21;Maple Heights|c|22;Mayfield|v|23;Mayfield Heights|c|19;Middleburg Heights|c|15;Moreland Hills|v|19;Newburgh Heights|v|19;North Olmsted|c|15;North Randall|v|18;North Royalton|c|17;Oakwood|v|19;Olmsted|t|15.17;Olmsted Falls|c|17;Orange|v|18;Parma|c|14;Parma Heights|c|14;Pepper Pike|c|19;Richmond Heights|c|23;Rocky River|c|16;Seven Hills|c|19;Shaker Heights|c|18;Solon|c|19;South Euclid|c|21;Strongsville|c|17;University Heights|c|21;Valley View|v|19;Walton Hills|v|19;Warrensville Heights|c|18;Westlake|c|16;Woodmere|v|18",
+"Darke":"Adams|t|84;Allen|t|84;Ansonia|v|84;Arcanum|v|80;Bradford|v|84;Brown|t|84;Burkettsville|v|84;Butler|t|80;Castine|v|80;Franklin|t|80;Gettysburg|v|84;Gordon|v|80;Greenville|c|84;Greenville|t|84;Harrison|t|80;Hollansburg|v|80;Ithaca|v|80;Jackson|t|84;Liberty|t|80;Mississinawa|t|84;Monroe|t|80;Neave|t|80;New Madison|v|80;New Weston|v|84;North Star|v|84;Osgood|v|84;Palestine|v|80;Patterson|t|84;Pitsburg|v|80;Richland|t|84;Rossburg|v|84;Twin|t|80;Union City|v|84;Van Buren|t|80;Versailles|v|84;Wabash|t|84;Washington|t|84;Wayne|t|84;Wayne Lakes|v|80;York|t|84;Yorkshire|v|84",
+"Defiance":"Adams|t|81;Brunersburg|u|82;Defiance|c|82;Defiance|t|82;Delaware|t|82;Farmer|t|81;Hicksville|v|82;Hicksville|t|82;Highland|t|82;Mark|t|82;Milford|t|81;Ney|v|81;Noble|t|82;Richland|t|82;Sherwood|v|82;Tiffin|t|81;Washington|t|81",
+"Delaware":"Ashley|v|61;Berkshire|t|61;Berlin|t|60.61;Brown|t|61;Columbus|c|60;Concord|t|60;Delaware|c|60.61;Delaware|t|61;Dublin|c|60;Galena|v|61;Genoa|t|60.61;Harlem|t|61;Kilbourne|u|61;Kingston|t|61;Liberty|t|60.61;Marlboro|t|61;Orange|t|60;Ostrander|v|60;Oxford|t|61;Porter|t|61;Powell|c|60;Radnor|t|61;Radnor|u|61;Scioto|t|60;Shawnee Hills|v|60;Sunbury|c|61;Thompson|t|61;Trenton|t|61;Troy|t|61;Westerville|c|60",
+"Erie":"Bay View|v|89;Bellevue|c|89;Berlin|t|89;Berlin Heights|v|89;Beulah Beach|u|89;Birmingham|u|89;Bloomingville|u|89;Castalia|v|89;Crystal Rock|u|89;Florence|t|89;Groton|t|89;Huron|c|89;Huron|t|89;Kelleys Island|v|89;Margaretta|t|89;Milan|v|89;Milan|t|89;Mitiwanga|u|89;Oxford|t|89;Perkins|t|89;Sandusky|c|89;Vermilion|c|89;Vermilion|t|89;Whites Landing|u|89",
+"Fairfield":"Amanda|v|69;Amanda|t|69;Baltimore|v|73;Berne|t|69;Bloom|t|69;Bremen|v|69;Buckeye Lake|v|73;Canal Winchester|c|69.73;Carroll|v|73;Clearcreek|t|69;Columbus|c|73;Fairfield Beach|u|73;Greenfield|t|73;Hamburg|u|69;Hide-A-Way Hills|u|69;Hocking|t|69;Lancaster|c|69.73;Liberty|t|73;Lithopolis|v|69;Madison|t|69;Millersport|v|73;Pickerington|c|73;Pleasant|t|73;Pleasantville|v|73;Reynoldsburg|c|73;Richland|t|69;Rush Creek|t|69;Rushville|v|69;Stoutsville|v|69;Sugar Grove|v|69;Thurston|v|73;Violet|t|73;Walnut|t|73;West Rushville|v|69",
+"Fayette":"Bloomingburg|v|91;Concord|t|91;Good Hope|u|91;Green|t|91;Jasper|t|91;Jefferson|t|91;Jeffersonville|v|91;Madison|t|91;Marion|t|91;Milledgeville|v|91;New Holland|v|91;Octa|v|91;Paint|t|91;Pancoastburg|u|91;Perry|t|91;Union|t|91;Washington Court House|c|91;Wayne|t|91",
+"Franklin":"Bexley|c|1;Blacklick Estates|u|2.5;Blendon|t|4.9;Brice|v|2;Brown|t|11;Canal Winchester|c|5;Clinton|t|3.7;Columbus|c|1.2.3.4.5.6.7.8.9.10.11.12;Darbydale|u|12;Dublin|c|11;Franklin|t|1.6.10;Gahanna|c|4;Grandview Heights|c|7;Grove City|c|10.12;Groveport|c|5;Hamilton|t|5.10;Harrisburg|v|12;Hilliard|c|11;Huber Ridge|u|9;Jackson|t|10;Jefferson|t|4.5;Lake Darby|u|11.12;Lincoln Village|u|6;Lithopolis|v|5;Lockbourne|v|5;Madison|t|5;Marble Cliff|v|7;Mifflin|t|1.3;Minerva Park|v|9;New Albany|c|4;Norwich|t|6.11;Obetz|c|5;Perry|t|8.11;Pickerington|c|5;Plain|t|4;Pleasant|t|12;Prairie|t|6.10.12;Reynoldsburg|c|5;Riverlea|v|8;Sharon|t|4.8.9;Truro|t|2.5;Upper Arlington|c|7;Urbancrest|v|10;Valleyview|v|6;Washington|t|11;Westerville|c|4;Whitehall|c|2;Worthington|c|8",
+"Fulton":"Ai|u|81;Amboy|t|81;Archbold|v|81;Chesterfield|t|81;Clinton|t|81;Delta|v|81;Dover|t|81;Fayette|v|81;Franklin|t|81;Fulton|t|81;German|t|81;Gorham|t|81;Lyons|v|81;Metamora|v|81;Pettisville|u|81;Pike|t|81;Royalton|t|81;Swan Creek|t|81;Swanton|v|81;Tedrow|u|81;Wauseon|c|81;York|t|81",
+"Gallia":"Addison|t|93;Bidwell|u|93;Centerville (Thurman)|v|93;Cheshire|v|93;Cheshire|t|93;Clay|t|93;Crown City|v|93;Gallipolis|v|93;Gallipolis|t|93;Green|t|93;Greenfield|t|93;Guyan|t|93;Harrison|t|93;Huntington|t|93;Kanauga|u|93;Morgan|t|93;Ohio|t|93;Perry|t|93;Raccoon|t|93;Rio Grande|v|93;Springfield|t|93;Vinton|v|93;Walnut|t|93",
+"Geauga":"Aquilla|v|99;Auburn|t|35;Bainbridge|t|35;Bainbridge|u|35;Bass Lake|u|99;Burton|v|99;Burton|t|99;Chardon|c|99;Chardon|t|99;Chester|t|99;Chesterland|u|99;Claridon|t|99;Hambden|t|99;Hunting Valley|v|99;Huntsburg|t|99;Middlefield|v|99;Middlefield|t|99;Montville|t|99;Munson|t|99;Newbury|t|99;Parkman|t|99;Parkman|u|99;Russell|t|99;South Russell|v|35;Thompson|t|99;Troy|t|99",
+"Greene":"Bath|t|70;Beavercreek|c|70;Beavercreek|t|70;Bellbrook|c|70;Bowersville|v|71;Caesarscreek|t|71;Cedarville|v|71;Cedarville|t|71;Centerville|c|70;Clifton|v|71;Fairborn|c|70;Jamestown|v|71;Jefferson|t|71;Kettering|c|70;Miami|t|71;New Jasper|t|71;Ross|t|71;Shawnee Hills|u|71;Silvercreek|t|71;Spring Valley|v|70;Spring Valley|t|70;Sugarcreek|t|70;Wilberforce|u|71;Xenia|c|71;Xenia|t|71;Yellow Springs|v|71",
+"Guernsey":"Adams|t|97;Buffalo|u|97;Byesville|v|97;Cambridge|c|97;Cambridge|t|97;Center|t|95;Cumberland|v|97;Fairview|v|95;Jackson|t|97;Jefferson|t|95;Kimbolton|u|97;Knox|t|97;Liberty|t|97;Londonderry|t|95;Lore City|v|95;Madison|t|95;Millwood|t|95;Monroe|t|95;Old Washington|v|95;Oxford|t|95;Pleasant City|v|97;Quaker City|v|95;Richland|t|95;Salesville|u|95;Senecaville|v|95;Spencer|t|97;Valley|t|97;Washington|t|95;Westland|t|97;Wheeling|t|97;Wills|t|95",
+"Hamilton":"Addyston|v|30;Amberley|v|27;Anderson|t|26.27;Arlington Heights|v|25;Blue Ash|c|28;Blue Jay|u|29;Brecon|u|28;Bridgetown|u|30;Camp Dennison|u|27;Cherry Grove|u|27;Cheviot|c|30;Cincinnati|c|24.25.26.27.30;Cleves|v|30;Coldstream|u|27;Colerain|t|29;Columbia|t|26.27;Concorde Hills|u|28;Covedale|u|30;Crosby|t|29;Deer Park|c|28;Delhi|t|30;Delhi Hills|u|30;Delshire|u|30;Dent|u|30;Dillonvale|u|28;Dry Ridge|u|29;Dry Run|u|27;Dunlap|u|29;Elizabethtown|u|29;Elmwood Place|v|25;Evendale|v|28;Fairfax|v|26;Finneytown|u|27;Forest Park|c|28;Forestville|u|27;Fruit Hill|u|27;Glendale|v|29;Golf Manor|v|26;Grandview|u|30;Green|t|30;Greenhills|v|29;Groesbeck|u|29;Harrison|c|29;Harrison|t|29;Highpoint|u|28;Hooven|u|29;Kenwood|u|27.28;Lincoln Heights|v|27;Lockland|v|27;Loveland|c|28;Loveland Park|u|28;Mack|u|30;Madeira|c|27;Madison Place|u|26;Mariemont|v|26;Miami|t|30;Miami Heights|u|30;Miamitown|u|29;Milford|c|27;Monfort Heights|u|30;Montgomery|c|28;Mount Healthy|c|29;Mount Healthy Heights|u|29;New Baltimore|u|29;New Burlington|u|27.29;New Haven|u|29;Newtown|v|27;North Bend|v|30;North College Hill|c|29;Northbrook|u|29;Northgate|u|29;Norwood|c|26;Plainville|u|26;Pleasant Hills|u|27;Pleasant Run|u|29;Pleasant Run Farm|u|28;Reading|c|27;Remington|u|28;Ridgewood|u|27;Rossmoyne|u|28;Salem Heights|u|27;Sharonville|c|28;Shawnee|u|30;Sherwood|u|27;Silverton|v|27;Sixteen Mile Stand|u|28;Skyline Acres|u|29;Springdale|c|28;Springfield|t|25.27.28.29;St. Bernard|v|25;Sycamore|t|27.28;Symmes|t|27.28;Taylor Creek|u|29;Terrace Park|v|27;The Village of Indian Hill|c|27;Turpin Hills|u|27;White Oak|u|29.30;Whitewater|t|29;Woodlawn|v|27;Wyoming|c|27",
+"Hancock":"Allen|t|83;Amanda|t|83;Arcadia|v|83;Arlington|v|83;Benton Ridge|v|83;Biglick|t|83;Blanchard|t|83;Bluffton|v|83;Cass|t|83;Delaware|t|83;Eagle|t|83;Findlay|c|83;Fostoria|c|83;Jackson|t|83;Jenera|v|83;Liberty|t|83;Madison|t|83;Marion|t|83;McComb|v|83;Mount Blanchard|v|83;Mount Cory|v|83;Orange|t|83;Pleasant|t|83;Portage|t|83;Rawson|v|83;Union|t|83;Van Buren|v|83;Van Buren|t|83;Vanlue|v|83;Washington|t|83",
+"Hardin":"Ada|v|83;Alger|v|83;Blanchard|t|83;Buck|t|83;Cessna|t|83;Dola|u|83;Dudley|t|83;Dunkirk|v|83;Forest|v|83;Goshen|t|83;Hale|t|83;Jackson|t|83;Kenton|c|83;Liberty|t|83;Lynn|t|83;Marion|t|83;McDonald|t|83;McGuffey|v|83;Mount Victory|v|83;Patterson|v|83;Pleasant|t|83;Ridgeway|v|83;Roundhead|t|83;Taylor Creek|t|83;Washington|t|83",
+"Harrison":"Adena|v|95;Archer|t|95;Athens|t|95;Bowerston|v|95;Cadiz|v|95;Cadiz|t|95;Deersville|v|95;Franklin|t|95;Freeport|v|95;Freeport|t|95;German|t|95;Green|t|95;Harrisville|v|95;Hopedale|v|95;Jewett|v|95;Monroe|t|95;Moorefield|t|95;New Athens|v|95;North|t|95;Nottingham|t|95;Rumley|t|95;Scio|v|95;Short Creek|t|95;Stock|t|95;Tippecanoe|u|95;Washington|t|95",
+"Henry":"Bartlow|t|81;Damascus|t|81;Deshler|v|81;Flatrock|t|81;Florida|v|81;Freedom|t|81;Hamler|v|81;Harrison|t|81;Holgate|v|81;Liberty|t|81;Liberty Center|v|81;Malinta|v|81;Marion|t|81;McClure|v|81;Monroe|t|81;Napoleon|c|81;Napoleon|t|81;New Bavaria|v|81;Pleasant|t|81;Richfield|t|81;Ridgeville|t|81;Ridgeville Corners|u|81;Washington|t|81",
+"Highland":"Brushcreek|t|91;Buford|u|91;Clay|t|91;Concord|t|91;Dodson|t|91;Fairfield|t|91;Greenfield|v|91;Hamer|t|91;Highland|v|91;Highland Holiday|u|91;Hillsboro|c|91;Jackson|t|91;Leesburg|v|91;Liberty|t|91;Lynchburg|v|91;Madison|t|91;Marshall|t|91;Mowrystown|v|91;New Market|t|91;Paint|t|91;Penn|t|91;Rocky Fork Point|u|91;Salem|t|91;Sinking Spring|v|91;Union|t|91;Washington|t|91;Whiteoak|t|91",
+"Hocking":"Benton|t|92;Buchtel|v|92;Carbon Hill|u|92;Falls|t|92;Good Hope|t|92;Green|t|92;Haydenville|u|92;Hide-A-Way Hills|u|92;Laurel|t|92;Laurelville|v|92;Logan|c|92;Marion|t|92;Murray City|v|92;Perry|t|92;Rockbridge|u|92;Salt Creek|t|92;Starr|t|92;Ward|t|92;Washington|t|92;West Logan|u|92",
+"Holmes":"Baltic|v|98;Berlin|t|98;Berlin|u|98;Clark|t|98;Glenmont|v|98;Hardy|t|98;Holmesville|v|98;Killbuck|v|98;Killbuck|t|98;Knox|t|98;Lake Buckhorn|u|98;Loudonville|v|98;Mechanic|t|98;Millersburg|v|98;Monroe|t|98;Mount Hope|u|98;Nashville|v|98;Paint|t|98;Prairie|t|98;Richland|t|98;Ripley|t|98;Salt Creek|t|98;Walnut Creek|t|98;Walnut Creek|u|98;Washington|t|98;Winesburg|u|98",
+"Huron":"Bellevue|c|89;Bronson|t|54;Celeryville|u|54;Clarksfield|t|54;Collins|u|54;Fairfield|t|54;Fitchville|t|54;Greenfield|t|54;Greenwich|v|54;Greenwich|t|54;Hartland|t|54;Holiday Lakes|u|54;Lyme|t|89;Milan|v|54;Monroeville|v|54;New Haven|t|54;New Haven|u|54;New London|v|54;New London|t|54;North Fairfield|v|54;Norwalk|c|54;Norwalk|t|54;Norwich|t|54;Peru|t|54;Plymouth|v|54;Richmond|t|54;Ridgefield|t|54;Ripley|t|54;Sherman|t|54;Townsend|t|54;Wakeman|v|89;Wakeman|t|89;Willard|c|54",
+"Jackson":"Bloomfield|t|93;Coal|t|93;Coalton|v|93;Franklin|t|93;Hamilton|t|93;Jackson|c|93;Jackson|t|93;Jefferson|t|93;Liberty|t|93;Lick|t|93;Madison|t|93;Milton|t|93;Oak Hill|v|93;Scioto|t|93;Washington|t|93;Wellston|c|93",
+"Jefferson":"Adena|v|96;Amsterdam|v|96;Bergholz|v|96;Bloomingdale|v|96;Brilliant|u|96;Brush Creek|t|96;Connorville|u|96;Cross Creek|t|96;Dillonvale|v|96;East Springfield|u|96;Empire|v|96;Irondale|v|96;Island Creek|t|96;Knox|t|96;Mingo Junction|v|96;Mount Pleasant|v|96;Mount Pleasant|t|96;New Alexandria|v|96;Pottery Addition|u|96;Rayland|v|96;Richmond|v|96;Ross|t|96;Salem|t|96;Saline|t|96;Smithfield|t|96;Springfield|t|96;Steubenville|c|96;Steubenville|t|96;Stratton|v|96;Tiltonsville|v|96;Toronto|c|96;Warren|t|96;Wayne|t|96;Wells|t|96;Wintersville|v|96;Yorkville|v|96",
+"Knox":"Apple Valley|u|98;Berlin|t|61;Bladensburg|u|98;Brown|t|98;Butler|t|98;Centerburg|v|61;Clay|t|98;Clinton|t|61.98;College|t|98;Danville|v|98;Fredericktown|v|61;Gambier|v|98;Gann (Brinkhaven)|v|98;Harrison|t|98;Hilliar|t|61;Howard|t|98;Howard|u|98;Jackson|t|98;Jefferson|t|98;Liberty|t|61;Martinsburg|v|98;Middlebury|t|61;Milford|t|61;Miller|t|61;Monroe|t|98;Morgan|t|98;Morris|t|61;Mount Vernon|c|98;Pike|t|98;Pleasant|t|98;South Mount Vernon|u|61;Union|t|98;Utica|v|98;Wayne|t|61",
+"Lake":"Concord|t|57;Eastlake|c|23;Fairport Harbor|v|57;Grand River|v|57;Kirtland|c|57;Kirtland Hills|v|57;Lakeline|v|23;Leroy|t|57;Madison|v|57;Madison|t|57;Mentor|c|23.57;Mentor-on-the-Lake|c|23;North Madison|u|57;North Perry|v|57;Painesville|c|57;Painesville|t|57;Perry|v|57;Perry|t|57;Timberlake|v|23;Waite Hill|v|57;Wickliffe|c|23;Willoughby|c|23;Willoughby Hills|c|23;Willowick|c|23",
+"Lawrence":"Aid|t|93;Athalia|v|93;Burlington|u|93;Chesapeake|v|93;Coal Grove|v|93;Decatur|t|93;Elizabeth|t|93;Fayette|t|93;Hamilton|t|93;Hanging Rock|v|93;Ironton|c|93;Lawrence|t|93;Mason|t|93;Miller|u|93;Perry|t|93;Proctorville|v|93;Rome|t|93;South Point|v|93;Symmes|t|93;Union|t|93;Upper|t|93;Washington|t|93;Windsor|t|93",
+"Licking":"Alexandria|v|68;Beechwood Trails|u|68;Bennington|t|69;Bowling Green|t|69;Brownsville|u|69;Buckeye Lake|v|69;Burlington|t|69;Eden|t|69;Etna|t|68;Etna|u|68;Fallsbury|t|69;Franklin|t|69;Granville|v|68;Granville|t|68;Granville South|u|68;Gratiot|v|69;Hanover|v|69;Hanover|t|69;Harbor Hills|u|69;Harrison|t|68;Hartford|t|69;Hartford (Croton)|v|69;Heath|c|68.69;Hebron|v|68;Hopewell|t|69;Jacksontown|u|69;Jersey|t|68;Jersey|u|68;Johnstown|c|69;Kirkersville|v|68;Liberty|t|69;Licking|t|69;Madison|t|69;Marne|u|69;Mary Ann|t|69;McKean|t|69;Monroe|t|69;New Albany|c|68;Newark|c|68;Newark|t|68;Newton|t|68.69;Pataskala|c|68;Perry|t|69;Reynoldsburg|c|68;St. Albans|t|68;St. Louisville|v|69;Union|t|68.69;Utica|v|69;Washington|t|69",
+"Logan":"Belle Center|v|83;Bellefontaine|c|85;Bloomfield|t|83;Bokescreek|t|83;Chippewa Park|u|83;De Graff|v|85;East Liberty|u|85;Harrison|t|85;Huntsville|v|83;Jefferson|t|85;Lake|t|85;Lakeview|v|83;Lewistown|u|83;Liberty|t|85;McArthur|t|83;Miami|t|85;Monroe|t|85;Perry|t|85;Pleasant|t|85;Quincy|v|85;Richland|t|83;Ridgeway|v|83;Rushcreek|t|83;Rushsylvania|v|83;Russells Point|v|83;Stokes|t|83;Union|t|85;Valley Hi|v|85;Washington|t|83;West Liberty|v|85;West Mansfield|v|83;Zane|t|85;Zanesfield|v|85",
+"Lorain":"Amherst|c|53;Amherst|t|52.54;Avon|c|52;Avon Lake|c|53;Brighton|t|54;Brownhelm|t|54;Camden|t|54;Carlisle|t|54;Columbia|t|54;Eaton|t|54;Eaton Estates|u|54;Elyria|c|52.54;Elyria|t|52;Grafton|v|54;Grafton|t|54;Henrietta|t|54;Huntington|t|54;Kipton|v|54;LaGrange|v|54;LaGrange|t|54;Lorain|c|53;New Russia|t|54;North Ridgeville|c|52;Oberlin|c|54;Penfield|t|54;Pheasant Run|u|54;Pittsfield|t|54;Rochester|v|54;Rochester|t|54;Sheffield|v|53;Sheffield|t|52.53;Sheffield Lake|c|53;South Amherst|v|54;Vermilion|c|54;Wellington|v|54;Wellington|t|54",
+"Lucas":"Berkey|v|44;Curtice|u|42;Harbor View|v|42;Harding|t|44;Holland|v|41;Jerusalem|t|42;Maumee|c|41;Monclova|t|44;Neapolis|u|44;Oregon|c|42;Ottawa Hills|v|43;Providence|t|44;Reno Beach|u|42;Richfield|t|44;Spencer|t|44;Springfield|t|41;Swanton|v|44;Swanton|t|44;Sylvania|c|44;Sylvania|t|43.44;Toledo|c|41.42.43;Washington|t|42.43;Waterville|c|44;Waterville|t|44;Whitehouse|v|44",
+"Madison":"Canaan|t|12;Choctaw Lake|u|12;Darby|t|12;Deer Creek|t|12;Fairfield|t|12;Jefferson|t|12;Lafayette|u|12;London|c|12;Midway|v|12;Monroe|t|12;Mount Sterling|v|12;Oak Run|t|12;Paint|t|12;Pike|t|12;Plain City|v|12;Pleasant|t|12;Plumwood|u|12;Range|t|12;Somerford|t|12;South Solon|v|12;Stokes|t|12;Union|t|12;West Jefferson|v|12",
+"Mahoning":"Alliance|c|59;Austintown|t|58;Austintown|u|58;Beaver|t|59;Beloit|v|59;Berlin|t|59;Boardman|t|59;Campbell|c|59;Canfield|c|59;Canfield|t|59;Coitsville|t|58;Columbiana|c|59;Craig Beach|v|58;Damascus|u|59;East Alliance|u|59;Ellsworth|t|59;Goshen|t|59;Green|t|59;Jackson|t|58;Lake Milton|u|58;Lowellville|v|58;Maple Ridge|u|59;Milton|t|58;Mineral Ridge|u|58;New Middletown|v|59;New Springfield|u|59;North Lima|u|59;Petersburg|u|59;Poland|v|58;Poland|t|58;Salem|c|59;Sebring|v|59;Smith|t|59;Springfield|t|59;Struthers|c|59;Washingtonville|v|59;Woodworth|u|59;Youngstown|c|58",
+"Marion":"Big Island|t|87;Bowling Green|t|87;Caledonia|v|87;Claridon|t|87;Grand|t|87;Grand Prairie|t|87;Green Camp|v|87;Green Camp|t|87;La Rue|v|87;Marion|c|86;Marion|t|86;Montgomery|t|87;Morral|v|87;New Bloomington|v|87;Pleasant|t|86;Prospect|v|86;Prospect|t|86;Richland|t|87;Salt Rock|t|87;Scott|t|87;Tully|t|87;Waldo|v|87;Waldo|t|87",
+"Medina":"Brunswick|c|67;Brunswick Hills|t|67;Chatham|t|67;Chippewa Lake|v|66;Creston|v|66;Gloria Glens Park|v|66;Granger|t|66;Guilford|t|66;Harrisville|t|66;Hinckley|t|66;Homer|t|67;Lafayette|t|66;Litchfield|t|67;Liverpool|t|67;Lodi|v|66;Medina|c|66;Medina|t|66;Montville|t|66;Rittman|c|66;Seville|v|66;Sharon|t|66;Sharon Center|u|66;Spencer|v|67;Spencer|t|67;Valley City|u|67;Wadsworth|c|66;Wadsworth|t|66;Westfield|t|66;Westfield Center|v|66;York|t|66.67",
+"Meigs":"Bedford|t|94;Chester|t|94;Columbia|t|94;Lebanon|t|94;Letart|t|94;Middleport|v|94;Olive|t|94;Orange|t|94;Pomeroy|v|94;Racine|v|94;Rutland|v|94;Rutland|t|94;Salem|t|94;Salisbury|t|94;Scipio|t|94;Sutton|t|94;Syracuse|v|94;Tuppers Plains|u|94",
+"Mercer":"Black Creek|t|84;Burkettsville|v|84;Butler|t|84;Celina|c|84;Center|t|84;Chickasaw|v|84;Coldwater|v|84;Dublin|t|84;Fort Recovery|v|84;Franklin|t|84;Gibson|t|84;Granville|t|84;Hopewell|t|84;Jefferson|t|84;Liberty|t|84;Maria Stein|u|84;Marion|t|84;Mendon|v|84;Montezuma|v|84;Recovery|t|84;Rockford|v|84;St. Henry|v|84;Union|t|84;Washington|t|84",
+"Miami":"Bethel|t|80;Bradford|v|80;Brandt|u|80;Brown|t|80;Casstown|v|80;Concord|t|80;Covington|v|80;Elizabeth|t|80;Fletcher|v|80;Huber Heights|c|80;Laura|v|80;Lostcreek|t|80;Ludlow Falls|v|80;Monroe|t|80;Newberry|t|80;Newton|t|80;Piqua|c|80;Pleasant Hill|v|80;Potsdam|v|80;Springcreek|t|80;Staunton|t|80;Tipp City|c|80;Troy|c|80;Union|c|80;Union|t|80;Washington|t|80;West Milton|v|80",
+"Monroe":"Adams|t|96;Antioch|v|96;Beallsville|v|96;Benton|t|96;Bethel|t|96;Center|t|96;Clarington|v|96;Franklin|t|96;Graysville|v|96;Green|t|96;Hannibal|u|96;Jackson|t|96;Jerusalem|v|96;Lee|t|96;Lewisville|v|96;Malaga|t|96;Miltonsburg|v|96;Ohio|t|96;Perry|t|96;Salem|t|96;Sardis|u|96;Seneca|t|96;Stafford|v|96;Summit|t|96;Sunsbury|t|96;Switzerland|t|96;Washington|t|96;Wayne|t|96;Wilson|v|96;Woodsfield|v|96",
+"Montgomery":"Brookville|c|40;Butler|t|39;Carlisle|c|37;Centerville|c|37;Clay|t|40;Clayton|c|39.40;Dayton|c|36.37.38.39;Drexel|u|37;Englewood|c|39;Farmersville|v|40;Fort McKinley|u|39;German|t|40;Germantown|c|40;Harrison|t|39;Huber Heights|c|39;Jackson|t|40;Jefferson|t|37.38;Kettering|c|36;Miami|t|37.40;Miamisburg|c|40;Moraine|c|37;New Lebanon|v|40;Oakwood|c|36;Perry|t|40;Phillipsburg|v|40;Riverside|c|36;Shiloh|u|39;Springboro|c|37;Trotwood|c|38;Union|c|39;Vandalia|c|39;Verona|v|40;Washington|t|37;West Carrollton|c|37",
+"Morgan":"Bloom|t|95;Bristol|t|95;Center|t|95;Chesterhill|v|95;Deerfield|t|95;Homer|t|95;Malta|v|95;Malta|t|95;Manchester|t|95;Marion|t|95;McConnelsville|v|95;Meigsville|t|95;Morgan|t|95;Penn|t|95;Rose Farm|u|95;Stockport|v|95;Union|t|95;Windsor|t|95;York|t|95",
+"Morrow":"Bennington|t|87;Canaan|t|87;Candlewood Lake|u|87;Cardington|v|87;Cardington|t|87;Chester|t|87;Chesterville|v|87;Congress|t|87;Edison|v|87;Franklin|t|87;Fulton|v|87;Galion|c|87;Gilead|t|87;Harmony|t|87;Hidden Lakes|u|87;Iberia|u|87;Lincoln|t|87;Marengo|v|87;Mount Gilead|v|87;North Bloomfield|t|87;Perry|t|87;Peru|t|87;South Bloomfield|t|87;Sparta|v|87;Troy|t|87;Washington|t|87;Westfield|t|87",
+"Muskingum":"Adams|t|97;Adamsville|v|97;Blue Rock|t|97;Brush Creek|t|97;Cass|t|97;Clay|t|97;Dresden|v|97;Duncan Falls|u|97;East Fultonham|u|97;Falls|t|97;Frazeysburg|v|97;Fultonham|v|97;Gratiot|v|97;Harrison|t|97;Highland|t|97;Hopewell|t|97;Jackson|t|97;Jefferson|t|97;Licking|t|97;Madison|t|97;Meigs|t|97;Monroe|t|97;Muskingum|t|97;Nashport|u|97;New Concord|v|97;Newton|t|97;North Zanesville|u|97;Norwich|v|97;Perry|t|97;Philo|v|97;Pleasant Grove|u|97;Rich Hill|t|97;Roseville|v|97;Salem|t|97;Salt Creek|t|97;South Zanesville|v|97;Springfield|t|97;Trinway|u|97;Union|t|97;Washington|t|97;Wayne|t|97;Zanesville|c|97",
+"Noble":"Batesville|v|95;Beaver|t|95;Belle Valley|v|95;Brookfield|t|95;Buffalo|t|95;Caldwell|v|95;Center|t|95;Dexter City|v|95;Elk|t|95;Enoch|t|95;Jackson|t|95;Jefferson|t|95;Marion|t|95;Noble|t|95;Olive|t|95;Sarahsville|v|95;Seneca|t|95;Sharon|t|95;Stock|t|95;Summerfield|v|95;Wayne|t|95",
+"Ottawa":"Allen|t|44;Bay|t|89;Benton|t|89;Carroll|t|89;Catawba Island|t|89;Clay|t|44;Clay Center|v|44;Curtice|u|44;Danbury|t|89;Elmore|v|89;Erie|t|89;Genoa|v|44;Harris|t|89;Lakeside|u|89;Marblehead|v|89;Oak Harbor|v|89;Port Clinton|c|89;Portage|t|89;Put-in-Bay|v|89;Put-in-Bay|t|89;Rocky Ridge|v|89;Salem|t|89;Williston|u|44",
+"Paulding":"Antwerp|v|82;Auglaize|t|82;Benton|t|82;Blue Creek|t|82;Broughton|v|82;Brown|t|82;Carryall|t|82;Cecil|v|82;Crane|t|82;Emerald|t|82;Grover Hill|v|82;Harrison|t|82;Haviland|v|82;Jackson|t|82;Latty|v|82;Latty|t|82;Melrose|v|82;Oakwood|v|82;Paulding|v|82;Paulding|t|82;Payne|v|82;Scott|v|82;Washington|t|82",
+"Perry":"Bearfield|t|92;Clayton|t|69;Coal|t|92;Corning|v|92;Crooksville|v|69;Glenford|v|69;Harrison|t|69;Hemlock|v|92;Hopewell|t|69;Jackson|t|69;Junction City|v|69;Madison|t|69;Monday Creek|t|92;Monroe|t|92;New Lexington|v|92;New Straitsville|v|92;Pike|t|92;Pleasant|t|92;Reading|t|69;Rendville|v|92;Rose Farm|u|69;Roseville|v|69;Salt Lick|t|92;Shawnee|v|92;Somerset|v|69;Thorn|t|69;Thornport|u|69;Thornville|v|69",
+"Pickaway":"Ashville|v|12;Circleville|c|12;Circleville|t|12;Commercial Point|v|12;Darby|t|12;Darbyville|v|12;Deercreek|t|12;Derby|u|12;Harrison|t|12;Jackson|t|12;Lockbourne|v|12;Logan Elm Village|u|12;Madison|t|12;Monroe|t|12;Muhlenberg|t|12;New Holland|v|12;Orient|u|12;Perry|t|12;Pickaway|t|12;Saltcreek|t|12;Scioto|t|12;South Bloomfield|v|12;Tarlton|v|12;Walnut|t|12;Washington|t|12;Wayne|t|12;Williamsport|v|12",
+"Pike":"Beaver|v|91;Beaver|t|91;Benton|t|91;Camp Creek|t|91;Cynthiana|u|91;Jackson|t|91;Marion|t|91;Mifflin|t|91;Newton|t|91;Pebble|t|91;Pee Pee|t|91;Perry|t|91;Piketon|v|91;Scioto|t|91;Seal|t|91;Stockdale|u|91;Sunfish|t|91;Union|t|91;Waverly|v|91",
+"Portage":"Atwater|t|72;Atwater|u|72;Aurora|c|35;Brady Lake|u|72;Brimfield|t|72;Brimfield|u|72;Charlestown|t|72;Deerfield|t|72;Edinburg|t|72;Franklin|t|72;Freedom|t|72;Garrettsville|v|72;Hiram|v|72;Hiram|t|72;Kent|c|72;Mantua|v|72;Mantua|t|35;Mogadore|v|72;Nelson|t|72;Palmyra|t|72;Paris|t|72;Randolph|t|72;Ravenna|c|72;Ravenna|t|72;Rootstown|t|72;Shalersville|t|72;Streetsboro|c|35;Suffield|t|72;Suffield|u|72;Sugar Bush Knolls|v|72;Tallmadge|c|72;Windham|v|72;Windham|t|72",
+"Preble":"Camden|v|40;College Corner|v|40;Dixon|t|40;Eaton|c|40;Eldorado|v|40;Gasper|t|40;Gratis|v|40;Gratis|t|40;Harrison|t|40;Israel|t|40;Jackson|t|40;Jefferson|t|40;Lake Lakengren|u|40;Lanier|t|40;Lewisburg|v|40;Monroe|t|40;New Paris|v|40;Somers|t|40;Twin|t|40;Verona|v|40;Washington|t|40;West Alexandria|v|40;West Elkton|v|40;West Manchester|v|40",
+"Putnam":"Belmore|v|82;Blanchard|t|82;Cloverdale|v|82;Columbus Grove|v|82;Continental|v|82;Dupont|v|82;Fort Jennings|v|82;Gilboa|v|82;Glandorf|v|82;Greensburg|t|82;Jackson|t|82;Jennings|t|82;Kalida|v|82;Leipsic|v|82;Liberty|t|82;Miller City|v|82;Monroe|t|82;Monterey|t|82;Ottawa|v|82;Ottawa|t|82;Ottoville|v|82;Palmer|t|82;Pandora|v|82;Perry|t|82;Pleasant|t|82;Riley|t|82;Sugar Creek|t|82;Union|t|82;Van Buren|t|82;Vaughnsville|u|82;West Leipsic|v|82",
+"Richland":"Bellville|v|76;Bloominggrove|t|76;Butler|v|76;Butler|t|76;Cass|t|76;Crestline|v|76;Franklin|t|76;Galion|c|76;Jackson|t|76;Jefferson|t|76;Lexington|v|76;Lincoln Heights|u|76;Lucas|v|76;Madison|t|76;Mansfield|c|76;Mifflin|t|76;Monroe|t|76;Ontario|c|76;Perry|t|76;Plymouth|v|76;Plymouth|t|76;Roseland|u|76;Sandusky|t|76;Sharon|t|76;Shelby|c|76;Shiloh|v|76;Springfield|t|76;Troy|t|76;Washington|t|76;Weller|t|76;Worthington|t|76",
+"Ross":"Adelphi|v|92;Andersonville|u|92;Bainbridge|v|91;Bourneville|u|91;Buckskin|t|91;Chillicothe|c|92;Clarksburg|v|91;Colerain|t|92;Concord|t|91;Deerfield|t|91;Frankfort|v|91;Franklin|t|92;Green|t|92;Greenfield|v|91;Harrison|t|92;Huntington|t|92;Jefferson|t|92;Kingston|v|92;Liberty|t|92;Massieville|u|92;Paint|t|91;Paxton|t|91;Richmond Dale|u|92;Scioto|t|92;South Salem|v|91;Springfield|t|92;Twin|t|91;Union|t|92",
+"Sandusky":"Ballville|t|88;Ballville|u|88;Bellevue|c|88;Burgoon|v|88;Clyde|c|88;Fremont|c|88;Gibsonburg|v|88;Green Creek|t|88;Green Springs|v|88;Helena|v|88;Hessville|u|88;Jackson|t|88;Lindsey|v|88;Madison|t|88;Rice|t|88;Riley|t|88;Sandusky|t|88;Scott|t|88;Stony Prairie|u|88;Townsend|t|88;Vickery|u|88;Washington|t|88;Whites Landing|u|88;Wightmans Grove|u|88;Woodville|v|88;Woodville|t|88;York|t|88",
+"Scioto":"Bloom|t|90;Brush Creek|t|90;Clarktown|u|90;Clay|t|90;Franklin Furnace|u|90;Friendship|u|90;Green|t|90;Harrison|t|90;Jefferson|t|90;Lucasville|u|90;Madison|t|90;McDermott|u|90;Minford|u|90;Morgan|t|90;New Boston|v|90;Nile|t|90;Otway|v|90;Porter|t|90;Portsmouth|c|90;Rarden|v|90;Rarden|t|90;Rosemount|u|90;Rush|t|90;Sciotodale|u|90;South Webster|v|90;Union|t|90;Valley|t|90;Vernon|t|90;Washington|t|90;West Portsmouth|u|90;Wheelersburg|u|90",
+"Seneca":"Adams|t|88;Attica|v|88;Bascom|u|88;Bettsville|v|88;Big Spring|t|88;Bloom|t|88;Bloomville|v|88;Clinton|t|88;Eden|t|88;Flat Rock|u|88;Fort Seneca|u|88;Fostoria|c|88;Green Springs|v|88;Hopewell|t|88;Jackson|t|88;Kansas|u|88;Liberty|t|88;Loudon|t|88;McCutchenville|u|88;Melmore|u|88;New Riegel|v|88;Old Fort|u|88;Pleasant|t|88;Reed|t|88;Republic|v|88;Scipio|t|88;Seneca|t|88;Thompson|t|88;Tiffin|c|88;Venice|t|88",
+"Shelby":"Anna|v|85;Botkins|v|85;Clinton|t|85;Cynthian|t|85;Dinsmore|t|85;Fort Loramie|v|85;Franklin|t|85;Green|t|85;Jackson|t|85;Jackson Center|v|85;Kettlersville|v|85;Lockington|v|85;Loramie|t|85;McLean|t|85;Newport|u|85;Orange|t|85;Perry|t|85;Port Jefferson|v|85;Russia|v|85;Salem|t|85;Sidney|c|85;Turtle Creek|t|85;Van Buren|t|85;Washington|t|85",
+"Stark":"Alliance|c|48;Beach City|v|51;Bethlehem|t|51;Bolton|u|48;Brewster|v|51;Canal Fulton|c|50;Canton|c|48.49;Canton|t|49.50;East Canton|v|50;East Sparta|v|51;Greentown|u|48;Harrisburg|u|48;Hartville|v|48;Hills and Dales|v|49;Jackson|t|49.50;Lake|t|48;Lawrence|t|50;Lexington|t|48;Limaville|u|48;Louisville|c|48;Magnolia|v|50;Marlboro|t|48;Marlboro|u|48;Massillon|c|50;Meyers Lake|v|50;Middlebranch|u|48;Minerva|v|50;Navarre|v|51;Nimishillen|t|48;North Canton|c|48;North Industry|u|50;North Lawrence|u|50;Osnaburg|t|50;Paris|t|50;Perry|t|50.51;Perry Heights|u|50;Pike|t|51;Plain|t|48.49;Reedurban|u|50;Richville|u|50;Robertsville|u|50;Sandy|t|50;Sugarcreek|t|51;Tuscarawas|t|50.51;Uniontown|u|48;Washington|t|48.50;Waynesburg|v|50;Wilmot|v|51",
+"Summit":"Akron|c|32.33.34;Barberton|c|31;Bath|t|31.33;Boston|t|31;Boston Heights|v|31;Clinton|v|32;Copley|t|31;Coventry|t|32;Cuyahoga Falls|c|31.33;Fairlawn|c|33;Green|c|32;Hudson|c|34;Lakemore|v|32;Macedonia|c|35;Mogadore|v|32;Montrose-Ghent|u|31;Munroe Falls|c|34;New Franklin|c|32;Northfield|v|35;Northfield Center|t|35;Norton|c|31;Peninsula|v|31;Pigeon Creek|u|31;Portage Lakes|u|32;Reminderville|c|35;Richfield|v|31;Richfield|t|31;Sagamore Hills|t|35;Sawyerwood|u|32;Silver Lake|v|34;Springfield|t|32;Stow|c|34;Tallmadge|c|34;Twinsburg|c|35;Twinsburg|t|35;Twinsburg Heights|u|35",
+"Trumbull":"Bazetta|t|64.65;Bloomfield|t|65;Bolindale|u|64;Braceville|t|64;Bristol|t|64;Brookfield|t|65;Brookfield Center|u|65;Champion|t|64;Champion Heights|u|64;Churchill|u|65;Cortland|c|65;Farmington|t|64;Fowler|t|65;Girard|c|65;Greene|t|65;Gustavus|t|65;Hartford|t|65;Hilltop|u|64;Howland|t|64;Howland Center|u|64;Hubbard|c|65;Hubbard|t|65;Johnston|t|65;Kinsman|t|65;Kinsman Center|u|65;Leavittsburg|u|64;Liberty|t|65;Lordstown|v|64;Maplewood Park|u|65;Masury|u|65;McDonald|v|64;McKinley Heights|u|64.65;Mecca|t|65;Mesopotamia|t|65;Mineral Ridge|u|64;Morgandale|u|64.65;Newton|t|64;Newton Falls|v|64;Niles|c|64.65;Orangeville|v|65;South Canal|u|64;Southington|t|64;Vernon|t|65;Vienna|t|65;Vienna Center|u|65;Warren|c|64;Warren|t|64;Weathersfield|t|64;West Farmington|v|64;West Hill|u|65;Yankee Lake|v|65;Youngstown|c|65",
+"Tuscarawas":"Auburn|t|51;Baltic|v|51;Barnhill|v|51;Bolivar|v|51;Bucks|t|51;Clay|t|51;Dennison|v|51;Dover|c|51;Dover|t|51;Dundee|u|51;Fairfield|t|51;Franklin|t|51;Gnadenhutten|v|51;Goshen|t|51;Jefferson|t|51;Lawrence|t|51;Midvale|v|51;Mill|t|51;Mineral City|v|51;New Philadelphia|c|51;Newcomerstown|v|51;Oxford|t|51;Parral|v|51;Perry|t|51;Port Washington|v|51;Roswell|v|51;Rush|t|51;Salem|t|51;Sandy|t|51;Sandyville|u|51;Stone Creek|v|51;Strasburg|v|51;Sugar Creek|t|51;Sugarcreek|v|51;Tuscarawas|v|51;Uhrichsville|c|51;Union|t|51;Warren|t|51;Warwick|t|51;Washington|t|51;Wayne|t|51;Wilkshire Hills|u|51;York|t|51;Zoar|v|51",
+"Union":"Allen|t|86;Claibourne|t|86;Darby|t|86;Dover|t|86;Dublin|c|86;Jackson|t|86;Jerome|t|86;Leesburg|t|86;Liberty|t|86;Magnetic Springs|v|86;Marysville|c|86;Milford Center|v|86;Millcreek|t|86;New California|u|86;Paris|t|86;Plain City|v|86;Raymond|u|86;Richwood|v|86;Taylor|t|86;Union|t|86;Unionville Center|v|86;Washington|t|86;York|t|86",
+"Van Wert":"Convoy|v|82;Delphos|c|82;Elgin|v|82;Harrison|t|82;Hoaglin|t|82;Jackson|t|82;Jennings|t|82;Liberty|t|82;Middle Point|v|82;Ohio City|v|82;Pleasant|t|82;Ridge|t|82;Scott|v|82;Tully|t|82;Union|t|82;Van Wert|c|82;Venedocia|v|82;Washington|t|82;Willshire|v|82;Willshire|t|82;Wren|v|82;York|t|82",
+"Vinton":"Brown|t|92;Clinton|t|92;Eagle|t|92;Elk|t|92;Hamden|v|92;Harrison|t|92;Jackson|t|92;Knox|t|92;Madison|t|92;McArthur|v|92;Richland|t|92;Swan|t|92;Vinton|t|92;Wilkesville|v|92;Wilkesville|t|92;Zaleski|v|92",
+"Warren":"Blanchester|v|55;Butlerville|v|55;Carlisle|c|55;Clear Creek|t|55;Corwin|v|55;Deerfield|t|56;Five Points|u|55;Franklin|c|55;Franklin|t|55;Hamilton|t|55.56;Harlan|t|55;Harveysburg|v|55;Hunter|u|55;Kings Mills|u|56;Landen|u|56;Lebanon|c|56;Loveland|c|55;Loveland Park|u|56;Maineville|v|55;Mason|c|56;Massie|t|55;Middletown|c|55;Monroe|c|56;Morrow|v|55;Pleasant Plain|v|55;Roachester|u|55;Salem|t|55;South Lebanon|v|55.56;Springboro|c|55;Turtlecreek|t|56;Union|t|56;Washington|t|55;Wayne|t|55;Waynesville|v|55",
+"Washington":"Adams|t|94;Aurelius|t|94;Barlow|t|94;Belpre|c|94;Belpre|t|94;Beverly|v|94;Decatur|t|94;Devola|u|94;Dunham|t|94;Fairfield|t|94;Fearing|t|94;Grandview|t|94;Independence|t|94;Lawrence|t|94;Liberty|t|94;Little Hocking|u|94;Lowell|v|94;Lower Salem|v|94;Ludlow|t|94;Macksburg|v|94;Marietta|c|94;Marietta|t|94;Matamoras (New Matamoras)|v|94;Muskingum|t|94;Newport|t|94;Newport|u|94;Palmer|t|94;Reno|u|94;Salem|t|94;Vincent|u|94;Warren|t|94;Waterford|t|94;Waterford|u|94;Watertown|t|94;Wesley|t|94",
+"Wayne":"Apple Creek|v|77;Baughman|t|77;Burbank|v|77;Canaan|t|77;Chester|t|77;Chippewa|t|77;Clinton|t|77;Congress|v|77;Congress|t|77;Creston|v|77;Dalton|v|77;Doylestown|v|77;East Union|t|77;Franklin|t|77;Fredericksburg|v|77;Green|t|77;Kidron|u|77;Marshallville|v|77;Milton|t|77;Mount Eaton|v|77;New Pittsburg|u|77;Orrville|c|77;Paint|t|77;Plain|t|77;Rittman|c|77;Salt Creek|t|77;Shreve|v|77;Smithville|v|77;Sterling|u|77;Sugar Creek|t|77;Wayne|t|77;West Salem|v|77;Wooster|c|77;Wooster|t|77",
+"Williams":"Alvordton|u|81;Blakeslee|v|81;Brady|t|81;Bridgewater|t|81;Bryan|c|81;Center|t|81;Edgerton|v|81;Edon|v|81;Florence|t|81;Holiday City|v|81;Jefferson|t|81;Kunkle|u|81;Lake Seneca|u|81;Madison|t|81;Mill Creek|t|81;Montpelier|v|81;Nettle Lake|u|81;Northwest|t|81;Pioneer|v|81;Pulaski|t|81;Pulaski|u|81;Springfield|t|81;St. Joseph|t|81;Stryker|v|81;Superior|t|81;West Unity|v|81",
+"Wood":"Bairdstown|v|75;Bloom|t|75;Bloomdale|v|75;Bowling Green|c|75;Bradner|v|75;Center|t|75;Custar|v|75;Cygnet|v|75;Fostoria|c|75;Freedom|t|75;Grand Rapids|v|75;Grand Rapids|t|75;Haskins|v|75;Henry|t|75;Hoytville|v|75;Jackson|t|75;Jerry City|v|75;Lake|t|75;Liberty|t|75;Luckey|v|75;Middleton|t|75;Millbury|v|75;Milton|t|75;Milton Center|v|75;Montgomery|t|75;North Baltimore|v|75;Northwood|c|44;Pemberville|v|75;Perry|t|75;Perrysburg|c|44.75;Perrysburg|t|44.75;Plain|t|75;Portage|v|75;Portage|t|75;Risingsun|v|75;Rossford|c|44;Rudolph|u|75;Stony Ridge|u|75;Tontogany|v|75;Troy|t|75;Walbridge|v|75;Washington|t|75;Wayne|v|75;Webster|t|75;West Millgrove|v|75;Weston|v|75;Weston|t|75",
+"Wyandot":"Antrim|t|87;Carey|v|87;Crane|t|87;Crawford|t|87;Eden|t|87;Harpster|v|87;Jackson|t|87;Kirby|v|87;Marseilles|v|87;Marseilles|t|87;McCutchenville|u|87;Mifflin|t|87;Nevada|v|87;Pitt|t|87;Richland|t|87;Ridge|t|87;Salem|t|87;Sycamore|v|87;Sycamore|t|87;Tymochtee|t|87;Upper Sandusky|c|87;Wharton|v|87"
+};
+const TOWN_KIND={c:"city",v:"village",t:"Township",u:"community"};
+const townLabel=([n,k])=> k==="t" ? `${n} Township` : `${n} (${TOWN_KIND[k]})`;
+const townsFor=c=>(TOWNS[c]||"").split(";").filter(Boolean).map(x=>{const [n,k,d]=x.split("|");return [n,k,d.split(".").map(Number)];});
 const pad = d=>String(d).padStart(2,"0");
 const repEmail = d=>`rep${pad(d)}@ohiohouse.gov`;
 const JUDICIARY_CHAIR = 49;
 
 /* ---------- Questions ---------- */
 const ROLES = [
- ["parent","I'm a parent this bill would bar from school property"],
+ ["parent","SB 422 would bar me from school property"],
  ["spouse","My spouse or partner would be barred from school property"],
  ["grandparent","Grandparent"],
  ["relative","Other relative"],
@@ -476,7 +583,6 @@ const SITS = [
  ["otherparent","The parent who can attend can't always go","Work, travel, illness, or a single-parent home"],
  ["siblings","Brothers and sisters get left out","Little ones leave with the parent who can't stay"],
  ["away","Events at other schools","Away games, tournaments, recitals out of town"],
- ["outsidegrp","Outside groups renting school space","No exception at all, not even drop-off"],
  ["resources","Help handed out at school events","Supplies, clothing, haircuts at back-to-school events"],
  ["choices","It shapes which activities we choose","Families weigh which parent is allowed at the field"],
 ];
@@ -485,10 +591,10 @@ const SITS = [
 const FAMILY_ROLES=["parent","spouse","grandparent","relative"];
 const NUMW=["","one","two","three","four","five","six"];
 const ACTS=[
- ["sports","Sports"],["music","Band, choir, or orchestra"],["plays","School plays or musicals"],
- ["dance","Dance"],["scouts","Scouts or 4-H"],["academic","Academic events (science fair, spelling bee)"]
+ ["sports","Sports or cheer"],["music","Band, choir, or orchestra"],["plays","Plays or musicals"],
+ ["academic","Academic events or clubs","Science fair, spelling bee, robotics"]
 ];
-const ACT_TEXT={sports:"sports",music:"music",plays:"school plays and musicals",dance:"dance",scouts:"scouts or 4-H",academic:"academic events"};
+const ACT_TEXT={sports:"sports",music:"music",plays:"school plays and musicals",academic:"academic events and clubs"};
 const MILESTONES=[
  ["kgrad","Kindergarten graduation",5,6],
  ["promo8","Eighth-grade promotion",13,14],
@@ -498,9 +604,7 @@ const MILESTONES=[
 function sitRule(k,f){
   const acts=f.acts||[], n=f.n||0;
   if(k==="siblings")   return n>=2 ? "" : "Needs two or more children";
-  if(k==="away")       return acts.some(a=>["sports","music","dance","academic"].includes(a)) ? "" : "Needs sports, music, dance, or academic events";
-  if(k==="outsidegrp") return acts.some(a=>["dance","scouts"].includes(a)) ? "" : "Needs dance or scouts/4-H";
-  if(k==="choices")    return acts.length ? "" : "Needs at least one activity";
+  if(k==="away")       return acts.length ? "" : "Needs at least one school activity";
   return "";
 }
 /* nouns for a child, by who is writing. rel = the relative's relationship (aunt, uncle, older sister…) */
@@ -568,7 +672,7 @@ function groupsWithAges(s,c){
 /* activities as natural verbs: "She plays sports and dances." */
 const ACT_VERB={
   sports:["plays sports","play sports"], music:["is in a school music program","are in school music programs"], plays:["acts in school plays","act in school plays"],
-  dance:["dances","dance"], scouts:["is in scouts or 4-H","are in scouts or 4-H"], academic:["competes in academic events","compete in academic events"]
+  academic:["takes part in academic events and clubs","take part in academic events and clubs"]
 };
 function relMode(s,c){
   /* how a relative refers to the children */
@@ -581,6 +685,12 @@ function relMode(s,c){
 function whoseParent(s,c,kp){ return relMode(s,c)==="sibling" ? "our parent" : `${kp} parent`; }
 function famPara(s){
   if(!FAMILY_ROLES.includes(s.role)) return "";
+  if(s.future) return futPara(s);
+  const r=famParaKids(s);
+  if(r && s.expectMore && FUTURE_ROLES.includes(s.role)) return r+" "+(s.role==="spouse"?"We":"I")+" also have a baby on the way"+(s.due?`, due in ${s.due}`:"")+".";
+  return r;
+}
+function famParaKids(s){
   const c=words(s); if(!c.n) return "";
   const pl = c.they==="they" ? 1 : 0, mode=relMode(s,c);
   const out=[];
@@ -603,6 +713,16 @@ function famPara(s){
   if(s.acts.length) out.push(pick("fam-acts",[
     `${c.one?c.They:"Between them, they"} ${listJoin(s.acts.map(a=> a==="music"&&c.one&&pl ? "are in a school music program" : ACT_VERB[a][pl]))}.`,
     `${c.They} ${pl?"stay":"stays"} busy with ${listJoin(s.acts.map(a=>ACT_TEXT[a]))}.`]));
+  if(s.outside){
+    const also = s.acts.length?" also":"", nm=s.outsideName;
+    out.push(pick("fam-out",[
+      nm ? `${c.They} ${pl?"are":"is"}${also} involved with ${nm}, which holds events at a school.` : `${c.They}${also} ${c.takeP} part in an outside program that meets or performs at a school.`,
+      nm ? `${c.They} ${pl?"are":"is"}${also} part of ${nm}, whose events are held at a school.` : `${c.They}${also} ${pl?"belong":"belongs"} to an outside group whose events are held at a school.`]));
+    out.push(pick("fam-out2",[
+      `For events like that, run by an outside group on school property, the bill has no exception at all, not even drop-off.`,
+      `When an outside group holds an event on school property, the bill offers no exception at all, not even drop-off.`,
+      `The bill treats those events more strictly than a school day: there is no exception at all, not even drop-off.`]));
+  }
   const m=MILESTONES.find(x=>x[0]===s.milestone);
   if(m){
     const k=c.list.find(k=>k.age>=m[2]&&k.age<=m[3]);
@@ -880,7 +1000,62 @@ community:[
 ]};
 const FAMILY_V=["This affects my own family.","I am writing partly because this affects someone in my own family.","This is personal for me; it affects my own family.","I know this firsthand, because it affects my own family.","This is not abstract for me. It touches my own family."];
 
+/* ---------- Expecting / planning (no children yet) ---------- */
+const FUTURE_ROLES=["parent","spouse"];
+const FUT_VALUES=["expecting","planning","none"];
+function spPro(s){ const w=s.spouseword; return w==="husband"?{p:"he",rem:"remains"}:w==="wife"?{p:"she",rem:"remains"}:{p:"they",rem:"remain"}; }
+function futWords(s){
+  const our = s.role==="spouse"?"our":"my", exp = s.future==="expecting";
+  const kids = exp?`${our} child`:`${our} future children`;
+  return { kids, kidsPoss: kids+(exp?"'s":"'s"), their:"their",
+    becoming: exp?"I am about to become a parent":"I hope to become a parent someday",
+    weB: exp?"we are expecting our first child":"we are planning to start a family" };
+}
+const ROLE_NONE=[
+ `I am subject to SB 422's restrictions myself. I do not have children, so this amendment would not change anything for me. I am writing because I believe parents should not be shut out of their children's school lives when the school is willing to supervise them.`,
+ `SB 422 would bar me from school property. I have no children, and the amendment I am asking for would never apply to me. I support it because the bill as written leaves schools no way to let a parent watch their own child, even under supervision.`,
+ `I am one of the people this bill would keep off school grounds, but I am not a parent, and this amendment would not benefit me. I am writing because the children of registered parents did nothing wrong, and their schools should be able to decide whether a parent may attend.`,
+ `I am writing as someone subject to SB 422 who has nothing personal to gain from this amendment: I do not have children. I fully support keeping strong rules around schools. I am asking only that schools be given a way to say yes to a parent, on the school's own terms.`,
+ `As someone the bill would bar from school property, I know what these restrictions mean. I do not have children, so the amendment would not help me. For parents in my position, though, it would mean a chance to see their child at a game or a graduation, with the school in charge.`,
+ `SB 422 would bar me from school property. I have no children, so I am not asking for anything for myself. I am asking you to support an amendment that would let a school, if it chooses, allow a parent to attend their own child's events.`
+];
+const ROLE_FUT={
+parent:[
+ f=>`This bill would bar me from school property, and ${f.becoming}. I am not asking for open access to schools. I am asking that ${f.kidsPoss} school be allowed to decide, on its own terms, whether I may attend ${f.their} events.`,
+ f=>`${cap1(f.becoming)}, and SB 422 as written would bar me from school property. That means ${f.kidsPoss} school could never say yes to me being at ${f.their} games, concerts, or graduation, no matter what precautions it was willing to take.`,
+ f=>`I am writing as someone SB 422 would bar from school property. ${cap1(f.becoming)}. I fully expect to follow every rule the bill sets. What I am asking for is a process: written permission from the school for events involving ${f.kids}, each approved on its own.`,
+ f=>`${cap1(f.becoming)}, and I am one of the people this bill would keep off school grounds. I am not asking you to change who the bill applies to. I am asking that schools be allowed to decide whether a parent like me can attend ${f.kidsPoss} events.`,
+ f=>`As someone the bill would bar from school property, I understand why lawmakers want firm rules around schools. I am not asking to loosen them. ${cap1(f.becoming)}, and I am asking that a school have a way to let me watch ${f.kids} at school events, with the school in charge.`,
+ f=>`SB 422 would bar me from school property. ${cap1(f.becoming)}, and I would like ${f.kidsPoss} school to have the authority to approve me for ${f.their} events, with an escort or any other condition it chooses.`
+],
+spouse:[
+ (f,s)=>`My ${s.spouseword} would be barred from school property under SB 422, and ${f.weB}. We are not asking for open access to schools. We are asking that ${f.kidsPoss} school be allowed to decide, on its own terms, whether my ${s.spouseword} may attend ${f.their} events.`,
+ (f,s)=>`${cap1(f.weB)}. My ${s.spouseword} is subject to SB 422's restrictions, and as written, the bill would make me the only parent who could ever attend ${f.kidsPoss} school events.`,
+ (f,s)=>`My ${s.spouseword} and I ${s.future==="expecting"?"are expecting our first child":"are planning to start a family"}. Under SB 422, my ${s.spouseword} could drop ${f.kids} off at school but never stay to watch, and the school would have no way to make an exception, even with an escort.`,
+ (f,s)=>`I am writing about my family. ${cap1(f.weB)}, and my ${s.spouseword} would be barred from school property under SB 422. Every game, recital, and graduation would depend on my being available. A school should be able to approve the other parent when I am not.`,
+ (f,s)=>`My ${s.spouseword} is subject to this bill's restrictions. ${cap1(f.weB)}, and I want ${f.kids} to grow up seeing both parents at school events. As written, the bill gives the school no way to allow that, even under the strictest conditions.`,
+ (f,s)=>`${cap1(f.weB)}. My ${s.spouseword} would be barred from school property under SB 422. I support the bill's goal, and I am asking only that ${f.kidsPoss} school be allowed to grant written permission for my ${s.spouseword} to attend, under the school's own conditions.`
+]};
+function futPara(s){
+  if(s.future==="none") return "";
+  const out=[], due=s.due, sp=spPro(s), par=s.role==="parent";
+  const subj = par?"I":`my ${s.spouseword}`, Subj=cap1(subj), our = par?"my":"our", Our=cap1(our);
+  const p = par?"I":sp.p, rem = par?"remain":sp.rem;
+  if(s.future==="expecting"){
+    if(due) out.push(par?`My baby is due in ${due}.`:`Our baby is due in ${due}.`);
+    out.push(pick("fut-p",[
+      `${Subj} would face that restriction from ${our} child's first day of kindergarten, at every game, concert, and graduation, for as long as ${p} ${rem} registered.`,
+      `${Our} child's school events are still a few years away, but this is the time to fix the bill. As written, ${subj} would miss every one of them for as long as ${p} ${rem} registered.`]));
+  } else {
+    out.push(pick("fut-p",[
+      `If the bill passes as written, ${subj} would face that restriction at every school event ${our} future children ever have, for as long as ${p} ${rem} registered.`,
+      `Those school events are years away, but the bill is being decided now. As written, ${subj} would miss every one of them for as long as ${p} ${rem} registered.`]));
+  }
+  return out.join(" ");
+}
 function roleEmail(s){
+  if(s.future==="none") return pick("role-none",ROLE_NONE);
+  if(s.future && FUTURE_ROLES.includes(s.role)){ const f=futWords(s); return pick("role-fut-"+s.role,ROLE_FUT[s.role])(f,s); }
   const list=ROLE_V[s.role]||ROLE_V.community, f=pick("role-"+s.role,list);
   let txt;
   if(s.role==="relative") txt=f(s, ["aunt","uncle","older sister","older brother"].includes(s.relword)?art(s.relword):"a family member");
@@ -928,14 +1103,14 @@ const ASK_V=[
  `The amendment puts the decision where it belongs, with the school. The principal or designee of the school hosting an event could grant prior written permission for a parent or guardian to attend specific events involving their own child, with each event approved separately and under the school's own conditions.`
 ];
 const CLOSE_V=[
- `Would you support this amendment? I would welcome a reply from you or your staff whenever it is convenient.`,
- `I would be grateful for your support of this amendment. A reply from you or your office, whenever convenient, would be appreciated.`,
- `Would you consider supporting this amendment as SB 422 moves through the House? I would appreciate hearing back from your office when you have a chance.`,
- `I hope you will support this amendment. I would welcome a reply at your convenience.`,
- `Could I count on your support for this amendment? I would be glad to hear from you or your staff whenever your schedule allows.`,
- `May I count on you to support this amendment when SB 422 is considered in the House? I would be grateful for a reply whenever your schedule allows.`,
- `I would appreciate knowing whether you can support this amendment. A reply from your office at any time would mean a great deal.`,
- `Please consider supporting this amendment. If you have any questions, I would be glad to hear from you or your staff.`
+ `I am asking you to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether you can support it.`,
+ `Would you support this amendment and let the chair of the committee hearing SB 422 know you are in favor of it? I would welcome a reply letting me know whether you can.`,
+ `I hope you will support this amendment and share that support with the chair of the committee that hears SB 422. I would be grateful to know whether you can support it.`,
+ `Please consider supporting this amendment and letting the chair of the committee hearing SB 422 know you support it. I would welcome a short reply letting me know whether you can support it.`,
+ `Could I count on your support for this amendment, and on you to mention that support to the chair of the committee hearing SB 422? I would welcome a reply whenever your schedule allows.`,
+ `My request is twofold: that you support this amendment, and that you let the chair of the committee hearing SB 422 know of your support. I would be grateful for a reply letting me know whether you can.`,
+ `I would be grateful for your support of this amendment, and for a word to the chair of the committee hearing SB 422 on its behalf. Please let me know whether you can support it; I would be glad to answer any questions.`,
+ `As SB 422 moves to committee in the House, I am asking you to support this amendment and to let the committee chair know of that support. I would welcome a reply letting me know whether you can support it.`
 ];
 const THANKS_V=[
  d=>`Thank you for your time and your service${d?` to District ${d}`:""}.`,
@@ -991,8 +1166,8 @@ ${sig}${inlineAppend(s)}`;
 
 function roleShort(s){
   switch(s.role){
-    case "parent": { const c=words(s); return `I'm one of the parents the bill would bar from school property, and I'm asking only that ${c.kidsPoss} school be allowed to decide.`; }
-    case "spouse": { const c=words(s); return `My ${s.spouseword} would be barred from school property by the bill, and when I can't go, ${c.kids} ${c.hasN} no parent at ${c.their} events at all.`; }
+    case "parent": { if(s.future==="none") return `I'm subject to the bill myself, but I don't have children, so the amendment wouldn't change anything for me. I'm asking you to support it because schools should be able to decide whether a parent can attend.`; if(s.future) return `I'm one of the people the bill would bar from school property, ${s.future==="expecting"?"I'm about to become a parent":"I hope to become a parent someday"}, and I'm asking only that my child's school be allowed to decide.`; const c=words(s); return `I'm one of the parents the bill would bar from school property, and I'm asking only that ${c.kidsPoss} school be allowed to decide.`; }
+    case "spouse": { if(s.future) return `My ${s.spouseword} would be barred from school property by the bill, and ${s.future==="expecting"?"we're expecting our first child":"we're planning to start a family"}. I'm asking that our child's school be allowed to decide whether my ${s.spouseword} can attend.`; const c=words(s); return `My ${s.spouseword} would be barred from school property by the bill, and when I can't go, ${c.kids} ${c.hasN} no parent at ${c.their} events at all.`; }
     case "grandparent": return "I'm a grandparent, and I don't want children losing their parent in the audience over a drafting gap.";
     case "relative": return "I have family this touches, and the kids are the ones who miss out.";
     case "teacher": return "I work in a school, and right now our principal would have no way to say yes, even with an escort.";
@@ -1033,13 +1208,15 @@ Creates a narrow, controlled exception allowing a parent or legal guardian who i
 
 ## Proposed Approach:
 A parent or legal guardian would be permitted to be physically present on school premises, or at a school-affiliated ticketed event, for a specific event involving their own child only when:
-- the parent or guardian has received prior written permission from the principal or designee of the school hosting the event; and
+- the parent or guardian has received prior written permission, including by email or other electronic means, from the principal or designee of the school hosting the event; and
 - the parent or guardian complies with any reasonable safety, supervision, location, or other conditions established by the school.
 
 ## How the permission would work:
 - The request may be submitted by the parent or guardian, a coach or other official responsible for the event, or, for events run by outside groups on school property, the event organizer.
 - The written permission would apply only to the specific events and dates identified in it.
 - The permission would not provide general or unrestricted access to school property.
+- A parent or guardian who is present with permission and follows its conditions would not be in violation of SB 422. The parent or guardian must carry the permission and show it on request.
+- A school and its employees would not be liable in a civil action for granting, denying, or conditioning permission, absent bad faith or reckless conduct.
 
 ## Examples:
 This narrowly tailored provision could allow a parent or guardian, with prior written permission, to attend an important milestone involving their own child, such as:
@@ -1056,7 +1233,7 @@ SB 422 establishes important restrictions concerning the presence of certain reg
 The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued.
 
 ## Requested Action:
-I am asking ${rep} to support this narrowly tailored amendment as SB 422 is considered in the Ohio House.`;
+I am asking ${rep} to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether ${rep} can support it.`;
 }
 
 /* ---------- Mini-markup → HTML / PDF blocks ---------- */
@@ -1166,7 +1343,13 @@ function renderExtra(role){
   $("familywrap").hidden = fam || !role;
   $("famsec").hidden = !fam;
   $("famh").textContent = role==="grandparent" ? "Your grandchildren" : role==="relative" ? "The children in your family" : "Your children";
-  $("kidcountlabel").firstChild.textContent = role==="grandparent" ? "How many grandchildren does this affect? " : role==="relative" ? "How many children does this affect? " : "How many children? ";
+  const futOk=FUTURE_ROLES.includes(role);
+  document.querySelectorAll("#kidcount .futopt").forEach(o=>{const ok=futOk&&(!o.classList.contains("noneopt")||role==="parent"); o.hidden=!ok; if(o.value) o.disabled=!ok;});
+  const kc=$("kidcount"); if(kc.selectedOptions[0]&&kc.selectedOptions[0].disabled){ kc.value=""; renderKids(); }
+  [...kc.options].forEach(o=>{ if(/^[1-6]$/.test(o.value)) o.textContent = role==="parent" ? `Yes, ${o.value} ${o.value==="1"?"child":"children"}` : o.value; });
+  const exp=kc.querySelector('option[value="expecting"]'); exp.textContent = role==="parent"?"Expecting my first child":"Expecting our first child";
+  futureUI();
+  $("kidcountlabel").firstChild.textContent = role==="grandparent" ? "How many grandchildren does this affect? " : role==="relative" ? "How many children does this affect? " : role==="parent" ? "Do you have children? " : "How many children? ";
 }
 /* one row per child: girl/boy + age */
 const AGES=[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
@@ -1182,6 +1365,19 @@ function renderKids(){
   box.innerHTML=html;
   for(let i=1;i<=n;i++) for(const f of ["sex","age"]){ const id=`kid-${f}-${i}`; const val=keep[id]!=null?keep[id]:saved[id]; if(val!=null) $(id).value=val; }
 }
+/* expecting / planning: hide the per-child questions; show due date when there's a baby on the way */
+function futureUI(){
+  const role=curRole(), kc=$("kidcount").value, fut=FUT_VALUES.includes(kc), n=Number(kc)||0;
+  const futOk=FUTURE_ROLES.includes(role);
+  ["kidschoolfield","actsfs","msfield","sitsfs"].forEach(id=>$(id).hidden=fut);
+  if(fut) document.querySelectorAll('#acts input,#sits input,#outside').forEach(i=>i.checked=false);
+  $("outsidenamefield").hidden = !$("outside").checked;
+  $("kidexpectwrap").hidden = !(futOk && n>=1);
+  $("duefield").hidden = !(futOk && (kc==="expecting" || (n>=1 && $("kidexpect").checked)));
+}
+(function(){ const d=new Date(), sel=$("duemonth"); let h='<option value="">Not sure</option>';
+  for(let i=0;i<10;i++){ const m=new Date(d.getFullYear(),d.getMonth()+i,1); const l=m.toLocaleDateString("en-US",{month:"long",year:"numeric"}); h+=`<option value="${l}">${l}</option>`; }
+  sel.innerHTML=h; })();
 function readKids(){
   const n=Number($("kidcount").value)||0, out=[];
   for(let i=1;i<=n;i++){ const sx=$(`kid-sex-${i}`), ag=$(`kid-age-${i}`); out.push({sex:sx?sx.value:"", age:ag?Number(ag.value)||0:0}); }
@@ -1209,12 +1405,27 @@ function applyRules(){
 
 /* ---------- District selection ---------- */
 let chosen = null;
+function renderTowns(){
+  const c=$("county").value, sel=$("town"), cur=sel.value;
+  sel.disabled = !c; $("townnote").hidden = !c;
+  sel.innerHTML = `<option value="">${c?"Not sure / skip":"Pick a county first"}</option>` + (c?townsFor(c).map((x,i)=>`<option value="${i}">${townLabel(x)}</option>`).join(""):"");
+  if(c && cur && sel.options[Number(cur)+1]) sel.value=cur; else sel.value="";
+}
+function townDists(){
+  const c=$("county").value, v=$("town").value;
+  if(!c||v==="") return null;
+  const x=townsFor(c)[Number(v)]; return x?{label:townLabel(x), ds:x[2]}:null;
+}
 function renderCands(){
   const c=$("county").value, box=$("cands");
-  if(!c){box.innerHTML="";$("lookupnote").hidden=true;return;}
-  const ds=COUNTY[c]||[];
+  if(!c){box.innerHTML="";$("lookupwhy").textContent="";$("candhead").hidden=true;return;}
+  const tw=townDists(), all=(COUNTY[c]||[]).slice().sort((x,y)=>x-y);
+  const ds=tw?all.filter(d=>tw.ds.includes(d)):all;
+  $("candhead").hidden=false;
+  $("candhead").textContent = tw ? (ds.length===1?`${tw.label} is in this district:`:`${tw.label} is split between these districts:`)
+    : (ds.length===1?`${c} County has one House district:`:`${c} County's House districts. Pick yours, or choose your town above to narrow it down:`);
+  $("lookupwhy").textContent = "";
   box.innerHTML = ds.map(d=>{const r=REPS[d];return `<label class="cand"><input type="radio" name="cand" value="${d}" ${chosen===d?"checked":""}><span class="d">Dist. ${d}</span><span><span class="n">${r.vacant?"Seat vacant":r.name}</span>${r.town&&!r.vacant?` <span class="t">· ${r.town}</span>`:""}</span></label>`;}).join("");
-  $("lookupnote").hidden = ds.length<2;
   if(ds.length===1 && chosen!==ds[0]) setDistrict(ds[0]);
 }
 function setDistrict(d){
@@ -1256,8 +1467,12 @@ function state(){
     school:v("x-school"), title:v("x-title"), org:v("x-org"),
     spouseword:v("x-spouseword")||"spouse",
     relword:(v("x-relword")==="other relative"?"":v("x-relword")),
+    future: fam&&FUTURE_ROLES.includes(role)&&FUT_VALUES.includes($("kidcount").value)&&!($("kidcount").value==="none"&&role!=="parent")?$("kidcount").value:"",
+    expectMore: fam&&FUTURE_ROLES.includes(role)&&$("kidexpect").checked&&!$("kidexpectwrap").hidden,
+    due: fam&&!$("duefield").hidden?v("duemonth"):"",
     kidsArr: fam?readKids():[], kidschool: fam?v("kidschool"):"",
     acts: fam?[...document.querySelectorAll('input[name=act]:checked')].map(i=>i.value):[],
+    outside: fam&&$("outside").checked&&!$("actsfs").hidden, outsideName: fam?v("outsidename").replace(/[.\s]+$/,""):"",
     milestone: fam?$("milestone").value:"",
     sits: fam?[...document.querySelectorAll('input[name=sit]:checked:not(:disabled)')].map(i=>i.value):[],
     att:{amend:flow.amend},
@@ -1290,12 +1505,14 @@ function makeAmendPdf(s){
     {t:"h",x:"Proposed Approach:"},
     {t:"p",x:"A parent or legal guardian would be permitted to be physically present on school premises, or at a school-affiliated ticketed event, for a specific event involving their own child only when:"},
     {t:"gap"},
-    {t:"li",x:"the parent or guardian has received prior written permission from the principal or designee of the school hosting the event; and"},
+    {t:"li",x:"the parent or guardian has received prior written permission, including by email or other electronic means, from the principal or designee of the school hosting the event; and"},
     {t:"li",x:"the parent or guardian complies with any reasonable safety, supervision, location, or other conditions established by the school."},
     {t:"h",x:"How the permission would work:"},
     {t:"li",x:"The request may be submitted by the parent or guardian, a coach or other official responsible for the event, or, for events run by outside groups on school property, the event organizer."},
     {t:"li",x:"The written permission would apply only to the specific events and dates identified in it."},
     {t:"li",x:"The permission would not provide general or unrestricted access to school property."},
+    {t:"li",x:"A parent or guardian who is present with permission and follows its conditions would not be in violation of SB 422. The parent or guardian must carry the permission and show it on request."},
+    {t:"li",x:"A school and its employees would not be liable in a civil action for granting, denying, or conditioning permission, absent bad faith or reckless conduct."},
     {t:"h",x:"Examples:"},
     {t:"p",x:"This narrowly tailored provision could allow a parent or guardian, with prior written permission, to attend an important milestone involving their own child, such as:",tight:true},
     {t:"li",x:"An athletic event or competition"},
@@ -1308,7 +1525,7 @@ function makeAmendPdf(s){
     {t:"p",x:"SB 422 establishes important restrictions concerning the presence of certain registered offenders on school premises. The proposed amendment would preserve those restrictions while creating a controlled process for a school to determine, on an individual event-by-event basis, whether a parent or guardian may attend an important event involving their own child."},
     {t:"p",x:"The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued."},
     {t:"h",x:"Requested Action:"},
-    {t:"p",x:`I am asking ${rep} to support this narrowly tailored amendment as SB 422 is considered in the Ohio House.`,last:true}
+    {t:"p",x:`I am asking ${rep} to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether ${rep} can support it.`,last:true}
   ];
   const {jsPDF}=window.jspdf;
   const W=612, H=792, M=36, TOP=34, BOTTOM=H-30;
@@ -1349,8 +1566,12 @@ async function saveFile(filename, blob){
     if(!dlCap) throw {code:"unavailable"};
     return dlCap.save({filename,data:blob});
   }
-  const touch = window.matchMedia && window.matchMedia("(pointer:coarse)").matches;
-  if(touch && navigator.canShare && typeof File==="function"){
+  /* iPhone/iPad Safari opens PDFs instead of saving them, and in-app browsers (Facebook, etc.) often can't download,
+     so those get the share menu. Android Chrome and desktops save straight to Downloads. */
+  const ua = navigator.userAgent||"";
+  const ios = /iP(hone|ad|od)/.test(ua) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+  const inApp = /; wv\)|FBAN|FBAV|Instagram|Line\/|Snapchat|TikTok/i.test(ua);
+  if((ios || inApp) && navigator.canShare && typeof File==="function"){
     const file=new File([blob],filename,{type:"application/pdf"});
     if(navigator.canShare({files:[file]})){
       try{ await navigator.share({files:[file],title:filename}); return {status:"shared"}; }
@@ -1428,14 +1649,14 @@ async function copyText(text){
 
 /* ---------- Page flow ---------- */
 function missing(p){
-  if(p===1) return chosen?"":"Pick your county or district to continue.";
+  if(p===1) return chosen?"":"Pick your county and representative to continue.";
   if(p===2){ const m=[], role=curRole();
     if(!v("name"))m.push("your name"); if(!v("city"))m.push("your city or township"); if(!role)m.push("which best describes you");
     if(role==="spouse"&&!v("x-spouseword"))m.push("husband, wife, or partner");
     if(role==="relative"&&!v("x-relword"))m.push("your relationship to the children");
     if(FAMILY_ROLES.includes(role)){
-      const n=Number($("kidcount").value)||0;
-      if(!n) m.push("how many children");
+      const n=Number($("kidcount").value)||0, fut=FUT_VALUES.includes($("kidcount").value);
+      if(!n && !fut) m.push(role==="parent"?"whether you have children":"how many children");
       else { const k=readKids(); if(k.some(x=>!x.sex)) m.push("girl or boy for each child"); if(k.some(x=>!x.age)) m.push("each child's age"); }
     }
     return m.length?`Still needed: ${listJoin(m)}.`:""; }
@@ -1470,12 +1691,13 @@ function persist(){
 function restore(){
   Object.entries(saved).forEach(([k,val])=>{
     if(k.startsWith("c:")){const e=$(k.slice(2)); if(e)e.checked=true;}
-    else if(k!=="chosen"&&k!=="flow"&&!k.startsWith("x-")&&!k.startsWith("kid-")&&k!=="milestone"){const e=$(k); if(e&&typeof val==="string")e.value=val;}
+    else if(k!=="chosen"&&k!=="flow"&&k!=="town"&&!k.startsWith("x-")&&!k.startsWith("kid-")&&k!=="milestone"){const e=$(k); if(e&&typeof val==="string")e.value=val;}
   });
   if(saved.flow) Object.assign(flow,{page:saved.flow.page||1, amend:saved.flow.amend||null});
   if(flow.amend!==null) flow.amend=null;   // a download from a past visit may be gone; ask again
-  renderExtra(curRole()); renderKids(); applyRules();
+  renderExtra(curRole()); renderKids(); futureUI(); applyRules();
   if(saved.milestone){ $("milestone").value=saved.milestone; applyRules(); }
+  renderTowns(); if(saved.town!=null&&$("town").options[Number(saved.town)+1]) $("town").value=saved.town;
   renderCands();
   if(saved.chosen){ chosen=null; setDistrict(saved.chosen); } else update();
   go(flow.page||1);
@@ -1483,19 +1705,21 @@ function restore(){
 
 /* ---------- Events ---------- */
 function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,3200);}
-$("county").addEventListener("change",()=>{renderCands();if(chosen&&!(COUNTY[$("county").value]||[]).includes(chosen)){setDistrict(0);}});
+$("county").addEventListener("change",()=>{$("town").value="";renderTowns();renderCands();if(chosen&&!(COUNTY[$("county").value]||[]).includes(chosen)){$("distnum").value="";setDistrict(0);}});
+$("town").addEventListener("change",()=>{renderCands();const tw=townDists();if(chosen&&tw&&!tw.ds.includes(chosen)){$("distnum").value="";setDistrict(0);}persist();});
 $("cands").addEventListener("change",e=>{if(e.target.name==="cand")setDistrict(e.target.value);});
 $("distnum").addEventListener("input",e=>{const d=Number(e.target.value); if(d>=1&&d<=99) setDistrict(d); else if(!e.target.value) setDistrict(0);});
 $("f").addEventListener("input",e=>{
   const id=e.target.id;
-  if(id==="county"||id==="distnum"||e.target.name==="cand"||id==="emailbody")return;
+  if(id==="county"||id==="town"||id==="distnum"||e.target.name==="cand"||id==="emailbody")return;
   if(e.target.name==="role") renderExtra(e.target.value);
-  if(id==="kidcount") renderKids();
+  if(id==="kidcount"){ renderKids(); futureUI(); }
+  if(id==="kidexpect"||id==="outside") futureUI();
   applyRules();
   update();
 });
 $("f").addEventListener("submit",e=>e.preventDefault());
-$("f").addEventListener("change",e=>{ if(e.target.tagName==="SELECT"&&e.target.id!=="county"){ if(e.target.id==="kidcount") renderKids(); applyRules(); update(); } });
+$("f").addEventListener("change",e=>{ if(e.target.tagName==="SELECT"&&e.target.id!=="county"&&e.target.id!=="town"){ if(e.target.id==="kidcount"){ renderKids(); futureUI(); } applyRules(); update(); } });
 $("emailbody").addEventListener("input",()=>{edited.email=$("emailbody").value!==out._genEmail;document.querySelector('[data-reset=email]').hidden=!edited.email;refreshMailLinks();});
 
 async function download(kind){
@@ -1524,7 +1748,7 @@ document.addEventListener("click",async e=>{
   if(el.matches("[data-back]")){ go(flow.page-1); return; }
   if(el.id==="reroll"){ const had=edited.email; reseed(); edited.email=false; document.querySelector('[data-reset=email]').hidden=true; update(); toast(had?"New wording. Your edits were replaced.":"New wording."); return; }
   if(el.id==="dl-amend"||el.id==="dl-amend2"){ if(await download("amend")){flow.amend="file";update();} return; }
-  if(el.id==="startover"){ try{localStorage.removeItem(STORE_KEY);}catch(_){} saved={}; $("f").reset(); chosen=null; Object.assign(flow,{amend:null}); edited.email=false; renderCands(); renderRep(); renderExtra(""); renderKids(); applyRules(); update(); go(1); return; }
+  if(el.id==="startover"){ try{localStorage.removeItem(STORE_KEY);}catch(_){} saved={}; $("f").reset(); renderTowns(); chosen=null; Object.assign(flow,{amend:null}); edited.email=false; renderCands(); renderRep(); renderExtra(""); renderKids(); applyRules(); update(); go(1); return; }
   if(el.dataset.reset){ const k=el.dataset.reset; edited[k]=false; el.hidden=true; update(); toast("Back to the written-for-you text."); return; }
   if(el.dataset.copy){
     const k=el.dataset.copy, s=state();
