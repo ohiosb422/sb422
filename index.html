@@ -91,6 +91,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .morecard .mbody{padding:0 16px 16px;display:grid;gap:10px}
 .morecard h4{margin:0;font-size:1rem}
 .morecard p{margin:0;font-size:.92rem;color:var(--muted)}
+.badge{display:inline-block;vertical-align:2px;margin-left:6px;padding:2px 8px;border-radius:999px;background:var(--warn);color:var(--paper);font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
 .morecard .num{font-family:var(--f-doc);color:var(--seal);font-weight:700;margin-right:6px}
 .kidrows{display:grid;gap:8px}
 .kidrow{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
@@ -297,9 +298,20 @@ a{color:var(--accent)}
     </details>
 
     <details class="morecard">
-      <summary><span class="num">2</span>Speak at the committee hearing, or send written testimony</summary>
+      <summary><span class="num">2</span>Track the bill</summary>
+      <div class="mbody">
+        <p>Hearing dates can be announced with only a few days' notice, so it helps to get an alert.</p>
+        <p>Open SB 422 on the Ohio Legislature website and click <strong style="color:var(--ink)">"Interested In SB422? Track It"</strong> near the top of the page (top right on a computer). Follow the steps to sign up, creating a free account if it asks. You'll get an email when a hearing is scheduled or the bill moves.</p>
+        <p>The <strong style="color:var(--ink)">Committee Activity</strong> tab on the same page lists every hearing and the testimony submitted at each one.</p>
+        <div class="row"><a class="btn small" href="https://www.legislature.ohio.gov/legislation/136/sb422" target="_blank" rel="noopener">SB 422 on legislature.ohio.gov</a></div>
+      </div>
+    </details>
+
+    <details class="morecard">
+      <summary><span class="num">3</span>Speak at the committee hearing, or send written testimony <span class="badge">Very important</span></summary>
       <div class="mbody">
       <p>When the House committee schedules a hearing on SB 422, members of the public may testify. You can speak in person at the Statehouse in Columbus, or submit written testimony without making the trip. Testimony and a witness form are due about 24 hours before the hearing. A clear, respectful two-minute statement from a parent, grandparent, teacher, or neighbor carries real weight.</p>
+      <p><strong style="color:var(--ink)">Interested in testifying, or want help with written testimony?</strong> Please reach out at <span class="cmail" data-subj="SB 422 testimony">ohiosb422 [at] proton [dot] me</span>. You don't need any experience. I can help you plan what to say, put a written statement together, and get the forms in on time.</p>
       <p id="hearinginfo" hidden></p>
       <div class="row" id="notifyrow" hidden><a class="btn" id="notifybtn" href="#" target="_blank" rel="noopener">Notify me when testimony opens</a></div>
       <p id="notifyfallback">Hearing dates will be posted on this page as soon as they are announced. Please check back after November 10.</p>
@@ -307,7 +319,26 @@ a{color:var(--accent)}
     </details>
 
     <details class="morecard">
-      <summary><span class="num">3</span>Share this page</summary>
+      <summary><span class="num">4</span>Send the same email to the bill's sponsors</summary>
+      <div class="mbody">
+        <p>Senators Tim Schaffer and Andrew Brenner sponsored SB 422. If the House adds the amendment, the bill goes back to the Senate for a final vote, so their support matters. This is your email, reworded for the sponsors.</p>
+        <div class="mailhead">
+          <div><div class="k">To</div><div class="row"><span class="mono" id="sp-to"></span><button class="btn small ghost" type="button" data-copy="spto">Copy</button></div></div>
+          <div><div class="k">Subject</div><div class="row"><span id="sp-subj"></span><button class="btn small ghost" type="button" data-copy="spsubj">Copy</button></div></div>
+        </div>
+        <div class="sheet" id="sp-view" style="white-space:pre-wrap;max-height:40vh"></div>
+        <p class="sendremind"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg><span>Attach the sponsor version of the amendment PDF: SB422-Amendment-Request-Sponsors.pdf</span></p>
+        <div class="row">
+          <button class="btn small" type="button" id="dl-sponsor">Download sponsor PDF</button>
+          <a class="btn small ghost" id="sp-gmail" href="#" target="_blank" rel="noopener">Open in Gmail</a>
+          <a class="btn small ghost" id="sp-mailto" href="#">Open in mail app</a>
+          <button class="btn small ghost" type="button" data-copy="spemail">Copy email</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="morecard">
+      <summary><span class="num">5</span>Share this page</summary>
       <div class="mbody">
         <p>Send it to one or two people who care about kids and schools. Every email from a different constituent counts.</p>
         <div class="row"><button class="btn small" type="button" data-copy="share">Copy link to this page</button></div>
@@ -325,6 +356,7 @@ a{color:var(--accent)}
 <footer><div class="wrap">
   <div class="share" id="share" hidden><canvas id="qr" width="240" height="240" aria-label="QR code for this page"></canvas><div><strong style="color:var(--ink)">Pass it on.</strong><br>Point a phone camera here to open this page.<br><span class="mono" id="shareurl"></span></div></div>
   <p>Read the bill: <a href="https://www.ohiohouse.gov/legislation/136/sb422" target="_blank" rel="noopener">Senate Bill 422 on ohiohouse.gov</a>. Member list from the Ohio House directory, October 2026. If an address bounces, check <a href="https://ohiohouse.gov/members/directory" target="_blank" rel="noopener">the member directory</a>.</p>
+  <p id="contact"><strong style="color:var(--ink)">Questions?</strong> Email <span class="cmail" data-subj="Question about SB 422">ohiosb422 [at] proton [dot] me</span>.</p>
   <p>Made by a Portage County parent. This page doesn't store or send what you type; your answers stay in this browser.</p>
 </div></footer>
 
@@ -341,6 +373,9 @@ const NOTIFY_URL = "";
 const HEARING_INFO = "";
 /* HEARING_DATE = the hearing day as "YYYY-MM-DD" (e.g. "2026-11-18"). When set, the top banner counts down to it. */
 const HEARING_DATE = "";
+/* Contact address, assembled here so simple scrapers reading the HTML don't pick it up. */
+(function(){const u="ohiosb422",d="proton.me",e=u+"@"+d;
+  document.querySelectorAll(".cmail").forEach(el=>{const a=document.createElement("a");a.href="mailto:"+e+"?subject="+encodeURIComponent(el.dataset.subj||"SB 422");a.textContent=e;el.replaceWith(a);});})();
 
 /* ---------- Ohio House, 136th GA (ohiohouse.gov directory, Oct 2026) ----------
    district|display name|surname for salutation|ohiohouse.gov slug|home town|party */
@@ -1164,6 +1199,40 @@ ${pick("signoff",SIGNOFF_V)}
 ${sig}${inlineAppend(s)}`;
 }
 
+/* ---------- Sponsor version of the email: same body, sponsor greeting, opening, ask and thanks ---------- */
+const SPONSOR_TO="Schaffer@ohiosenate.gov, Brenner@ohiosenate.gov";
+const SPONSOR_NAMES="Senator Schaffer and Senator Brenner";
+function genSponsorEmail(s){
+  const base=$("emailbody").value||out._genEmail||"";
+  const R=repName(s);
+  const hello = s.t&&s.t.viaVacancy
+    ? `I live in Ohio House District ${s.t.home}, which is currently vacant, so I am writing to you as chair of the House Judiciary Committee about Senate Bill 422. I support the bill's goal of keeping children safe at school, and I am asking you to support one narrow amendment.`
+    : pick("hello",HELLO_V)(districtLine(s), s.city?` (${s.city})`:"", s);
+  const att=attachLine(s), close=pick("close",CLOSE_V);
+  const d = s.t&&!s.t.viaVacancy ? s.t.d : null;
+  const thanks=pick("thanks",THANKS_V)(d);
+  const who = s.city ? `${s.name||"[Your name]"}, and I live in ${s.city}, Ohio` : `${s.name||"[Your name]"}, and I live in Ohio`;
+  const spHello=`My name is ${who}. I am writing to you as the sponsors of Senate Bill 422. I support the bill's goal of keeping children safe at school, and I am asking my state representative to support one narrow amendment as it moves through the House. I wanted you to hear the request directly.`;
+  const spClose=`${att?att+" ":""}I am asking for your support of this amendment. If the House adds it, I hope you will vote to accept it when SB 422 returns to the Senate. I would welcome a reply letting me know whether you can support it.`;
+  return base
+    .replace(`Dear ${R},`,`Dear ${SPONSOR_NAMES},`)
+    .replace(hello,spHello)
+    .replace(`${att?att+" ":""}${close}`,spClose)
+    .replace(thanks,`Thank you for your time and for your work on this bill.`);
+}
+const SPONSOR_SUBJ="From a supporter of SB 422: a narrow amendment for parents at school events";
+function renderSponsor(){
+  const s=state(), body=genSponsorEmail(s);
+  out.sponsor=body;
+  $("sp-to").textContent=SPONSOR_TO; $("sp-subj").textContent=SPONSOR_SUBJ; $("sp-view").textContent=body;
+  const to=SPONSOR_TO.replace(/\s+/g,"");
+  const g=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(SPONSOR_SUBJ)}`;
+  const m=`mailto:${to}?subject=${encodeURIComponent(SPONSOR_SUBJ)}`;
+  const gFull=g+`&body=${encodeURIComponent(body)}`, long=gFull.length>MAIL_LINK_LIMIT;
+  $("sp-gmail").href=long?g:gFull; $("sp-mailto").href=long?m:m+`&body=${encodeURIComponent(body)}`;
+  $("sp-gmail").dataset.needcopy=$("sp-mailto").dataset.needcopy=long?"1":"";
+}
+
 function roleShort(s){
   switch(s.role){
     case "parent": { if(s.future==="none") return `I'm subject to the bill myself, but I don't have children, so the amendment wouldn't change anything for me. I'm asking you to support it because schools should be able to decide whether a parent can attend.`; if(s.future) return `I'm one of the people the bill would bar from school property, ${s.future==="expecting"?"I'm about to become a parent":"I hope to become a parent someday"}, and I'm asking only that my child's school be allowed to decide.`; const c=words(s); return `I'm one of the parents the bill would bar from school property, and I'm asking only that ${c.kidsPoss} school be allowed to decide.`; }
@@ -1495,8 +1564,8 @@ function inlineAppend(s){
 
 
 /* ---------- Amendment PDF: mirrors the original one-page Word layout ---------- */
-function makeAmendPdf(s){
-  const rep = s.t ? `Representative ${s.t.last}` : "Representative [Name]";
+function makeAmendPdf(s, repOverride){
+  const rep = repOverride || (s.t ? `Representative ${s.t.last}` : "Representative [Name]");
   const B=[
     {t:"title",x:"Proposed Amendment to SB 422"},
     {t:"sub",x:"Parent/Guardian Access for Specific Child-Related Events"},
@@ -1597,7 +1666,7 @@ function update(){
   $("amendto").textContent = s.t?`Rep. ${s.t.name}`:"your representative";
   $("subj").textContent=genSubject();
   $("toaddr").textContent=s.t?repEmail(s.t.d):"";
-  renderStatus(); renderAttach(); refreshMailLinks(); validate(); persist();
+  renderStatus(); renderAttach(); refreshMailLinks(); renderSponsor(); validate(); persist();
 }
 function renderStatus(){
   $("amendstatus").innerHTML = flow.amend==="file" ? `<div class="okbox">Saved. You'll attach it on the next page.</div>`
@@ -1720,7 +1789,7 @@ $("f").addEventListener("input",e=>{
 });
 $("f").addEventListener("submit",e=>e.preventDefault());
 $("f").addEventListener("change",e=>{ if(e.target.tagName==="SELECT"&&e.target.id!=="county"&&e.target.id!=="town"){ if(e.target.id==="kidcount"){ renderKids(); futureUI(); } applyRules(); update(); } });
-$("emailbody").addEventListener("input",()=>{edited.email=$("emailbody").value!==out._genEmail;document.querySelector('[data-reset=email]').hidden=!edited.email;refreshMailLinks();});
+$("emailbody").addEventListener("input",()=>{edited.email=$("emailbody").value!==out._genEmail;document.querySelector('[data-reset=email]').hidden=!edited.email;refreshMailLinks();renderSponsor();});
 
 async function download(kind){
   if(!window.jspdf){toast("The PDF tool didn't load. Check your connection and reload.");return false;}
@@ -1744,6 +1813,20 @@ document.addEventListener("click",async e=>{
     else location.href=el.href;
     return;
   }
+  if((el.id==="sp-gmail"||el.id==="sp-mailto") && el.dataset.needcopy){
+    e.preventDefault();
+    const ok = copyNow(out.sponsor||"");
+    toast(ok ? "Email copied. Paste it into the message body." : "Use Copy email, then paste it into the message body.");
+    if(el.id==="sp-gmail"){ const w=window.open(el.href,"_blank"); if(w){ try{w.opener=null;}catch(_){} } else location.href=el.href; }
+    else location.href=el.href;
+    return;
+  }
+  if(el.id==="dl-sponsor"){
+    if(!window.jspdf){toast("The PDF tool didn't load. Check your connection and reload.");return;}
+    try{ const r=await saveFile("SB422-Amendment-Request-Sponsors.pdf", makeAmendPdf(state(), SPONSOR_NAMES)); toast(r&&r.status==="shared"?"Done. If you chose Save to Files, it\u2019s in your Files app.":"PDF saved."); }
+    catch(err){ toast(err&&err.code==="declined"?"Canceled. Tap the button again when you\u2019re ready.":"The download didn't start. Try again, or open this page in Chrome or Safari."); }
+    return;
+  }
   if(el.matches("[data-next]")){ if(!el.disabled) go(flow.page+1); return; }
   if(el.matches("[data-back]")){ go(flow.page-1); return; }
   if(el.id==="reroll"){ const had=edited.email; reseed(); edited.email=false; document.querySelector('[data-reset=email]').hidden=true; update(); toast(had?"New wording. Your edits were replaced.":"New wording."); return; }
@@ -1752,7 +1835,7 @@ document.addEventListener("click",async e=>{
   if(el.dataset.reset){ const k=el.dataset.reset; edited[k]=false; el.hidden=true; update(); toast("Back to the written-for-you text."); return; }
   if(el.dataset.copy){
     const k=el.dataset.copy, s=state();
-    const text={to:s.t?repEmail(s.t.d):"",subj:genSubject(),email:$("emailbody").value,call:plain(out.call),share:SHARE_URL||location.href}[k];
+    const text={to:s.t?repEmail(s.t.d):"",subj:genSubject(),email:$("emailbody").value,call:plain(out.call),share:SHARE_URL||location.href,spto:SPONSOR_TO,spsubj:SPONSOR_SUBJ,spemail:out.sponsor}[k];
     if(!text){toast("Pick your district first.");return;}
     try{await navigator.clipboard.writeText(text);toast("Copied.");}
     catch(_){
