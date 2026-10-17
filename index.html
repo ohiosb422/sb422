@@ -228,7 +228,7 @@ a{color:var(--accent)}
     <div class="grid2">
       <div class="field"><label for="kidcount" id="kidcountlabel">How many children? <span class="req">*</span></label>
         <select id="kidcount"><option value="">Choose…</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option disabled class="futopt">──────────</option><option value="expecting" class="futopt">Expecting our first child</option><option value="planning" class="futopt">Planning to have children</option><option value="none" class="futopt noneopt">No, and not planning to</option></select></div>
-      <div class="field" id="kidschoolfield"><label for="kidschool">Their school or district <span class="opt">(optional)</span></label><input type="text" id="kidschool" placeholder="e.g. Garfield Elementary"></div>
+      <div class="field" id="kidschoolfield"><label for="kidschool">Their school, preschool, or child care <span class="opt">(optional)</span></label><input type="text" id="kidschool" placeholder="e.g. Garfield Elementary"></div>
     </div>
     <div class="kidrows" id="kidrows"></div>
     <label class="chk" id="kidexpectwrap" hidden><input type="checkbox" id="kidexpect"><span>We're also expecting a baby<small>Adds a line about the new baby to your message.</small></span></label>
@@ -657,9 +657,13 @@ function nounFor(role,sex,rel,many){
   return n==="child"?"children":n==="grandchild"?"grandchildren":n+"s";
 }
 const anA=n=>([8,11,18].includes(n)?"an ":"a ");
+/* ages under 1 are stored as 0 */
+const ageIs=a=>a===0?"under a year old":String(a);      /* "is 2" / "is under a year old" */
+const ageShort=a=>a===0?"under 1":String(a);             /* "ages 5 and under 1" */
+const ageAdj=a=>a===0?"baby":`${a}-year-old`;            /* "a 2-year-old" / "a baby" */
 const cap1=x=>x.charAt(0).toUpperCase()+x.slice(1);
 function words(s){
-  const kids=(s.kidsArr||[]).filter(k=>k.sex&&k.age);
+  const kids=(s.kidsArr||[]).filter(k=>k.sex&&k.age!=null);
   const n=kids.length, one=n===1, rel=s.relword||"";
   const poss=s.role==="spouse"?"our":"my";
   const noun1=one?nounFor(s.role,kids[0].sex,rel):"";
@@ -677,11 +681,11 @@ function words(s){
     isP: pl?"are":"is", haveP: pl?"have":"has", loseP: pl?"lose":"loses", takeP: pl?"take":"takes", attendP: pl?"attend":"attends"
   };
 }
-const sameAges=a=>{ const u=[...new Set(a)]; return u.length===1 ? (a.length===2?`both ${a[0]}`:`all ${a[0]}`) : listJoin(a.map(String)); };
+const sameAges=a=>{ const u=[...new Set(a)]; return u.length===1 ? (a.length===2?`both ${ageIs(a[0])}`:`all ${ageIs(a[0])}`) : listJoin(a.map(ageIs)); };
 /* "My daughter is 5 and my son is 6." / "My daughters are 12 and 5, and my son is 6." / "My children are 9 and 6." */
 function agesSentence(s,c){
   const kids=c.list, P=cap1(c.poss), anyX=kids.some(k=>k.sex==="x");
-  if(c.one) return `${P} ${nounFor(s.role,kids[0].sex,c.rel)} is ${kids[0].age}.`;
+  if(c.one) return `${P} ${nounFor(s.role,kids[0].sex,c.rel)} is ${ageIs(kids[0].age)}.`;
   if(anyX || s.role==="relative" && !["aunt","uncle","older sister","older brother"].includes(c.rel)){
     const ages=kids.map(k=>k.age).sort((a,b)=>b-a);
     return `${P} ${NUMW[kids.length]} ${nounFor(s.role,"x",c.rel,true)} are ${sameAges(ages)}.`;
@@ -689,7 +693,7 @@ function agesSentence(s,c){
   const order=[]; kids.forEach(k=>{ if(!order.includes(k.sex)) order.push(k.sex); });
   const parts=order.map(sex=>{
     const ages=kids.filter(k=>k.sex===sex).map(k=>k.age).sort((a,b)=>b-a);
-    return ages.length===1 ? `${c.poss} ${nounFor(s.role,sex,c.rel)} is ${ages[0]}` : `${c.poss} ${nounFor(s.role,sex,c.rel,true)} are ${sameAges(ages)}`;
+    return ages.length===1 ? `${c.poss} ${nounFor(s.role,sex,c.rel)} is ${ageIs(ages[0])}` : `${c.poss} ${nounFor(s.role,sex,c.rel,true)} are ${sameAges(ages)}`;
   });
   const joined = parts.length===2 && parts.every(p=>!p.includes(" and ")) ? parts.join(" and ") : parts.join(", and ");
   return cap1(joined)+".";
@@ -697,11 +701,11 @@ function agesSentence(s,c){
 /* "my granddaughter, who is 5, and my grandson, who is 6" / "my two cousins, who are 9 and 6" */
 function groupsWithAges(s,c){
   const kids=c.list, generic = kids.some(k=>k.sex==="x") || (s.role==="relative" && !["aunt","uncle","older sister","older brother"].includes(c.rel));
-  const agesTxt=a=>{ const u=[...new Set(a)]; return u.length===1&&a.length>1 ? (a.length===2?`both ${a[0]}`:`all ${a[0]}`) : listJoin(a.map(String)); };
+  const agesTxt=a=>{ const u=[...new Set(a)]; return u.length===1&&a.length>1 ? (a.length===2?`both ${ageIs(a[0])}`:`all ${ageIs(a[0])}`) : listJoin(a.map(ageIs)); };
   if(generic){ const a=kids.map(k=>k.age).sort((x,y)=>y-x); return `${c.poss} ${NUMW[kids.length]} ${nounFor(s.role,"x",c.rel,true)}, who are ${agesTxt(a)}`; }
   const order=[]; kids.forEach(k=>{ if(!order.includes(k.sex)) order.push(k.sex); });
   const parts=order.map(sex=>{ const a=kids.filter(k=>k.sex===sex).map(k=>k.age).sort((x,y)=>y-x);
-    return a.length===1 ? `${c.poss} ${nounFor(s.role,sex,c.rel)}, who is ${a[0]}` : `${c.poss} ${NUMW[a.length]} ${nounFor(s.role,sex,c.rel,true)}, who are ${agesTxt(a)}`; });
+    return a.length===1 ? `${c.poss} ${nounFor(s.role,sex,c.rel)}, who is ${ageIs(a[0])}` : `${c.poss} ${NUMW[a.length]} ${nounFor(s.role,sex,c.rel,true)}, who are ${agesTxt(a)}`; });
   return parts.length===1 ? parts[0] : `${parts[0]}, and ${parts[1]}`;
 }
 /* activities as natural verbs: "She plays sports and dances." */
@@ -728,21 +732,43 @@ function famPara(s){
 function famParaKids(s){
   const c=words(s); if(!c.n) return "";
   const pl = c.they==="they" ? 1 : 0, mode=relMode(s,c);
-  const out=[];
+  const out=[], allYoung=c.list.every(k=>k.age<=2);
   if(s.role==="parent"||s.role==="spouse"){
     const have = s.role==="spouse"?"We have":"I have";
-    const phr = c.list.map(k=>`${anA(k.age)}${k.age}-year-old${k.sex==="x"?"":" "+nounFor(s.role,k.sex,c.rel)}`);
+    /* group identical children: "two baby daughters", "two 5-year-old sons" */
+    const grp=[]; c.list.forEach(k=>{ const g=grp.find(x=>x.age===k.age&&x.sex===k.sex); if(g) g.n++; else grp.push({age:k.age,sex:k.sex,n:1}); });
+    const phr = grp.map(g=>{
+      const noun = g.sex==="x" ? "" : " "+nounFor(s.role,g.sex,c.rel,g.n>1);
+      if(g.n===1) return `${anA(g.age)}${ageAdj(g.age)}${noun}`;
+      if(g.age===0) return g.sex==="x" ? `${NUMW[g.n]} babies` : `${NUMW[g.n]} baby${noun}`;
+      return `${NUMW[g.n]} ${ageAdj(g.age)}${noun||" children"}`;
+    });
     out.push(pick("fam-ages",[agesSentence(s,c), `${have} ${listJoin(phr)}.`]));
   } else if(mode==="family"){
     const k0=c.list[0], g=k0.sex==="girl"?"girl":k0.sex==="boy"?"boy":"child";
     const ages=c.list.map(k=>k.age).sort((a,b)=>b-a);
-    out.push(c.one ? `This bill affects ${anA(k0.age)}${k0.age}-year-old ${g} in my family.`
-                   : `This bill affects ${NUMW[c.n]} children in my family, ${new Set(ages).size===1?`${c.n===2?"both":"all"} ${ages[0]}`:`ages ${listJoin(ages.map(String))}`}.`);
-    if(!s.milestone) out.push(c.one ? `As written, it would keep ${c.their} parent away from ${c.their} school events.` : `As written, it would keep their parent away from their school events.`);
+    out.push(c.one ? `This bill affects ${k0.age===0&&g==="child"?"a baby":`${anA(k0.age)}${ageAdj(k0.age)} ${g}`} in my family.`
+                   : `This bill affects ${NUMW[c.n]} children in my family, ${new Set(ages).size===1?`${c.n===2?"both":"all"} ${ageIs(ages[0])}`:`ages ${listJoin(ages.map(ageShort))}`}.`);
+    if(!s.milestone && !allYoung) out.push(c.one ? `As written, it would keep ${c.their} parent away from ${c.their} school events.` : `As written, it would keep their parent away from their school events.`);
   } else {
     const par = mode==="sibling" ? "our parent" : `${c.one?c.their:"their"} parent`;
-    out.push(c.one ? `This bill affects ${c.kids}, who is ${c.list[0].age}.` : `This bill affects ${groupsWithAges(s,c)}.`);
-    if(!s.milestone) out.push(`As written, it would keep ${par} away from ${c.one?c.their:"their"} school events.`);
+    out.push(c.one ? `This bill affects ${c.kids}, who is ${ageIs(c.list[0].age)}.` : `This bill affects ${groupsWithAges(s,c)}.`);
+    if(!s.milestone && !allYoung) out.push(`As written, it would keep ${par} away from ${c.one?c.their:"their"} school events.`);
+  }
+  /* children under 3: the bill also covers preschool and child care center premises */
+  const young=c.list.filter(k=>k.age<=2);
+  if(young.length===c.n){
+    const T=c.one?c.their:"their", Th=c.one?c.They:"They", be=c.one?c.isP:"are";
+    const who = s.role==="parent" ? "me" : s.role==="spouse" ? `my ${s.spouseword}` : whoseParent(s,c,T);
+    out.push(pick("fam-young",[
+      `The bill also covers preschools and child care centers, so as written it would keep ${who} away from ${T} school events from ${T} first day of child care or preschool through high school graduation.`,
+      `${Th} ${be} not in school yet, but the bill also covers preschools and child care centers, so it would keep ${who} away from ${T} events from the very start, all the way through graduation.`]));
+  } else if(young.length){
+    const pre=(s.role==="parent"||s.role==="spouse")?c.poss:"the";
+    const yk=young.length===1?`${pre} youngest`:`${pre} ${NUMW[young.length]} youngest`;
+    out.push(pick("fam-young",[
+      `The bill also covers preschools and child care centers, so for ${yk}, it would last from the first day of child care or preschool through high school graduation.`,
+      `Because the bill also covers preschools and child care centers, it would reach ${yk} from the very start, through every school event ahead.`]));
   }
   if(s.kidschool) out.push(pick("fam-school",[`${c.They} ${c.attendP} ${s.kidschool}.`,`${c.They} ${pl?"go":"goes"} to ${s.kidschool}.`]));
   if(s.acts.length) out.push(pick("fam-acts",[
@@ -1421,7 +1447,8 @@ function renderExtra(role){
   $("kidcountlabel").firstChild.textContent = role==="grandparent" ? "How many grandchildren does this affect? " : role==="relative" ? "How many children does this affect? " : role==="parent" ? "Do you have children? " : "How many children? ";
 }
 /* one row per child: girl/boy + age */
-const AGES=[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+const AGES=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+const ageLabel=a=>a===0?"Under 1 year old":a===1?"1 year old":`${a} years old`;
 function renderKids(){
   const n=Number($("kidcount").value)||0, box=$("kidrows");
   const keep=[...box.querySelectorAll("select")].reduce((o,el)=>(o[el.id]=el.value,o),{});
@@ -1429,7 +1456,7 @@ function renderKids(){
   for(let i=1;i<=n;i++){
     html+=`<div class="kidrow"><span class="kn">Child ${i}</span>
       <select id="kid-sex-${i}" aria-label="Child ${i}: girl or boy"><option value="">Girl or boy…</option><option value="girl">Girl</option><option value="boy">Boy</option><option value="x">Prefer not to say</option></select>
-      <select id="kid-age-${i}" aria-label="Child ${i}: age"><option value="">Age…</option>${AGES.map(a=>`<option value="${a}">${a} years old</option>`).join("")}</select></div>`;
+      <select id="kid-age-${i}" aria-label="Child ${i}: age"><option value="">Age…</option>${AGES.map(a=>`<option value="${a}">${ageLabel(a)}</option>`).join("")}</select></div>`;
   }
   box.innerHTML=html;
   for(let i=1;i<=n;i++) for(const f of ["sex","age"]){ const id=`kid-${f}-${i}`; const val=keep[id]!=null?keep[id]:saved[id]; if(val!=null) $(id).value=val; }
@@ -1449,12 +1476,12 @@ function futureUI(){
   sel.innerHTML=h; })();
 function readKids(){
   const n=Number($("kidcount").value)||0, out=[];
-  for(let i=1;i<=n;i++){ const sx=$(`kid-sex-${i}`), ag=$(`kid-age-${i}`); out.push({sex:sx?sx.value:"", age:ag?Number(ag.value)||0:0}); }
+  for(let i=1;i<=n;i++){ const sx=$(`kid-sex-${i}`), ag=$(`kid-age-${i}`); out.push({sex:sx?sx.value:"", age:ag&&ag.value!==""?Number(ag.value):null}); }
   return out;
 }
 /* turn off any choice that doesn't fit the answers, and clear it if it was picked */
 function applyRules(){
-  const kids=readKids().filter(k=>k.age), acts=[...document.querySelectorAll('input[name=act]:checked')].map(i=>i.value);
+  const kids=readKids().filter(k=>k.age!=null), acts=[...document.querySelectorAll('input[name=act]:checked')].map(i=>i.value);
   const f={n:Number($("kidcount").value)||0, acts};
   // milestones: only ages that match
   const ms=$("milestone"), cur=ms.value;
@@ -1726,7 +1753,7 @@ function missing(p){
     if(FAMILY_ROLES.includes(role)){
       const n=Number($("kidcount").value)||0, fut=FUT_VALUES.includes($("kidcount").value);
       if(!n && !fut) m.push(role==="parent"?"whether you have children":"how many children");
-      else { const k=readKids(); if(k.some(x=>!x.sex)) m.push("girl or boy for each child"); if(k.some(x=>!x.age)) m.push("each child's age"); }
+      else { const k=readKids(); if(k.some(x=>!x.sex)) m.push("girl or boy for each child"); if(k.some(x=>x.age==null)) m.push("each child's age"); }
     }
     return m.length?`Still needed: ${listJoin(m)}.`:""; }
   if(p===3) return flow.amend?"":"Download the amendment PDF to continue.";
