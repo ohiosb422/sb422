@@ -822,15 +822,16 @@ function sitText(k,s){
   const other = s.role==="spouse" ? "I" : `${fam?(sib?"our":c.their):"the"} other parent`;
   const otherCant = s.role==="spouse" ? "I can't" : `${other} can't`;
   const leaveWith = s.role==="parent" ? "me" : s.role==="spouse" ? `my ${s.spouseword}` : sib ? "our parent" : "the restricted parent";
+  const leaveSubj = s.role==="parent" ? "I" : leaveWith, leaveHas = s.role==="parent" ? "have" : "has";
   const V={
     otherparent:[
       `When ${otherCant} go because of work, travel, or illness, ${T} ${Tm} the event entirely.`,
       `If ${s.role==="spouse"?"I am":other+" is"} working, traveling, or sick, there is no one else the school could approve, so ${T} ${Tm} out.`,
       `There is no backup plan: if ${s.role==="spouse"?"I":other} can't make it, ${T} ${T==="they"||T==="the children"?"go":"goes"} without a parent in the audience.`],
     siblings:[
-      `Younger brothers and sisters who can't stay home alone have to leave with ${leaveWith} after drop-off, so the child performing has no family in the audience.`,
-      `The younger kids can't stay home alone, so they leave with ${leaveWith} after drop-off and never see their brother or sister play or perform.`,
-      `Bringing the whole family to a game or recital is not an option, because the younger kids have to leave with ${leaveWith} once the older child is dropped off.`],
+      `The younger kids would normally sit with ${leaveWith} and watch. Since that isn't allowed, and they are too young to sit in the audience alone, they have to leave after drop-off and miss their brother or sister's game or performance.`,
+      `The younger kids are too young to be left in the stands on their own, so when ${leaveSubj} ${leaveHas} to leave after drop-off, they leave too and never get to see their brother or sister play or perform.`,
+      `Bringing the whole family to a game or recital isn't possible. The younger kids can't be left in the audience by themselves, so they go home with ${leaveWith} after drop-off.`],
     away:[
       `Away games, tournaments, and recitals at other schools may not qualify at all, because the bill's exception for parents applies only to a child who attends “the related school.”`,
       `When an event is at another school, the bill's exception for parents may not apply at all, since it covers only a child who attends “the related school.”`,
