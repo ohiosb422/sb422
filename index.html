@@ -1215,7 +1215,7 @@ A parent or legal guardian would be permitted to be physically present on school
 - The request may be submitted by the parent or guardian, a coach or other official responsible for the event, or, for events run by outside groups on school property, the event organizer.
 - The written permission would apply only to the specific events and dates identified in it.
 - The permission would not provide general or unrestricted access to school property.
-- A parent or guardian who is present with permission and follows its conditions would not be in violation of SB 422. The parent or guardian must carry the permission and show it on request.
+- A parent or guardian who is present with permission and follows its conditions would not be in violation of SB 422.
 - A school and its employees would not be liable in a civil action for granting, denying, or conditioning permission, absent bad faith or reckless conduct.
 
 ## Examples:
@@ -1511,7 +1511,7 @@ function makeAmendPdf(s){
     {t:"li",x:"The request may be submitted by the parent or guardian, a coach or other official responsible for the event, or, for events run by outside groups on school property, the event organizer."},
     {t:"li",x:"The written permission would apply only to the specific events and dates identified in it."},
     {t:"li",x:"The permission would not provide general or unrestricted access to school property."},
-    {t:"li",x:"A parent or guardian who is present with permission and follows its conditions would not be in violation of SB 422. The parent or guardian must carry the permission and show it on request."},
+    {t:"li",x:"A parent or guardian who is present with permission and follows its conditions would not be in violation of SB\u00a0422."},
     {t:"li",x:"A school and its employees would not be liable in a civil action for granting, denying, or conditioning permission, absent bad faith or reckless conduct."},
     {t:"h",x:"Examples:"},
     {t:"p",x:"This narrowly tailored provision could allow a parent or guardian, with prior written permission, to attend an important milestone involving their own child, such as:",tight:true},
@@ -1528,8 +1528,8 @@ function makeAmendPdf(s){
     {t:"p",x:`I am asking ${rep} to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether ${rep} can support it.`,last:true}
   ];
   const {jsPDF}=window.jspdf;
-  const W=612, H=792, M=36, TOP=34, BOTTOM=H-30;
-  // lay out once at a given scale; draw only when asked. Shrinks slightly if a long name ever pushes past one page.
+  const W=612, H=792, M=29, TOP=24, BOTTOM=H-29; // 0.4" side/bottom margins
+  // lay out once at a given scale; draw only when asked. Uses the largest text size (up to 12.4pt body) that still fits one page.
   function run(doc,k,draw){
     let y=TOP; const fs=11*k, lh=fs*1.33, ink=[17,17,17];
     const txt=(str,x,size,style,width,align)=>{
@@ -1541,9 +1541,9 @@ function makeAmendPdf(s){
       const prev=B[i-1];
       if(b.t==="title"){ txt(b.x,M,20*k,"bold",W-2*M,"center"); y+=10*k; }
       else if(b.t==="sub"){ txt(b.x,M,11*k,"bold",W-2*M,"center"); y+=12*k; }
-      else if(b.t==="h"){ if(i>2) y+=12*k; txt(b.x,M,fs,"bold",W-2*M); y+=10*k; }
-      else if(b.t==="p"){ if(prev&&prev.t==="p") y+=12*k; txt(b.x,M,fs,"normal",W-2*M); }
-      else if(b.t==="gap"){ y+=12*k; }
+      else if(b.t==="h"){ if(i>2) y+=9*k; txt(b.x,M,fs,"bold",W-2*M); y+=5*k; }
+      else if(b.t==="p"){ if(prev&&prev.t==="p") y+=8*k; txt(b.x,M,fs,"normal",W-2*M); }
+      else if(b.t==="gap"){ y+=6*k; }
       else if(b.t==="li"){
         doc.setFont("helvetica","normal"); doc.setFontSize(fs);
         const startY=y; txt(b.x,M+36,fs,"normal",W-2*M-36);
@@ -1552,8 +1552,8 @@ function makeAmendPdf(s){
     });
     return y;
   }
-  let k=1, doc=new jsPDF({unit:"pt",format:"letter"});
-  while(k>0.8 && run(doc,k,false)>BOTTOM) k-=0.02;
+  let k=1.13, doc=new jsPDF({unit:"pt",format:"letter"});
+  while(k>0.8 && run(doc,k,false)>BOTTOM) k-=0.01;
   run(doc,k,true);
   return doc.output("blob");
 }
