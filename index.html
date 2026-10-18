@@ -187,7 +187,7 @@ a{color:var(--accent)}
 <section class="page" data-page="1">
   <p class="eyebrow">Step 1 of 4</p>
   <h2 tabindex="-1">Who represents you in the Ohio House?</h2>
-  <p class="hint">SB 422 keeps certain registered offenders off school property. As written, it gives a school no way to let a parent watch their own child's game, concert, or graduation, even with an escort. In about five minutes you'll send your state representative a short, polite request to fix that.</p>
+  <p class="hint">SB 422 keeps certain registered offenders off school property. As written, it would keep some parents away from nearly every part of their child's school life, and the school would have no way to make an exception, even with an escort. In about five minutes you'll send your state representative a short, polite request to fix that.</p>
   <div class="grid2">
     <div class="field"><label for="county">Your county</label>
       <select id="county"><option value="">Choose a county…</option></select></div>
@@ -829,7 +829,7 @@ function sitText(k,s){
       `If ${s.role==="spouse"?"I am":other+" is"} working, traveling, or sick, there is no one else the school could approve, so ${T} ${Tm} out.`,
       `There is no backup plan: if ${s.role==="spouse"?"I":other} can't make it, ${T} ${T==="they"||T==="the children"?"go":"goes"} without a parent in the audience.`],
     siblings:[
-      `The younger kids would normally sit with ${leaveWith} and watch. Since that isn't allowed, and they are too young to sit in the audience alone, they have to leave after drop-off and miss their brother or sister's game or performance.`,
+      `The younger kids would normally sit in the audience with ${leaveWith}. Since that isn't allowed, and they are too young to sit in the audience alone, they have to leave after drop-off and miss their brother or sister's game or performance.`,
       `The younger kids are too young to be left in the stands on their own, so when ${leaveSubj} ${leaveHas} to leave after drop-off, they leave too and never get to see their brother or sister play or perform.`,
       `Bringing the whole family to a game or recital isn't possible. The younger kids can't be left in the audience by themselves, so they go home with ${leaveWith} after drop-off.`],
     away:[
@@ -846,8 +846,8 @@ function sitText(k,s){
       `Some events, like back-to-school nights, are where families pick up supplies, clothing, or other help, and a child without a parent there can miss out on that too.`],
     choices:[
       `Families end up choosing a child's activities around which parent is allowed at the field.`,
-      `It shapes which sports and activities a child signs up for, because one parent could never watch.`,
-      `Families end up steering kids away from teams and activities that meet on school grounds, since one parent could never watch.`]
+      `It shapes which sports and activities a child signs up for, because one parent could never be there.`,
+      `Families end up steering kids away from teams and activities that meet on school grounds, since one parent could never attend.`]
   };
   return V[k] ? pick("sit-"+k,V[k]) : "";
 }
@@ -889,12 +889,12 @@ parent:[
  (s,c)=>`I would be directly affected by SB 422 as a parent. My request is simple: let ${c.kidsPoss} school decide, event by event, whether I can be there.`,
  (s,c)=>`I am writing as one of the parents this bill would bar from school property. I do not expect to walk into a school whenever I want. I am asking only that the principal have the authority to approve me for events ${c.kids} ${c.isN} part of, under whatever conditions the school sets.`,
  (s,c)=>`This bill would bar me from school property. As written, SB 422 means ${c.kidsPoss} school could never say yes to me being at ${c.their} games, concerts, or graduation, no matter what precautions it was willing to take.`,
- (s,c)=>`As a parent the bill would bar from school property, I understand why lawmakers want firm rules around schools. I am not asking to loosen them. I am asking that a school have a way to let me watch ${c.own}, with the school in charge.`,
+ (s,c)=>`As a parent the bill would bar from school property, I understand why lawmakers want firm rules around schools. I am not asking to loosen them. I am asking that a school have a way to let me attend ${c.ownPoss} events, with the school in charge.`,
  (s,c)=>`I am one of the parents this bill would keep off school grounds. ${c.Kids} did nothing to be in this position, but as written, the bill means ${c.they} would go through school without me in the audience.`,
  (s,c)=>`I am a parent SB 422 would bar from school property. I fully expect to follow every rule the bill sets. What I am asking for is a process: written permission from the school for events involving ${c.kids}, each approved on its own.`,
  (s,c)=>`I am a parent, and this bill would bar me from school property. I am not asking you to change who the bill applies to. I am asking that schools be allowed to decide whether a parent like me can attend ${c.kidsPoss} events.`,
  (s,c)=>`I want to be upfront about why I am writing: I am one of the parents this bill would bar from school property. I support keeping schools safe, and I believe the people best placed to decide whether I can safely attend ${c.kidsPoss} events are the principals who run them.`,
- (s,c)=>`Under SB 422 as written, I could drop ${c.kids} off at school but never stay to watch ${c.them}. I am one of the parents it would bar, and I am asking only that the school be given the choice.`,
+ (s,c)=>`Under SB 422 as written, I could drop ${c.kids} off at school but never stay for ${c.their} events. I am one of the parents it would bar, and I am asking only that the school be given the choice.`,
  (s,c)=>`I am a parent this bill would bar from school property. Every milestone ${c.kids} ${c.hasN} in school, from awards to graduation, would happen without me, with no way for anyone to make an exception. I am asking that the school be allowed to make that call.`,
  (s,c)=>`I write as a parent who is subject to this bill's restrictions. I am not seeking unsupervised access or any special treatment. I am asking that a principal be able to approve my attendance at ${c.ownPoss} events, with escorts, seating limits, or any other conditions the school chooses.`,
  (s,c)=>`I am a parent subject to SB 422's restrictions, and I accept the rules it sets. What I ask is that ${c.kidsPoss} school not be legally barred from saying yes when it believes my attendance at an event is appropriate.`,
@@ -910,7 +910,7 @@ spouse:[
  (s,c)=>`My ${s.spouseword} is a parent this bill would bar from school property. We share the work of raising ${c.kids}. When I am working, traveling, or sick, ${c.they} ${c.haveP} no parent who can go with ${c.them} to a school event, because the school has no way to approve my ${s.spouseword}, even under supervision.`,
  (s,c)=>`My ${s.spouseword} would be barred from school property under SB 422. Right now, whether ${c.kids} ${c.hasN} a parent at ${c.their} school events depends entirely on my schedule. If I cannot make it, no one goes.`,
  (s,c)=>`I am writing about my family. My ${s.spouseword} is a parent this bill would bar from school property, and I am the only one of us who could attend ${c.kidsPoss} school events. I cannot be at every one of them, and I do not want ${c.kids} to be alone when I am not.`,
- (s,c)=>`My ${s.spouseword} and I are raising ${c.kids} together. Under SB 422 as written, my ${s.spouseword} could drop ${c.them} off but never stay to watch, and the school would have no way to make an exception, even with an escort.`,
+ (s,c)=>`My ${s.spouseword} and I are raising ${c.kids} together. Under SB 422 as written, my ${s.spouseword} could drop ${c.them} off but never stay for the event, and the school would have no way to make an exception, even with an escort.`,
  (s,c)=>`My ${s.spouseword} is subject to SB 422's restrictions. I support the bill's purpose, but I have seen how the current wording falls on ${c.kids}, not on the adults.`,
  (s,c)=>`Our family includes a parent this bill would keep off school grounds: my ${s.spouseword}. I work, I travel, and I get sick like anyone else. On those days, ${c.kids} would have no parent at ${c.their} game or concert, because the school would have no legal way to let my ${s.spouseword} come.`,
  (s,c)=>`I share parenting with my ${s.spouseword}, who would be barred from school property under SB 422. The bill puts every school event on my shoulders alone. When I cannot be there, ${c.kids} simply ${c.missN} out.`,
@@ -938,12 +938,12 @@ grandparent:[
  s=>`As a grandparent, I have watched how much a child's school events mean to the whole family. The bill as written would bar some parents from all of them, without any process for the school to review a family's situation.`,
  s=>`I am a grandparent who supports SB 422's goal. I am asking for a change so that children are not the ones who lose out: let the school decide whether a parent may attend an event, under whatever conditions it sets.`,
  s=>`Grandparents fill in for a lot of things, but we cannot replace a parent in the audience. As written, SB 422 would leave some children without that at school events, with no exception possible.`,
- s=>`As a grandparent, I would like to see this bill pass with a sensible fix. Schools already supervise their events. They should be allowed to decide, event by event, whether a parent may come watch their own child.`,
+ s=>`As a grandparent, I would like to see this bill pass with a sensible fix. Schools already supervise their events. They should be allowed to decide, event by event, whether a parent may attend their own child's event.`,
  s=>`I am writing as a grandparent and a voter in this district. Children should not lose their parent at school games, concerts, and graduations because the bill leaves no room for a school's judgment.`,
  s=>`I am a grandparent, and I have learned that the small moments at school, a recital or an awards night, are the ones children carry with them. SB 422 as written takes those away from some children and gives their school no way to step in.`,
  s=>`As a grandparent, I trust our local principals. If a principal believes a parent can safely attend an event with an escort or other conditions, the law should not stand in the way.`,
  s=>`I am a grandparent who wants children protected. I also do not want any child on a stage scanning the crowd for a parent who is not allowed to come. The amendment would let schools prevent that, case by case.`,
- s=>`As a grandparent, I am asking you to look at this bill from a child's point of view. A child does not understand why a parent can drop them off but never stay to watch.`,
+ s=>`As a grandparent, I am asking you to look at this bill from a child's point of view. A child does not understand why a parent can drop them off but never stay.`,
  s=>`I am a grandparent writing in support of a narrow amendment. SB 422 keeps certain adults off school property, and I agree with that goal. But as written, it also keeps some children from ever having a parent at their school events.`,
  s=>`As a grandparent, I have sat through a lot of school programs. I would hate to think of a child in one of them with no parent there because the law left the school no choice.`,
  s=>`I write as a grandparent. Families depend on more than one adult to get children to everything they do, and this bill, as written, removes one of those adults from school events with no way back.`,
@@ -966,7 +966,7 @@ relative:[
  (s,w)=>`As ${w}, I trust local principals to make careful decisions. The bill as written does not let them make any decision at all about a parent attending a child's event.`,
  (s,w)=>`I write as ${w}. A child should not have to perform or compete knowing their parent is not allowed to come, when the school itself might be willing to allow it with supervision.`,
  (s,w)=>`As ${w}, I am asking you to support a small but important change: written permission from the school for specific events involving a parent's own child, each approved on its own.`,
- (s,w)=>`I am ${w}, and I see this from the children's side. As written, the bill lets a parent drop a child off but never stay to watch, not even for a graduation.`,
+ (s,w)=>`I am ${w}, and I see this from the children's side. As written, the bill lets a parent drop a child off but never stay, not even for a graduation.`,
  (s,w)=>`As ${w}, I want schools safe and I want children supported. The amendment keeps the bill's protections and adds a controlled way for schools to make exceptions.`,
  (s,w)=>`I am writing as ${w} who helps with school pickups and events. There are many days when no one else can go, and the bill gives the school no way to let the parent attend instead.`,
  (s,w)=>`As ${w}, I believe the school is the right one to decide who attends its events. This amendment would give principals that authority instead of a ban no one can adjust.`,
@@ -1018,7 +1018,7 @@ admin:[
 ],
 coach:[
  (s,o)=>`I ${o.run}. Our events are often held in school gyms, fields, and auditoriums. Under SB 422 as written, a restricted parent could not even drop a child off at an event an outside group runs on school property, because the bill's drop-off exception for events covers only school-sponsored events. The amendment would let the host school decide, and would let organizers like me request permission for a family.`,
- (s,o)=>`As a coach${o.with}, I see how much it matters to kids when their parents are in the stands. Under SB 422 as written, a restricted parent could not watch any game held on school property, and the school would have no way to allow it.`,
+ (s,o)=>`As a coach${o.with}, I see how much it matters to kids when their parents are in the stands. Under SB 422 as written, a restricted parent could not attend any game held on school property, and the school would have no way to allow it.`,
  (s,o)=>`I organize youth activities${o.for}, and many of our events happen in school buildings. The bill's drop-off exception for events covers only school-sponsored events, so for groups like ours, a parent restricted by SB 422 could not even drop a child off.`,
  (s,o)=>`As someone who ${o.run3}, I would like to be able to request permission from the host school on behalf of a family. The amendment allows exactly that, and the school keeps the final word.`,
  (s,o)=>`I ${o.run}. We use school gyms, fields, and auditoriums for practices, games, and recitals. As written, SB 422 offers no exception for a parent at any of those events, not even drop-off.`,
@@ -1075,7 +1075,7 @@ function futWords(s){
 }
 const ROLE_NONE=[
  `I am subject to SB 422's restrictions myself. I do not have children, so this amendment would not change anything for me. I am writing because I believe parents should not be shut out of their children's school lives when the school is willing to supervise them.`,
- `SB 422 would bar me from school property. I have no children, and the amendment I am asking for would never apply to me. I support it because the bill as written leaves schools no way to let a parent watch their own child, even under supervision.`,
+ `SB 422 would bar me from school property. I have no children, and the amendment I am asking for would never apply to me. I support it because the bill as written leaves schools no way to let a parent attend their own child's events, even under supervision.`,
  `I am one of the people this bill would keep off school grounds, but I am not a parent, and this amendment would not benefit me. I am writing because the children of registered parents did nothing wrong, and their schools should be able to decide whether a parent may attend.`,
  `I am writing as someone subject to SB 422 who has nothing personal to gain from this amendment: I do not have children. I fully support keeping strong rules around schools. I am asking only that schools be given a way to say yes to a parent, on the school's own terms.`,
  `As someone the bill would bar from school property, I know what these restrictions mean. I do not have children, so the amendment would not help me. For parents in my position, though, it would mean a chance to see their child at a game or a graduation, with the school in charge.`,
@@ -1087,13 +1087,13 @@ parent:[
  f=>`${cap1(f.becoming)}, and SB 422 as written would bar me from school property. That means ${f.kidsPoss} school could never say yes to me being at ${f.their} games, concerts, or graduation, no matter what precautions it was willing to take.`,
  f=>`I am writing as someone SB 422 would bar from school property. ${cap1(f.becoming)}. I fully expect to follow every rule the bill sets. What I am asking for is a process: written permission from the school for events involving ${f.kids}, each approved on its own.`,
  f=>`${cap1(f.becoming)}, and I am one of the people this bill would keep off school grounds. I am not asking you to change who the bill applies to. I am asking that schools be allowed to decide whether a parent like me can attend ${f.kidsPoss} events.`,
- f=>`As someone the bill would bar from school property, I understand why lawmakers want firm rules around schools. I am not asking to loosen them. ${cap1(f.becoming)}, and I am asking that a school have a way to let me watch ${f.kids} at school events, with the school in charge.`,
+ f=>`As someone the bill would bar from school property, I understand why lawmakers want firm rules around schools. I am not asking to loosen them. ${cap1(f.becoming)}, and I am asking that a school have a way to let me be there for ${f.kids} at school events, with the school in charge.`,
  f=>`SB 422 would bar me from school property. ${cap1(f.becoming)}, and I would like ${f.kidsPoss} school to have the authority to approve me for ${f.their} events, with an escort or any other condition it chooses.`
 ],
 spouse:[
  (f,s)=>`My ${s.spouseword} would be barred from school property under SB 422, and ${f.weB}. We are not asking for open access to schools. We are asking that ${f.kidsPoss} school be allowed to decide, on its own terms, whether my ${s.spouseword} may attend ${f.their} events.`,
  (f,s)=>`${cap1(f.weB)}. My ${s.spouseword} is subject to SB 422's restrictions, and as written, the bill would make me the only parent who could ever attend ${f.kidsPoss} school events.`,
- (f,s)=>`My ${s.spouseword} and I ${s.future==="expecting"?"are expecting our first child":"are planning to start a family"}. Under SB 422, my ${s.spouseword} could drop ${f.kids} off at school but never stay to watch, and the school would have no way to make an exception, even with an escort.`,
+ (f,s)=>`My ${s.spouseword} and I ${s.future==="expecting"?"are expecting our first child":"are planning to start a family"}. Under SB 422, my ${s.spouseword} could drop ${f.kids} off at school but never stay for the event, and the school would have no way to make an exception, even with an escort.`,
  (f,s)=>`I am writing about my family. ${cap1(f.weB)}, and my ${s.spouseword} would be barred from school property under SB 422. Every game, recital, and graduation would depend on my being available. A school should be able to approve the other parent when I am not.`,
  (f,s)=>`My ${s.spouseword} is subject to this bill's restrictions. ${cap1(f.weB)}, and I want ${f.kids} to grow up seeing both parents at school events. As written, the bill gives the school no way to allow that, even under the strictest conditions.`,
  (f,s)=>`${cap1(f.weB)}. My ${s.spouseword} would be barred from school property under SB 422. I support the bill's goal, and I am asking only that ${f.kidsPoss} school be allowed to grant written permission for my ${s.spouseword} to attend, under the school's own conditions.`
@@ -1143,14 +1143,14 @@ const HELLO_V=[
 const GAP_V=[
  `As written, the bill lets a parent restricted by SB 422 drop off or pick up a child, but not attend the event itself. That includes graduations, award ceremonies, concerts, and games. Events that outside groups hold in school buildings have no exception at all. The school has no way to say yes, even once.`,
  `Under the bill's current wording, a restricted parent may drop off or pick up a child but may not stay for the event itself, whether it is a game, a concert, an awards night, or a graduation. Events that outside groups hold in school buildings have no exception at all, and the school has no way to say yes.`,
- `The gap is in the bill's list of "legitimate purposes." It allows drop-off and pick-up, but nothing that lets a parent attend and watch their own child, even under supervision. Events run by outside groups in school buildings get no exception at all.`,
+ `The gap is in the bill's list of "legitimate purposes." It allows drop-off and pick-up, but nothing that lets a parent attend their own child's event, even under supervision. Events run by outside groups in school buildings get no exception at all.`,
  `As SB 422 reads now, a principal who is comfortable with a parent attending a child's graduation under escort would have no legal way to allow it. For events, the bill covers drop-off and pick-up only, and it offers no exception for events outside groups hold on school property.`,
  `Right now the bill draws the line at drop-off: a parent restricted by SB 422 can bring a child to an event and pick them up afterward, but cannot stay to see the concert, the game, or the graduation. For events outside groups hold in school buildings, there is no exception at all. Schools are left with no option.`,
  `For school events, the bill's exceptions cover getting a child there and back, but not being there for the child. A parent restricted by SB 422 could not attend a graduation, an award ceremony, or a game, and the school could not approve it under any conditions.`,
- `SB 422 lists a handful of "legitimate purposes" for a restricted parent to be on school grounds, such as dropping off or picking up a child. Watching that child's game, concert, or graduation is not one of them, and the school has no way to make an exception.`,
+ `SB 422 lists a handful of "legitimate purposes" for a restricted parent to be on school grounds, such as dropping off or picking up a child. Attending that child's game, concert, or graduation is not one of them, and the school has no way to make an exception.`,
  `The problem is a narrow one. A restricted parent may bring a child to a school event and pick them up afterward, but may not stay for it. That is true even for a graduation, and even if the school would supervise the parent. For events outside groups hold in school buildings, the bill allows no exception at all.`,
  `Under the current text, a school could not approve a restricted parent to attend a child's game, concert, or graduation under any conditions. The bill allows drop-off and pick-up for school events, but nothing more, and events run by outside groups in school buildings get no exception at all.`,
- `As written, the bill gives schools no discretion. A restricted parent can drop a child off for a school event but cannot stay to watch, whether it is a game, an awards night, or a graduation, and no amount of supervision changes that.`
+ `As written, the bill gives schools no discretion. A restricted parent can drop a child off for a school event but cannot stay for it, whether it is a game, an awards night, or a graduation, and no amount of supervision changes that.`
 ];
 const ASK_V=[
  `The amendment would let the principal (or designee) of the school hosting an event give a parent or guardian prior written permission to attend specific events involving their own child. Each event would be approved on its own, under any safety or supervision conditions the school sets. It grants no general access to school property, and the decision stays entirely with the school.`,
