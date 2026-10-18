@@ -33,6 +33,9 @@ header.top .wrap{padding-block:18px 16px;display:grid;gap:6px}
 .billref b{color:var(--seal)}
 h1{font-family:var(--f-doc);font-weight:700;font-size:clamp(1.45rem,4vw,1.95rem);line-height:1.15;margin:0;text-wrap:balance}
 .status{font-size:.84rem;color:var(--muted)}
+.altpath{font-size:.86rem;color:var(--muted);margin:0}
+.altpath a{font-weight:600}
+.altpath.hot{background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:10px 12px;color:var(--ink)}
 .status i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px;vertical-align:1px}
 
 .progress{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
@@ -174,6 +177,7 @@ a{color:var(--accent)}
     <span id="urg-p">SB 422 is expected to be assigned to a House committee as early as November 9 or 10. The best time to fix the bill is before that committee starts its work. Once a bill moves forward, there are fewer chances to change it.</span>
     <span>If SB 422 passes as written, parents on Ohio's registry whom the bill restricts would be barred from their children's school events for as long as they remain registered: 25 years for Tier II, and for life for Tier III. Schools would have no way to make an exception. This takes about five minutes.</span>
   </div>
+  <p class="altpath" id="altpath">Outside Ohio, or want to speak to the House committee? <a href="testimony.html">Write testimony instead</a></p>
 </div></header>
 
 <main><div class="wrap">
@@ -311,7 +315,9 @@ a{color:var(--accent)}
       <summary><span class="num">3</span>Speak at the committee hearing, or send written testimony <span class="badge">Very important</span></summary>
       <div class="mbody">
       <p>When the House committee schedules a hearing on SB 422, members of the public may testify. You can speak in person at the Statehouse in Columbus, or submit written testimony without making the trip. Testimony and a witness form are due about 24 hours before the hearing. A clear, respectful two-minute statement from a parent, grandparent, teacher, or neighbor carries real weight.</p>
-      <p><strong style="color:var(--ink)">Interested in testifying, or want help with written testimony?</strong> Please reach out at <span class="cmail" data-subj="SB 422 testimony">ohiosb422 [at] proton [dot] me</span>. You don't need any experience. I can help you plan what to say, put a written statement together, and get the forms in on time.</p>
+      <p>The testimony page writes an interested party statement for you, using the answers you already gave here. It takes about ten minutes, and you can save it now and submit it once the hearing is posted.</p>
+      <div class="row"><a class="btn" href="testimony.html">Write your testimony</a></div>
+      <p><strong style="color:var(--ink)">Want help or a second look?</strong> Reach out at <span class="cmail" data-subj="SB 422 testimony">ohiosb422 [at] proton [dot] me</span>. You don't need any experience. I can help you plan what to say, review your statement, and get it in on time.</p>
       <p id="hearinginfo" hidden></p>
       <div class="row" id="notifyrow" hidden><a class="btn" id="notifybtn" href="#" target="_blank" rel="noopener">Notify me when testimony opens</a></div>
       <p id="notifyfallback">Hearing dates will be posted on this page as soon as they are announced. Please check back after November 10.</p>
@@ -1903,6 +1909,12 @@ document.addEventListener("click",async e=>{
 
 /* ---------- Testimony notice ---------- */
 if(NOTIFY_URL){ $("notifybtn").href=NOTIFY_URL; $("notifyrow").hidden=false; $("notifyfallback").hidden=true; }
+/* Once a hearing date is set, testimony becomes time-sensitive: promote it in the header until the hearing passes. */
+if(HEARING_DATE){
+  const [hy,hm,hd]=HEARING_DATE.split("-").map(Number), hday=new Date(hy,hm-1,hd), now=new Date(); now.setHours(0,0,0,0);
+  if(now<=hday){ const ap=$("altpath"); ap.classList.add("hot");
+    ap.innerHTML=`<b>Committee hearing ${hday.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}.</b> Testimony is due the day before. <a href="testimony.html">Write your testimony</a>`; }
+}
 if(HEARING_INFO){ $("hearinginfo").textContent=HEARING_INFO; $("hearinginfo").hidden=false; $("hearinginfo").style.color="var(--ink)"; $("hearinginfo").style.fontWeight="600"; $("notifyfallback").hidden=true; }
 
 /* ---------- Share QR ---------- */

@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SB 422 Testimony</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+
+/* Layout: a five-page walkthrough, one task per page, with a numbered progress rail (the order is real). Single dark theme by choice. */
+:root{
+  --paper:#0e131c; --card:#161d2a; --sheet:#1b2230;
+  --ink:#e5e9f0; --muted:#9ca7ba; --line:#2a3447; --line-strong:#3b475d;
+  --accent:#86afe8; --accent-ink:#0e131c; --accent-soft:#1d2b42;
+  --seal:#ec7482; --ok:#6cc79a; --ok-soft:#15291f; --warn:#e6b85c; --warn-soft:#2c2414;
+  color-scheme:dark;
+  --f-ui:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-doc:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --r:10px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{border-bottom:1px solid var(--line);background:var(--card)}
+header.top .wrap{padding-block:18px 16px;display:grid;gap:6px}
+.billref{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;flex-wrap:wrap;gap:4px 14px}
+.billref b{color:var(--seal)}
+h1{font-family:var(--f-doc);font-weight:700;font-size:clamp(1.45rem,4vw,1.95rem);line-height:1.15;margin:0;text-wrap:balance}
+.status{font-size:.84rem;color:var(--muted)}
+.status i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px;vertical-align:1px}
+
+.progress{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.progress li{display:grid;gap:6px;font-size:.74rem;font-weight:600;color:var(--muted);text-align:left;min-width:0}
+.progress li::before{content:"";height:4px;border-radius:2px;background:var(--line)}
+.progress li.done::before{background:var(--ok)}
+.progress li.opt-step::before{background:transparent;border-top:2px dashed var(--line-strong);height:2px}
+.progress li.opt-step.cur::before{border-top-color:var(--seal)}
+.extra{border:1px dashed var(--line-strong);border-radius:10px;padding:14px 16px;display:grid;gap:8px;background:var(--paper)}
+.extra b{font-size:1rem}
+.extra span{color:var(--muted);font-size:.9rem}
+.progress li.cur::before{background:var(--seal)}
+.progress li.cur{color:var(--ink)}
+.progress span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:460px){.progress li:not(.cur) span{visibility:hidden}}
+
+main .wrap{padding-block:20px 40px;display:grid;gap:18px}
+.page{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;display:grid;gap:16px;min-width:0}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--seal);font-weight:700;margin:0}
+.page h2{font-family:var(--f-doc);font-size:1.45rem;line-height:1.2;margin:0;text-wrap:balance}
+.page h2:focus{outline:none}
+.hint{margin:0;color:var(--muted);font-size:.95rem;max-width:60ch}
+label{font-weight:600;font-size:.9rem;display:block;margin-bottom:5px}
+.opt{font-weight:400;color:var(--muted)}
+.req{color:var(--seal)}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:8px;padding:10px 12px}
+textarea{min-height:96px;resize:vertical;line-height:1.45}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible,.chk:focus-within,.cand:focus-within,.choice:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.field{min-width:0}
+.cands{display:grid;gap:8px}
+.cand{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--paper)}
+.cand input{accent-color:var(--accent);width:18px;height:18px;flex:none}
+.cand .d{font-variant-numeric:tabular-nums;font-weight:700;min-width:4.6em;color:var(--accent)}
+.cand .n{font-weight:600}
+.cand .t{color:var(--muted);font-size:.86rem}
+.cand:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.repcard{border:1px solid var(--accent);border-radius:8px;padding:14px;display:grid;gap:6px;background:var(--accent-soft)}
+.repcard .who{font-family:var(--f-doc);font-size:1.25rem;font-weight:700}
+.meta{font-size:.86rem;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;word-break:break-all}
+.note{font-size:.86rem;color:var(--muted);margin:0}
+.warnbox{background:var(--warn-soft);color:var(--ink);border-left:3px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:.88rem}
+.tipbox{background:var(--accent-soft);color:var(--ink);border-left:3px solid var(--accent);padding:10px 12px;border-radius:6px;font-size:.9rem}
+.tipbox b{display:block;margin-bottom:2px}
+.urgent{background:var(--warn-soft);border:1px solid var(--warn);border-left:5px solid var(--warn);border-radius:8px;padding:12px 14px;display:grid;gap:4px;font-size:.93rem;line-height:1.45}
+.urgent b.dl{font-size:1.02rem;color:var(--warn)}
+.more{display:grid;gap:12px}
+.more h3{font-family:var(--f-doc);font-size:1.3rem;margin:4px 0 0}
+.morecard{border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.morecard>summary{cursor:pointer;list-style:none;padding:14px 44px 14px 16px;font-weight:700;font-size:1rem;position:relative}
+.morecard>summary::-webkit-details-marker{display:none}
+.morecard>summary::after{content:"+";position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:1.3rem;font-weight:400;color:var(--accent)}
+.morecard[open]>summary::after{content:"\2212"}
+.morecard .mbody{padding:0 16px 16px;display:grid;gap:10px}
+.morecard h4{margin:0;font-size:1rem}
+.morecard p{margin:0;font-size:.92rem;color:var(--muted)}
+.badge{display:inline-block;vertical-align:2px;margin-left:6px;padding:2px 8px;border-radius:999px;background:var(--warn);color:var(--paper);font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.morecard .num{font-family:var(--f-doc);color:var(--seal);font-weight:700;margin-right:6px}
+.kidrows{display:grid;gap:8px}
+.kidrow{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.kidrow .kn{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;min-width:4.2em;font-size:.9rem}
+.kidrow select{padding:8px 10px}
+@media (max-width:420px){.kidrow{grid-template-columns:1fr 1fr}.kidrow .kn{grid-column:1/-1}}
+.chk.off{opacity:.45;cursor:not-allowed}
+.chk .why{display:block;font-style:normal;color:var(--warn);font-size:.78rem;font-weight:500}
+.okbox{background:var(--ok-soft);color:var(--ink);border-left:3px solid var(--ok);padding:10px 12px;border-radius:6px;font-size:.9rem}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.chk{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--paper);font-weight:500;font-size:.93rem;margin:0}
+.chk input{accent-color:var(--accent);width:18px;height:18px;flex:none;margin-top:2px}
+.chk:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.chk small{display:block;color:var(--muted);font-weight:400;font-size:.82rem}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.choice{display:grid;gap:4px;border:1px solid var(--line-strong);border-radius:10px;padding:14px 16px;cursor:pointer;background:var(--paper);margin:0}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice b{font-size:1rem}
+.choice span{color:var(--muted);font-size:.88rem;font-weight:400}
+.choice:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+fieldset{border:0;padding:0;margin:0;min-width:0;display:grid;gap:8px}
+legend{font-weight:600;font-size:.9rem;padding:0;margin-bottom:6px}
+.sub-h{font-size:1rem;margin:6px 0 0;font-weight:700}
+.btn{font:inherit;font-weight:600;font-size:.95rem;border-radius:8px;padding:10px 16px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.small{padding:5px 10px;font-size:.84rem}
+.btn.big{padding:14px 20px;font-size:1.02rem;width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font-size:.9rem}
+.pager{display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:16px;flex-wrap:wrap}
+.pager .need{font-size:.85rem;color:var(--warn);flex:1 1 200px}
+.pager .spacer{flex:1}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:24px 26px;font-family:var(--f-ui);font-size:.98rem;line-height:1.55;max-height:56vh;overflow:auto;min-width:0}
+@media (max-width:520px){.sheet{padding:18px 16px}}
+.sheet h3{font-size:1.3rem;margin:0 0 4px;text-wrap:balance;text-align:center}
+.sheet .sub{text-align:center;font-weight:700;font-style:normal!important;color:var(--ink)!important}
+.sheet h4{font-size:1rem;margin:16px 0 6px}
+.sheet p{margin:0 0 10px}
+.sheet ul{margin:0 0 10px;padding-left:1.2em}
+.sheet .stage{font-family:var(--f-ui);font-size:.84rem;color:var(--muted);font-style:italic;margin:0 0 10px}
+.sheet .sub{font-style:italic;color:var(--muted);margin-bottom:14px}
+.mailhead{display:grid;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.mailhead .k{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.mailbody{font-family:var(--f-doc);min-height:380px;background:var(--sheet)}
+.attach{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.attach li{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--paper);font-size:.92rem}
+.attach .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:800}
+.attach .yes .ic{background:var(--ok);color:var(--paper)}
+.attach .no .ic{background:var(--warn);color:var(--paper)}
+.attach small{display:block;color:var(--muted)}
+.attachbox{border:2px dashed var(--warn);background:var(--warn-soft);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.attachbox .ah{display:flex;gap:10px;align-items:center;font-weight:800;font-size:1.02rem;color:var(--warn)}
+.attachbox .ah svg{flex:none}
+.attachbox .bang{flex:none;width:24px;height:24px;border-radius:50%;background:var(--warn);color:var(--paper);display:grid;place-items:center;font-weight:900;font-size:.95rem}
+.attachbox ol{margin:0;padding-left:1.3em;display:grid;gap:4px;font-size:.92rem}
+.attachbox .fname{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 6px;word-break:break-all}
+.attachbox.inl{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.attachbox.inl .ah{color:var(--ok)}
+.sendremind{display:flex;gap:8px;align-items:flex-start;color:var(--warn);font-weight:700;font-size:.9rem;margin:6px 0 2px}
+details.call{border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+details.call summary{cursor:pointer;padding:12px 14px;font-weight:600}
+details.call .in{padding:0 14px 14px;display:grid;gap:10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);font-weight:600;font-size:.9rem;padding:9px 16px;border-radius:999px;max-width:calc(100% - 32px)}
+footer .wrap{padding-block:20px 36px;border-top:1px solid var(--line);color:var(--muted);font-size:.84rem;display:grid;gap:10px}
+.share{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.share canvas{width:112px;height:112px;background:#fff;padding:6px;border-radius:6px}
+a{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+/* ---- testimony page additions ---- */
+.backlink{font-size:.84rem;font-weight:600;text-decoration:none}
+.backlink:hover{text-decoration:underline}
+.explain{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:14px 16px;display:grid;gap:8px}
+.explain b{font-size:1rem}
+.explain p{margin:0;color:var(--muted);font-size:.92rem}
+.stances{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;font-size:.82rem}
+.stances span{border:1px solid var(--line);border-radius:6px;padding:6px 8px;text-align:center;color:var(--muted)}
+.stances span.me{border-color:var(--seal);color:var(--ink);font-weight:700;background:var(--accent-soft)}
+.prompts{margin:0;padding-left:1.2em;color:var(--muted);font-size:.9rem;display:grid;gap:3px}
+.tbody{font-family:var(--f-doc);min-height:460px;background:var(--sheet);font-size:1rem;line-height:1.55}
+.thead{background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:16px 18px;font-family:var(--f-doc);display:grid;gap:2px}
+.thead .t1{font-weight:700;font-size:1.15rem;text-align:center}
+.thead .t2{font-weight:600;text-align:center;margin-bottom:8px}
+.thead .ln{font-size:.92rem;color:var(--muted)}
+.wc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.86rem;color:var(--muted)}
+.wc b{color:var(--ink);font-variant-numeric:tabular-nums}
+.wc .long{color:var(--warn);font-weight:600}
+ol.steps{margin:0;padding-left:1.3em;display:grid;gap:10px;font-size:.93rem}
+ol.steps li::marker{color:var(--seal);font-weight:700}
+ol.steps p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.hearing{border:1px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:12px 14px;display:grid;gap:4px;font-size:.93rem}
+.hearing b{font-size:1rem}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="billref"><span><b>Senate Bill 422</b></span><span>136th General Assembly</span><span>Interested party testimony</span></div>
+  <h1>Tell the House committee how to fix SB 422</h1>
+  <div class="status"><i></i>Passed the Senate 33–0 on June 10, 2026 · now in the Ohio House</div>
+  <a class="backlink" id="backtop" href="./">&larr; Back to the email page</a>
+</div></header>
+
+<main><div class="wrap">
+<ol class="progress" id="progress" aria-label="Progress">
+  <li><span>Before you start</span></li><li><span>About you</span></li><li><span>Your story</span></li><li><span>Review &amp; submit</span></li>
+</ol>
+
+<form id="f" autocomplete="on">
+
+<!-- PAGE 1 -->
+<section class="page" data-page="1">
+  <p class="eyebrow">Step 1 of 4</p>
+  <h2 tabindex="-1">Testimony goes to every member of the committee</h2>
+  <p class="hint">When a House committee holds a hearing on SB 422, anyone can submit testimony. It goes into the public record and to every member who will vote on the bill and its amendments. This page writes a clear, respectful statement for you in about ten minutes. You can change every word of it.</p>
+
+  <div class="explain">
+    <b>Why "interested party"?</b>
+    <div class="stances" aria-hidden="true"><span>Proponent</span><span>Opponent</span><span class="me">Interested party</span></div>
+    <p>Ohio House committees take testimony as a proponent (for the bill), an opponent (against it), or an interested party. Interested party fits this request: you support what SB 422 is trying to do, and you're asking the committee to change one part of it, not to pass it as is or to defeat it.</p>
+  </div>
+
+  <div id="hearingbox"></div>
+
+  <fieldset>
+    <legend>How will you testify? <span class="req">*</span></legend>
+    <div class="choices">
+      <label class="choice"><input type="radio" name="fmt" id="fmt-written" value="written"><b>Written only</b><span>No trip to Columbus. Your statement goes in the record and to every committee member.</span></label>
+      <label class="choice"><input type="radio" name="fmt" id="fmt-inperson" value="inperson"><b>In person</b><span>You read it aloud at the Statehouse. Members may ask you a question or two afterward.</span></label>
+    </div>
+  </fieldset>
+
+  <div class="warnbox"><b>Testimony is public.</b> The House upload form says anything submitted may be released to the public and published online, and committee web pages list each witness by name beside their testimony. If SB 422 would restrict you, you don't have to say so; the next step lets you choose how to describe yourself. Leave out children's names, your street address, and anything you wouldn't want online.</div>
+  <label class="chk"><input type="checkbox" id="ack"><span>I understand my testimony and name will be public <span class="req">*</span></span></label>
+
+  <div class="pager"><span class="need" id="need1"></span><button class="btn" type="button" data-next>Next</button></div>
+</section>
+
+<!-- PAGE 2 -->
+<section class="page" data-page="2" hidden>
+  <p class="eyebrow">Step 2 of 4</p>
+  <h2 tabindex="-1">About you</h2>
+  <p class="hint" id="prefillnote">Your name and town go at the top of your testimony. Nothing you type leaves this page.</p>
+  <fieldset>
+    <legend>Where do you live? <span class="req">*</span></legend>
+    <div class="choices">
+      <label class="choice"><input type="radio" name="loc" id="loc-ohio" value="ohio"><b>In Ohio</b><span>Your House district goes in your testimony.</span></label>
+      <label class="choice"><input type="radio" name="loc" id="loc-out" value="out"><b>Outside Ohio</b><span>Anyone may submit committee testimony. You'll say how you're connected to Ohio.</span></label>
+    </div>
+  </fieldset>
+  <div class="grid2">
+    <div class="field"><label for="name">Full name <span class="req">*</span></label><input type="text" id="name" autocomplete="name"></div>
+    <div class="field"><label for="city" id="citylabel">City or township <span class="req">*</span></label><input type="text" id="city" autocomplete="address-level2"></div>
+    <div class="field" id="districtfield"><label for="district">Your Ohio House district <span class="opt">(optional)</span></label><select id="district"></select></div>
+    <div class="field" id="statefield" hidden><label for="state">State <span class="req">*</span></label><select id="state"></select></div>
+    <div class="field" id="connfield" hidden><label for="conn">Your connection to Ohio <span class="opt">(optional)</span></label>
+      <select id="conn"><option value="none">None in particular; I care about the issue</option><option value="kids">My children go to school in Ohio</option><option value="family">I have family in Ohio this would affect</option><option value="travel">My family travels to Ohio for youth sports or events</option><option value="border">I live near Ohio; our kids' events are often there</option><option value="former">I grew up in Ohio</option></select></div>
+    <div class="field"><label for="org">Representing <span class="opt">(optional)</span></label><input type="text" id="org" placeholder="Leave blank if speaking for yourself"></div>
+  </div>
+  <p class="note" id="distnote" style="margin-top:-6px">Don't know your district? The <a href="./">email page</a> looks it up from your county and town.</p>
+  <div class="tipbox" id="oosnote" hidden><b>Testimony from outside Ohio counts, but it's read differently.</b>Committee members weigh their own constituents most. What makes out-of-state testimony land is a real connection: children in Ohio schools, family there, or games and recitals you travel to. Say it specifically in your own words on the next step.</div>
+
+  <fieldset>
+    <legend>Which best describes you? <span class="req">*</span></legend>
+    <div class="roles" id="roles"></div>
+  </fieldset>
+  <div class="grid2" id="roleextra"></div>
+
+  <div class="field" id="selfdescfield" hidden>
+    <label for="selfdesc">How should your testimony describe you? <span class="req">*</span></label>
+    <select id="selfdesc">
+      <option value="">Choose…</option>
+      <option value="direct">Say plainly that SB 422 would bar me from school property</option>
+      <option value="family">Say only that SB 422 would affect my family</option>
+    </select>
+    <p class="note" id="selfdescnote">Saying it plainly is the most persuasive. It's also public, with your name on it. Either choice is fine.</p>
+  </div>
+
+  <div id="famsec" hidden style="display:grid;gap:14px">
+    <h3 class="sub-h" id="famh">Your children</h3>
+    <p class="hint">Ages only, no names. These answers keep every sentence about your family accurate.</p>
+    <div class="grid2">
+      <div class="field"><label for="kidcount" id="kidcountlabel">How many children? <span class="req">*</span></label>
+        <select id="kidcount"><option value="">Choose…</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option disabled class="futopt">──────────</option><option value="expecting" class="futopt">Expecting our first child</option><option value="planning" class="futopt">Planning to have children</option><option value="none" class="futopt noneopt">No, and not planning to</option></select></div>
+    </div>
+    <div class="kidrows" id="kidrows"></div>
+  </div>
+
+  <label class="chk" id="familywrap" hidden><input type="checkbox" id="family"><span>This affects someone in my own family<small>Adds one line saying so, without naming anyone.</small></span></label>
+
+  <fieldset>
+    <legend>Contact line at the end <span class="opt">(optional)</span></legend>
+    <p class="note" style="margin:0 0 4px">Advocacy groups recommend it so members can reach you with questions. It will be public.</p>
+    <div class="grid2">
+      <div class="field"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
+      <div class="field"><label for="phone">Phone</label><input type="tel" id="phone" autocomplete="tel"></div>
+    </div>
+    <div class="roles">
+      <label class="chk"><input type="checkbox" id="showemail"><span>Put my email on the testimony</span></label>
+      <label class="chk"><input type="checkbox" id="showphone"><span>Put my phone on the testimony</span></label>
+    </div>
+  </fieldset>
+
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need2"></span><button class="btn" type="button" data-next>Next</button></div>
+</section>
+
+<!-- PAGE 3 -->
+<section class="page" data-page="3" hidden>
+  <p class="eyebrow">Step 3 of 4</p>
+  <h2 tabindex="-1">Your story</h2>
+  <p class="hint" id="storyhint">Committee members hear a lot of policy arguments. A specific, true example from your own life is what they remember.</p>
+
+  <div id="famstory" style="display:grid;gap:14px">
+    <fieldset id="actsfs"><legend>Activities <span id="actswho">your children take part in</span> <span class="opt">(optional)</span></legend>
+      <div class="roles" id="acts"></div>
+      <label class="chk" style="margin-top:6px"><input type="checkbox" id="outside"><span>An outside group that meets or performs at a school<small>Dance studio, scouts, 4-H, youth league, church group…</small></span></label>
+      <div class="field" id="outsidenamefield" hidden style="margin-top:8px"><label for="outsidename">Name of the group <span class="opt">(optional)</span></label><input type="text" id="outsidename" placeholder="e.g. Miss Lisa's Dance Studio"></div>
+    </fieldset>
+    <fieldset id="ptsfs"><legend>How the bill would affect your family <span class="opt">(pick the ones that are true)</span></legend><div class="roles" id="pts"></div></fieldset>
+  </div>
+
+  <div class="field">
+    <label for="own">In your own words <span class="opt">(optional, but it makes the biggest difference)</span></label>
+    <ul class="prompts" id="prompts"></ul>
+    <textarea id="own" style="margin-top:8px;min-height:140px" placeholder="Two to five sentences is plenty."></textarea>
+    <p class="note">This goes into your testimony after the part about your family, as you wrote it. Plain words are best.</p>
+  </div>
+
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="need" id="need3"></span><button class="btn" type="button" data-next>Next: review your testimony</button></div>
+</section>
+
+<!-- PAGE 4 -->
+<section class="page" data-page="4" hidden>
+  <p class="eyebrow">Step 4 of 4</p>
+  <h2 tabindex="-1">Review and submit</h2>
+  <p class="hint">Read it out loud once. Change anything that doesn't sound like you. The heading block is filled in for you; everything in the large box is yours to edit.</p>
+
+  <div class="thead" id="thead"></div>
+  <div class="warnbox" id="ownnudge" hidden><b>Add a sentence of your own.</b> Many people are using this page, and each person gets different wording, but a few lines only you could write are what make testimony stand out to committee members and staff. <button class="linkbtn" type="button" id="toown">Go back and add it</button></div>
+  <div class="tipbox"><b>Proofread before you submit.</b>Testimony is entered into the record exactly as you send it, and it stays online.</div>
+  <textarea class="tbody" id="tbody" aria-label="Your testimony"></textarea>
+  <div class="wc" id="wc"></div>
+  <div class="row">
+    <button class="btn" type="button" id="dl">Download testimony PDF</button>
+    <button class="btn ghost" type="button" data-copy="body">Copy text</button>
+    <button class="btn ghost" type="button" id="reroll">Get different wording</button>
+    <button class="btn ghost small" type="button" id="resetbody" hidden>Undo my edits</button>
+  </div>
+  <p class="note">On iPhone, the download opens your share menu: choose <strong>Save to Files</strong> so you can upload it.</p>
+
+  <section class="more" aria-labelledby="howh">
+    <h3 id="howh">How to submit it</h3>
+    <ol class="steps" id="steps"></ol>
+
+    <details class="morecard" id="inpersoncard">
+      <summary><span class="num">+</span>Tips for testifying in person</summary>
+      <div class="mbody">
+        <p>Arrive early, and bring a printed copy to read from. The chair calls witnesses by name.</p>
+        <p>Begin by addressing the chair and members, as your testimony already does. Read at a steady pace; about two to three minutes is ideal. The chair may set a time limit, so don't be thrown if asked to summarize.</p>
+        <p>If a member asks a question you can't answer, it's fine to say "I don't know, but I can follow up." You don't have to share anything more personal than what's in your written statement.</p>
+        <p>Thank the chair when you finish. That's it.</p>
+      </div>
+    </details>
+
+    <details class="morecard">
+      <summary><span class="num">+</span>Want someone to look it over first?</summary>
+      <div class="mbody">
+        <p>Send your PDF or text to <span class="cmail" data-subj="SB 422 testimony review">ohiosb422 [at] proton [dot] me</span>. I'll read it, check that every statement about the bill is accurate, and help you get it in on time. Please allow a day before the deadline.</p>
+      </div>
+    </details>
+  </section>
+
+  <div class="okbox">Thank you. Committee members read what people take the time to write. Testimony from a constituent with a real story is one of the most effective things anyone can do for this amendment.</div>
+  <div class="pager"><button class="btn ghost" type="button" data-back>Back</button><span class="spacer"></span><button class="btn ghost" type="button" id="startover">Start over</button></div>
+</section>
+</form>
+</div></main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<footer><div class="wrap">
+  <p><a href="./">&larr; Back to the email page</a> · Read the bill: <a href="https://www.legislature.ohio.gov/legislation/136/sb422" target="_blank" rel="noopener">Senate Bill 422 on legislature.ohio.gov</a> · <a href="https://www.ohiohouse.gov/committees" target="_blank" rel="noopener">Ohio House committees</a></p>
+  <p><strong style="color:var(--ink)">Questions?</strong> Email <span class="cmail" data-subj="Question about SB 422 testimony">ohiosb422 [at] proton [dot] me</span>.</p>
+  <p>Made by a Portage County parent. This page doesn't store or send what you type; your answers stay in this browser.</p>
+</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+"use strict";
+/* ================= Fill these in once SB 422 is assigned and a hearing is posted =================
+   COMMITTEE    committee name without "Committee", e.g. "Judiciary"
+   CHAIR / VICE_CHAIR / RANKING   last names, e.g. "Thomas"
+   HEARING_DATE "YYYY-MM-DD"   HEARING_TIME e.g. "10:00 a.m."   HEARING_ROOM e.g. "Room 121"
+   MEETING_URL  the ohiohouse.gov meeting page for that hearing (it has the "Upload Testimony" link)
+   CHAIR_EMAIL  the committee email given in the hearing notice, if any
+   TAKING_IP    true once the notice lists interested party testimony (or "Prop/Opp/IP") for SB 422 */
+const COMMITTEE="", CHAIR="", VICE_CHAIR="", RANKING="";
+const HEARING_DATE="", HEARING_TIME="", HEARING_ROOM="";
+const MEETING_URL="", CHAIR_EMAIL="";
+const TAKING_IP=false;
+
+/* Contact address, assembled here so simple scrapers reading the HTML don't pick it up. */
+(function(){const u="ohiosb422",d="proton.me",e=u+"@"+d;
+  document.querySelectorAll(".cmail").forEach(el=>{const a=document.createElement("a");a.href="mailto:"+e+"?subject="+encodeURIComponent(el.dataset.subj||"SB 422");a.textContent=e;el.replaceWith(a);});})();
+
+const $=id=>document.getElementById(id);
+const v=id=>{const e=$(id);return e?e.value.trim():"";};
+const cap1=x=>x?x.charAt(0).toUpperCase()+x.slice(1):x;
+const art=w=>(/^[aeiou]/i.test(w)?"an ":"a ")+w;
+const anA=n=>([8,11,18].includes(n)?"an ":"a ");
+const NUMW=["","one","two","three","four","five","six"];
+function listJoin(a){return a.length<2?a.join(""):a.length===2?a.join(" and "):a.slice(0,-1).join(", ")+", and "+a[a.length-1];}
+
+/* ---------- Questions (same roles as the email page, so answers carry over) ---------- */
+const ROLES=[
+ ["parent","SB 422 would bar me from school property"],
+ ["spouse","My spouse or partner would be barred from school property"],
+ ["grandparent","Grandparent"],
+ ["relative","Other relative"],
+ ["teacher","Teacher or school staff"],
+ ["admin","Principal, superintendent, or school board"],
+ ["coach","Coach, activity leader, or event organizer"],
+ ["community","Friend, neighbor, or community member"],
+];
+const FAMILY_ROLES=["parent","spouse","grandparent","relative"];
+const FUTURE_ROLES=["parent","spouse"];
+const FUT_VALUES=["expecting","planning","none"];
+const ACTS=[["sports","Sports or cheer"],["music","Band, choir, or orchestra"],["plays","Plays or musicals"],["academic","Academic events or clubs","Science fair, spelling bee, robotics"]];
+const ACT_VERB={sports:["plays sports","play sports"],music:["is in a school music program","are in school music programs"],plays:["acts in school plays","act in school plays"],academic:["takes part in academic events and clubs","take part in academic events and clubs"]};
+const PTS=[
+ ["otherparent","The parent who can attend can't always go","Work, travel, illness, or a single-parent home"],
+ ["siblings","Brothers and sisters get left out","Little ones leave with the parent who can't stay"],
+ ["away","Events at other schools","Away games, tournaments, recitals out of town"],
+ ["choices","It shapes which activities we choose","Families weigh which parent is allowed at the field"],
+];
+function ptRule(k,s){
+  if(k==="siblings") return s.kids.length>=2?"":"Needs two or more children";
+  if(k==="away") return s.acts.length||s.outside?"":"Needs at least one activity";
+  return "";
+}
+const EXTRA={
+  teacher:[["school","School name","text","e.g. Garfield Elementary"]],
+  admin:[["title","Your role","select",["Principal","Assistant principal","Superintendent","School board member","School administrator"]],["school","School or district","text","e.g. James A. Garfield Local Schools"]],
+  coach:[["org2","Team, group, or studio","text","e.g. Garrettsville Youth Softball"]],
+  spouse:[["spouseword","The parent the bill would bar is my…","select",["husband","wife","partner"],true]],
+  relative:[["relword","I am the children's…","select",["aunt","uncle","older sister","older brother","cousin","other relative"],true]],
+  grandparent:[],parent:[],community:[]
+};
+
+/* ---------- Build controls ---------- */
+function chk(container,type,name,items){
+  container.innerHTML=items.map(([val,l,sm])=>`<label class="chk"><input type="${type}" name="${name}" id="${name}-${val}" value="${val}"><span>${l}${sm?`<small>${sm}</small>`:""}<em class="why" hidden></em></span></label>`).join("");
+}
+chk($("roles"),"radio","role",ROLES);
+chk($("acts"),"checkbox","act",ACTS);
+chk($("pts"),"checkbox","pt",PTS);
+$("state").innerHTML=`<option value="">Choose…</option>`+["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","District of Columbia","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","Puerto Rico","Outside the U.S."].map(x=>`<option>${x}</option>`).join("");
+$("district").innerHTML=`<option value="">Not sure / leave out</option>`+Array.from({length:99},(_,i)=>`<option value="${i+1}">District ${i+1}</option>`).join("");
+
+const curRole=()=>(document.querySelector('input[name=role]:checked')||{}).value||"";
+const curLoc=()=>(document.querySelector('input[name=loc]:checked')||{}).value||"";
+const curFmt=()=>(document.querySelector('input[name=fmt]:checked')||{}).value||"";
+
+const TKEY="sb422kit.testimony.v1", IKEY="sb422kit.v5";
+let saved={}; try{saved=JSON.parse(localStorage.getItem(TKEY)||"null")||null;}catch(e){saved=null;}
+let fromIndex=false;
+if(!saved){
+  /* First visit: carry over answers from the email page (same site, same browser) */
+  let ix={}; try{ix=JSON.parse(localStorage.getItem(IKEY)||"{}")||{};}catch(e){ix={};}
+  saved={};
+  ["name","city","email","phone","kidcount","outsidename","x-spouseword","x-relword","x-school","x-title"].forEach(k=>{ if(typeof ix[k]==="string"&&ix[k]) saved[k]=ix[k]; });
+  if(ix["x-org"]) saved["x-org2"]=ix["x-org"];
+  Object.keys(ix).forEach(k=>{
+    if(/^kid-(sex|age)-\d$/.test(k)) saved[k]=ix[k];
+    if(/^c:(role|act)-/.test(k)||k==="c:outside"||k==="c:family") saved[k]=1;
+    const m=k.match(/^c:sit-(otherparent|siblings|away|choices)$/); if(m) saved["c:pt-"+m[1]]=1;
+  });
+  if(ix.chosen) saved.district=String(ix.chosen);
+  if(ix.chosen||ix.county) saved["c:loc-ohio"]=1;
+  fromIndex=!!(saved.name||saved.city||Object.keys(saved).some(k=>k.startsWith("c:role-")));
+}
+
+function renderExtra(role){
+  const fields=EXTRA[role]||[];
+  $("roleextra").innerHTML=fields.map(([id,l,type,opt,req])=>{
+    const lab=`<label for="x-${id}">${l} ${req?'<span class="req">*</span>':'<span class="opt">(optional)</span>'}</label>`;
+    return type==="select"
+      ? `<div class="field">${lab}<select id="x-${id}"><option value="">Choose…</option>${opt.map(o=>`<option>${o}</option>`).join("")}</select></div>`
+      : `<div class="field">${lab}<input type="text" id="x-${id}" placeholder="${opt}"></div>`;
+  }).join("");
+  fields.forEach(([id])=>{ if(saved["x-"+id]!=null) $("x-"+id).value=saved["x-"+id]; });
+  const fam=FAMILY_ROLES.includes(role);
+  $("familywrap").hidden=fam||!role;
+  $("famsec").hidden=!fam;
+  $("selfdescfield").hidden=role!=="parent";
+  $("famh").textContent=role==="grandparent"?"Your grandchildren":role==="relative"?"The children in your family":"Your children";
+  const futOk=FUTURE_ROLES.includes(role), kc=$("kidcount");
+  kc.querySelectorAll(".futopt").forEach(o=>{const ok=futOk&&(!o.classList.contains("noneopt")||role==="parent"); o.hidden=!ok; if(o.value) o.disabled=!ok;});
+  if(kc.selectedOptions[0]&&kc.selectedOptions[0].disabled){ kc.value=""; renderKids(); }
+  [...kc.options].forEach(o=>{ if(/^[1-6]$/.test(o.value)) o.textContent=role==="parent"?`Yes, ${o.value} ${o.value==="1"?"child":"children"}`:o.value; });
+  kc.querySelector('option[value="expecting"]').textContent=role==="parent"?"Expecting my first child":"Expecting our first child";
+  $("kidcountlabel").firstChild.textContent=role==="grandparent"?"How many grandchildren does this affect? ":role==="relative"?"How many children does this affect? ":role==="parent"?"Do you have children? ":"How many children? ";
+}
+const AGES=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+const ageLabel=a=>a===0?"Under 1 year old":a===1?"1 year old":`${a} years old`;
+function renderKids(){
+  const n=Number($("kidcount").value)||0, box=$("kidrows");
+  const keep=[...box.querySelectorAll("select")].reduce((o,el)=>(o[el.id]=el.value,o),{});
+  let h="";
+  for(let i=1;i<=n;i++) h+=`<div class="kidrow"><span class="kn">Child ${i}</span>
+    <select id="kid-sex-${i}" aria-label="Child ${i}: girl or boy"><option value="">Girl or boy…</option><option value="girl">Girl</option><option value="boy">Boy</option><option value="x">Prefer not to say</option></select>
+    <select id="kid-age-${i}" aria-label="Child ${i}: age"><option value="">Age…</option>${AGES.map(a=>`<option value="${a}">${ageLabel(a)}</option>`).join("")}</select></div>`;
+  box.innerHTML=h;
+  for(let i=1;i<=n;i++) for(const f of ["sex","age"]){const id=`kid-${f}-${i}`; const val=keep[id]!=null?keep[id]:saved[id]; if(val!=null) $(id).value=val;}
+}
+function readKids(){
+  const n=Number($("kidcount").value)||0,o=[];
+  for(let i=1;i<=n;i++){const sx=$(`kid-sex-${i}`),ag=$(`kid-age-${i}`); o.push({sex:sx?sx.value:"",age:ag&&ag.value!==""?Number(ag.value):null});}
+  return o;
+}
+
+/* ---------- State ---------- */
+function state(){
+  const role=curRole()||"community", fam=FAMILY_ROLES.includes(role), kc=$("kidcount").value;
+  const future=fam&&FUTURE_ROLES.includes(role)&&FUT_VALUES.includes(kc)&&!(kc==="none"&&role!=="parent")?kc:"";
+  return {
+    role, fmt:curFmt()||"written", name:v("name"), city:v("city"), org:v("org"),
+    loc:curLoc()||"ohio", district:curLoc()==="out"?"":v("district"), state:v("state")==="Outside the U.S."?"":v("state"), conn:v("conn")||"none",
+    email:$("showemail").checked?v("email"):"", phone:$("showphone").checked?v("phone"):"",
+    selfdesc: role==="parent"&&future!=="none" ? (v("selfdesc")||"direct") : "direct",
+    family:$("family").checked&&!$("familywrap").hidden,
+    school:v("x-school"), title:v("x-title"), org2:v("x-org2"),
+    spouseword:v("x-spouseword")||"spouse",
+    relword:v("x-relword")==="other relative"?"":v("x-relword"),
+    future, kids: fam&&!future?readKids().filter(k=>k.sex&&k.age!=null).sort((a,b)=>b.age-a.age):[],
+    acts: fam&&!future?[...document.querySelectorAll('input[name=act]:checked')].map(i=>i.value):[],
+    outside: fam&&!future&&$("outside").checked, outsideName: v("outsidename").replace(/[.\s]+$/,""),
+    pts: fam&&!future?[...document.querySelectorAll('input[name=pt]:checked:not(:disabled)')].map(i=>i.value):[],
+    own: $("own").value.trim()
+  };
+}
+
+/* ---------- Wording about children ---------- */
+function nounFor(role,sex,rel,many){
+  let n;
+  if(role==="grandparent") n=sex==="girl"?"granddaughter":sex==="boy"?"grandson":"grandchild";
+  else if(role==="relative"){
+    if(rel==="aunt"||rel==="uncle") n=sex==="girl"?"niece":sex==="boy"?"nephew":"child";
+    else if(rel==="older sister"||rel==="older brother") n=sex==="girl"?"younger sister":sex==="boy"?"younger brother":"younger sibling";
+    else if(rel==="cousin") n="cousin";
+    else n="child";
+  } else n=sex==="girl"?"daughter":sex==="boy"?"son":"child";
+  if(!many) return n;
+  return n==="child"?"children":n==="grandchild"?"grandchildren":n+"s";
+}
+function kidPhrase(s,k){
+  const n=nounFor(s.role,k.sex,s.relword,false);
+  if(k.age===0) return n==="child"?"a baby":`a baby ${n}`;
+  return `${anA(k.age)}${k.age}-year-old ${n}`;
+}
+function C(s){
+  const k=s.kids, n=k.length, one=n===1, poss=s.role==="spouse"?"our":"my";
+  let txt;
+  if(one) txt=`${poss} ${nounFor(s.role,k[0].sex,s.relword,false)}`;
+  else if(s.role==="grandparent") txt="my grandchildren";
+  else if(s.role==="relative") txt="the children";
+  else txt=`${poss} children`;
+  const sx=one?k[0].sex:"many";
+  const pr=sx==="girl"?["she","her","her"]:sx==="boy"?["he","him","his"]:["they","them","their"];
+  const pl=pr[0]==="they";
+  return {n,one,kids:txt,Kids:cap1(txt),poss:txt+(txt.endsWith("s")?"'":"'s"),they:pr[0],They:cap1(pr[0]),them:pr[1],their:pr[2],Their:cap1(pr[2]),pl,is:pl?"are":"is"};
+}
+function kidsSentence(s){
+  const c=C(s); if(!c.n) return "";
+  const list=listJoin(s.kids.map(k=>kidPhrase(s,k)));
+  const ages=listJoin(s.kids.map(k=>k.age===0?"under 1":String(k.age)));
+  if(s.role==="parent") return c.one
+    ? pick("ks-p1",[`I have ${list}.`,`I am the parent of ${list}.`])
+    : pick("ks-p",[`I have ${NUMW[c.n]} children: ${list}.`,`I am the parent of ${NUMW[c.n]} children, ages ${ages}.`,`Our family includes ${list}.`]);
+  if(s.role==="spouse") return c.one
+    ? pick("ks-s1",[`My ${s.spouseword} and I have ${list}.`,`We are the parents of ${list}.`])
+    : pick("ks-s",[`My ${s.spouseword} and I have ${NUMW[c.n]} children: ${list}.`,`We are the parents of ${NUMW[c.n]} children, ages ${ages}.`,`Our family includes ${list}.`]);
+  if(s.role==="grandparent") return c.one
+    ? `I have ${list}.`
+    : pick("ks-g",[`I have ${NUMW[c.n]} grandchildren this bill would affect: ${list}.`,`This bill would affect ${NUMW[c.n]} of my grandchildren, ages ${ages}.`]);
+  return c.one?`This bill affects ${list} in my family.`:pick("ks-r",[`This bill affects ${NUMW[c.n]} children in my family: ${list}.`,`It affects ${NUMW[c.n]} children in my family, ages ${ages}.`]);
+}
+
+/* ---------- Wording variety ----------
+   Every visitor gets a random but stable pick from each list below, so testimony from different
+   people doesn't read word for word the same. "Get different wording" moves every list to its next version. */
+const SEED_KEY="sb422kit.tseed";
+let SEED; try{SEED=localStorage.getItem(SEED_KEY);}catch(e){}
+if(!SEED){SEED=String(Math.floor(Math.random()*1e9)); try{localStorage.setItem(SEED_KEY,SEED);}catch(e){}}
+let ROLL=0; try{ROLL=Number(localStorage.getItem(SEED_KEY+".roll"))||0;}catch(e){}
+function reseed(){ROLL++; try{localStorage.setItem(SEED_KEY+".roll",String(ROLL));}catch(e){}}
+function pick(key,arr){let h=2166136261;const str=SEED+"|"+key;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return arr[((h>>>0)+ROLL)%arr.length];}
+
+/* ---------- Testimony text ---------- */
+const OOS_CONN={
+  kids:  ["My children attend school in Ohio, so this bill would reach my family directly.","Although I live outside Ohio, my children go to school there, so this bill would affect us directly."],
+  family:["I have family in Ohio, and this bill would affect them.","My family ties to Ohio are close, and this bill would reach people I love there."],
+  travel:["My family regularly travels to Ohio for youth sports, competitions, and school events.","Our children's teams and activities often bring us to Ohio schools for games, tournaments, and performances."],
+  border:["I live near the Ohio line, and our children's activities often take us into Ohio schools.","We live close to Ohio, and many of our children's games and events are held at Ohio schools."],
+  former:["I grew up in Ohio and still have close ties to the state.","Ohio is where I grew up, and I still care a great deal about its schools and families."],
+  none:  [""]
+};
+const OOS_NOTE=["I recognize that I am not one of your constituents, and I appreciate the committee's willingness to hear from people outside Ohio.","I know this committee's first responsibility is to Ohioans, and I am grateful that you accept testimony from people outside the state.","I am not an Ohio resident, and I appreciate the chance to share my perspective with the committee."];
+
+/* Salutations, modeled on real Ohio testimony openings: full Chair/Vice Chair/Ranking Member form,
+   Chair + Ranking Member only, "Dear ..." letter style, and salutations folded into the thank-you sentence. */
+function addressees(){
+  const C=CHAIR?`Chair ${CHAIR}`:"Chair", V=VICE_CHAIR?`Vice Chair ${VICE_CHAIR}`:"Vice Chair", R=RANKING?`Ranking Member ${RANKING}`:"Ranking Member";
+  const COM=COMMITTEE?`the ${COMMITTEE} Committee`:"the committee", HCOM=COMMITTEE?`the House ${COMMITTEE} Committee`:"the House committee";
+  return {C,V,R,COM,HCOM,list:[
+    `${C}, ${V}, ${R}, and members of ${COM}`,
+    `${C}, ${V}, ${R}, and committee members`,
+    `${C}, ${R}, and members of ${COM}`,
+    `${C}, ${R}, and members of the committee`,
+    `${C} and members of ${COM}`,
+    `${C} and members of the committee`,
+    `${C}, ${V}, ${R}, and distinguished members of ${COM}`,
+    `${C}, ${V}, ${R}, and all members of the committee`,
+    `${C}, ${V}, ${R}, and members of ${HCOM}`,
+    `${C} and committee members`,
+    `${C}, ${R}, and committee members`]};
+}
+function salutationParts(s){
+  const A=addressees(), L=A.list, ip=s.fmt==="inperson";
+  const standalone=[
+    ...L.map(x=>`${x}:`),
+    `${L[0]},`, `${L[2]},`, `${L[4]},`,
+    `Dear ${L[0]}:`, `Dear ${L[2]}:`, `Dear ${L[5]}:`, `Dear ${L[9]}:`,
+    `To ${A.C} and the members of ${A.HCOM}:`, `To the members of ${A.HCOM}:`,
+    `Honorable ${A.C} and members of ${A.COM}:`, `Members of ${A.HCOM}:`];
+  const verb=ip?pick("sal-verb-ip",["provide interested party testimony","testify as an interested party","offer interested party testimony"]):pick("sal-verb-w",["submit written interested party testimony","provide written interested party testimony"]);
+  const a=pick("sal-a",L);
+  const merged=[
+    `${a}, thank you for the opportunity to ${verb} on Senate Bill 422.`,
+    `Thank you, ${a}, for the opportunity to ${verb} on Senate Bill 422.`,
+    `${a}, thank you for allowing me to ${verb} on Senate Bill 422.`,
+    `${a}, I appreciate the opportunity to ${verb} on Senate Bill 422.`];
+  if(ip && HEARING_TIME){
+    const t=HEARING_TIME.toLowerCase(), hr=parseInt(t,10)||0, pm=/p\.?\s*m/.test(t);
+    const part=!pm?"morning":(hr>=5&&hr<12?"evening":"afternoon");
+    merged.push(`Good ${part}, ${a}. Thank you for the opportunity to ${verb} on Senate Bill 422.`);
+  }
+  const useMerged=pick("sal-mode",[false,false,true,false,true])===true;
+  return useMerged ? {merged:true,text:pick("sal-m",merged)} : {merged:false,text:pick("sal-s",standalone)};
+}
+const THANKS_IP=[
+  "Thank you for the opportunity to provide interested party testimony on Senate Bill 422.",
+  "Thank you for allowing me to testify today as an interested party on Senate Bill 422.",
+  "Thank you for the chance to speak with you today about Senate Bill 422.",
+  "I appreciate the opportunity to offer interested party testimony on Senate Bill 422.",
+  "Thank you for hearing my testimony on Senate Bill 422 today."];
+const THANKS_W=[
+  "Thank you for the opportunity to submit written interested party testimony on Senate Bill 422.",
+  "Please accept this written interested party testimony on Senate Bill 422.",
+  "Thank you for considering my written testimony on Senate Bill 422, which I submit as an interested party.",
+  "I appreciate the opportunity to submit interested party testimony on Senate Bill 422.",
+  "I respectfully submit this written testimony as an interested party on Senate Bill 422."];
+const POS_SHORT=[
+  "I support the goal of SB 422, keeping children safe at school, and I am here as an interested party to ask for one narrow amendment that keeps every protection in the bill and leaves the final decision with the school.",
+  "I agree with what SB 422 sets out to do. I am testifying as an interested party because I am asking for one narrow change: a way for a school to say yes, on its own terms.",
+  "I support protecting children at school, and I support the purpose of this bill. I am asking the committee to add one narrow amendment that keeps the decision in the school's hands.",
+  "My testimony is neither for nor against SB 422. I support its goal, and I am asking for a single, narrow amendment that leaves every protection in place and lets schools make one kind of decision for themselves.",
+  "I want to be clear that I support keeping children safe at school. I am testifying as an interested party to ask for one amendment that would let a school, and only the school, approve a parent for specific events."];
+const POS_LONG=[
+  "I support the goal of SB 422: keeping children safe at school. I am testifying as an interested party because I am not asking you to defeat this bill, and I am not asking you to pass it exactly as it is. I am asking you to adopt one narrow amendment that keeps every protection in the bill and leaves the final decision with the school.",
+  "I am not writing to oppose SB 422. I share its goal of keeping children safe at school. I am writing as an interested party because the bill, as passed by the Senate, leaves out one thing: a way for a school to approve a parent's attendance at their own child's events. I am asking the committee to add it."];
+function pOpening(s,skipThanks){
+  const ip=s.fmt==="inperson", oos=s.loc==="out", n=s.name||"[Your name]", city=s.city||"[your city]";
+  const thanks=pick("thanks-"+s.fmt, ip?THANKS_IP:THANKS_W);
+  let who;
+  if(oos){
+    const where=`${city}, ${s.state||"[your state]"}`;
+    who=pick("who-oos",[`My name is ${n}, and I live in ${where}.`,`I am ${n}, from ${where}.`,`My name is ${n}. I live in ${where}.`]);
+    const conn=pick("conn-"+s.conn,OOS_CONN[s.conn]||OOS_CONN.none);
+    if(conn) who+=" "+conn;
+    who+=" "+pick("oosnote",OOS_NOTE);
+  } else {
+    const d=s.district;
+    who=pick("who",[
+      `My name is ${n}, and I live in ${city}${d?`, in House District ${d}`:""}.`,
+      `My name is ${n}. I live in ${city}${d?` and am a constituent of House District ${d}`:""}.`,
+      `I am ${n}, a resident of ${city}${d?` in House District ${d}`:""}.`]);
+  }
+  const org=s.org?` I am testifying on behalf of ${s.org}.`:"";
+  const pos=pick("pos-"+s.fmt, ip?POS_SHORT:POS_SHORT.concat(POS_LONG));
+  return `${skipThanks?"":thanks+" "}${who}${org} ${pos}`;
+}
+function pRole(s){
+  const c=C(s), sw=s.spouseword, oos=s.loc==="out";
+  const k=s.future?"my child":c.kids, kp=s.future?"my child's":c.poss, th=s.future?"their":c.their;
+  let t="";
+  switch(s.role){
+    case "parent":
+      if(s.future==="none"){ t=pick("role-none",[
+        `I am subject to SB 422's restrictions myself. I do not have children, so this amendment would never apply to me. I am testifying because the children of parents in my position have done nothing wrong, and their schools should be allowed to decide whether a parent may attend.`,
+        `SB 422 would bar me from school property. I have no children, and the amendment I am asking for would never benefit me. I support it because, as written, the bill leaves schools no way to let a parent attend their own child's events, even under supervision.`]); break; }
+      { const fut=s.future==="expecting"?" I am expecting my first child.":s.future==="planning"?" I hope to become a parent someday.":"";
+        t = s.selfdesc==="family" ? pick("role-pfam",[
+          `SB 422 would directly affect my family.${fut} As written, it would keep a parent in our home away from ${kp} games, concerts, and graduation, and no school would have any way to make an exception.`,
+          `This bill would directly affect my family.${fut} As written, one parent in our home could drop ${k} off at school but never stay for a game, a concert, or a graduation, and no school could make an exception.`,
+          `I am testifying because SB 422 would affect my own family.${fut} It would keep a parent in our home from ${kp} school events, with no way for any principal to approve that parent, even under supervision.`,
+          `My family is one of the families this bill would reach.${fut} As written, it would leave ${kp} school with no way to let a parent in our home attend ${th} events, no matter what conditions the school was willing to set.`])
+        : pick("role-pdir",[
+          `I am one of the parents SB 422 would bar from school property.${fut} I accept the rules this bill sets, and I am not asking for open access to any school. I am asking that ${kp} school be allowed to decide, event by event and on its own terms, whether I may attend.`,
+          `I am a parent this bill would bar from school property.${fut} I am not asking you to change who the bill applies to. I am asking that ${kp} school be allowed to decide whether I may attend a specific event, under whatever conditions it sets.`,
+          `I am one of the people SB 422 applies to, and I am also a parent.${fut} I accept the rules this bill sets. What I am asking for is a process: written permission from ${kp} school for specific events, each approved on its own.`,
+          `I am a parent who would be barred from school property under SB 422.${fut} I do not expect to walk into a school whenever I want. I am asking only that a principal have the authority to approve me for events involving ${k}, under conditions the school chooses.`,
+          `I am one of the parents this bill would keep off school grounds.${fut} I support strong rules around schools. I also believe the people best placed to decide whether I can safely attend an event involving ${k} are the principals who run those events.`]); }
+      break;
+    case "spouse":
+      { const fut=s.future==="expecting"?" We are expecting our first child.":s.future==="planning"?" We hope to start a family.":"";
+        const k2=s.future?"our child":c.kids, kp2=s.future?"our child's":c.poss, th2=s.future?"their":c.their;
+        t=pick("role-spouse",[
+          s.future ? `My ${sw} is a parent SB 422 would bar from school property.${fut} Under the bill as written, I would be the only parent who could ever attend our child's school events, and the school would have no way to approve my ${sw}, even with an escort.`
+                   : `My ${sw} is a parent SB 422 would bar from school property. We share the work of raising ${k2}. Under the bill as written, I would be the only parent who could ever attend ${th2} school events, and the school would have no way to approve my ${sw}, even with an escort.`,
+          `My ${sw} would be barred from school property under SB 422.${fut} As written, the bill would put every one of ${kp2} school events on my shoulders alone.`,
+          `My ${sw} is subject to SB 422's restrictions.${fut} I support the bill's purpose, but under its current wording, ${k2} could have at most one parent at ${th2} school events, and none at all when I cannot go.`,
+          `I am the other parent in a home this bill affects: my ${sw} would be barred from school property.${fut} I am asking that ${kp2} school be allowed to approve my ${sw} for specific events, under whatever conditions the school sets.`]); }
+      break;
+    case "grandparent":
+      { const ks=kidsSentence(s), par=c.n?`${c.Their} parent is subject to SB 422's restrictions.`:"";
+        const never=c.n?`${c.they} never ${c.pl?"find":"finds"}`:"some children never find";
+        t=pick("role-gp",[
+          `I am a grandparent. ${ks} ${par} Children look for their family in the audience at games and concerts. As written, this bill would make sure ${never} that parent there, and the school could not decide otherwise.`,
+          `I am a grandparent. ${ks} ${par} I have spent plenty of time in school gyms and auditoriums, and I know a child looks for family in the crowd. As written, the bill gives the school no way to let that parent be there.`,
+          `As a grandparent, I care about two things here: that children are safe at school, and that they are not the ones who lose out. ${ks} ${par} The amendment protects both by leaving the decision with the school.`,
+          `I am testifying as a grandparent. ${ks} ${par} Grandparents fill in for a lot, but we cannot take a parent's place in the audience at a graduation.`]); }
+      break;
+    case "relative":
+      { const who=["aunt","uncle","older sister","older brother","cousin"].includes(s.relword)?art(s.relword):"a family member";
+        const ks=kidsSentence(s), par=c.n?`${c.Their} parent is subject to SB 422's restrictions.`:"";
+        t=pick("role-rel",[
+          `I am writing as ${who}. ${ks} ${par} The rest of our family helps where we can, but none of us can take a parent's place at a graduation or a game.`,
+          `I am testifying as ${who}. ${ks} ${par} When a parent cannot attend school events, the rest of the family tries to fill the gap, and often we cannot.`,
+          `As ${who}, I have seen how much school events mean to children. ${ks} ${par} As written, the bill would keep that parent away from every one of them, with no exception possible.`]); }
+      break;
+    case "teacher":
+      { const at=s.school?` at ${s.school}`:"", P=oos?"an Ohio principal":"our principal";
+        t=pick("role-teacher",[
+          `I work in a school${at}. We plan games, concerts, and award nights for every student, and our staff already supervise every event we hold. As written, SB 422 gives ${P} no way to approve a parent for an event, even with an escort. This amendment would give schools a tool, not an obligation.`,
+          `As a teacher${at}, I want students safe, and I want them to have family at their events. SB 422 as written takes the decision out of school leaders' hands entirely. The amendment would put it back with the principal.`,
+          `I am an educator${at}. School staff already supervise every event we hold. If a principal is comfortable allowing a parent to attend with conditions, the law should let that happen.`,
+          `I work in a school${at}. I see what it means to a child when a parent is in the audience, and what it means when no one comes. The amendment would let schools prevent the second where it is safe to do so.`]); }
+      break;
+    case "admin":
+      { const ti=(s.title?art(s.title.toLowerCase()):"a school leader")+(s.school?` with ${s.school}`:"");
+        t=pick("role-admin",[
+          `I serve as ${ti}. Schools already decide who may be on their campuses and under what conditions. This amendment would let us apply that same judgment to a parent who wants to see their own child perform, compete, or graduate, instead of leaving us with a ban that no one can adjust. It requires nothing of a school that chooses to say no.`,
+          `I am ${ti}. The amendment does not require schools to admit anyone. It gives administrators the authority to approve a parent for specific events, in writing, under conditions the school sets.`,
+          `Speaking as ${ti}, a ban with no way to review a family's situation leaves a school unable to respond to the families in front of it. A written permission process keeps control with the school and keeps students safe.`,
+          `As ${ti}, I would welcome the flexibility to approve a parent for specific events involving their child, each approved on its own, with whatever supervision the school determines is necessary.`]); }
+      break;
+    case "coach":
+      { const o=s.org2;
+        t=pick("role-coach",[
+          `I ${o?`help run ${o}`:"coach and organize youth activities"}. Many of our games, practices, and recitals take place in school gyms, fields, and auditoriums. Because those events are not school-sponsored, SB 422 as written would not even let a restricted parent drop a child off. The amendment would let the host school decide, and would let organizers like me request permission on a family's behalf.`,
+          `As a coach${o?` with ${o}`:""}, I see how much it matters to kids when their parents are in the stands. Many of our events take place on school property, and because they are not school-sponsored, SB 422 as written would not allow a restricted parent even to drop a child off.`,
+          `I organize youth activities${o?` for ${o}`:""}, and many of our games and recitals happen in school buildings. I would like to be able to request permission from the host school on a family's behalf. The amendment allows exactly that, and the school keeps the final word.`]); }
+      break;
+    default:
+      t = oos ? pick("role-comm-oos",[
+          `I care about safe schools and strong families, wherever they are. This amendment protects both: the bill's rules stay in place, and the school decides, event by event, whether a parent may attend.`,
+          `I want children to be safe at school, and I want them to have their families at the events that matter to them. This amendment protects both by leaving the decision with the school.`,
+          `I believe the people who run a school are best placed to decide who attends its events. The amendment would give Ohio principals that authority instead of a ban no one can adjust.`])
+        : pick("role-comm",[
+          `I am a member of this community. I want children to be safe at school, and I want them to have their families at the events that matter to them. This amendment protects both by leaving the decision with the school.`,
+          `I am testifying as a neighbor and a voter. SB 422 has a good purpose, and I would like it to pass with a way for schools to approve a parent for a child's event under supervision.`,
+          `As a member of this community, I trust our principals to make careful decisions. The bill as written does not let them decide at all whether a parent may attend a child's event.`,
+          `I care about safe schools and strong families. This amendment protects both: the bill's rules stay in place, and the school decides, event by event, whether a parent may attend.`]);
+  }
+  if(s.family&&!FAMILY_ROLES.includes(s.role)) t+=" "+pick("famline",["This is also personal for me: it affects someone in my own family.","I also know this firsthand, because it affects my own family.","This is not abstract for me. It touches my own family."]);
+  return t.replace(/ {2,}/g," ");
+}
+const ACT_TEXT={sports:"sports",music:"school music",plays:"school plays and musicals",academic:"academic events and clubs"};
+function pFamily(s){
+  if(!FAMILY_ROLES.includes(s.role)||!s.kids.length) return "";
+  const c=C(s), out=[];
+  if(s.role==="parent"||s.role==="spouse") out.push(kidsSentence(s));
+  if(s.kids.some(k=>k.age<=4)){
+    const one=c.one&&s.kids[0].age<=4, who=one?c.them:"the youngest", whose=one?c.their:"their";
+    out.push(pick("young",[
+      `Because the bill also covers preschool and child care center premises, it would reach ${who} from ${whose} first day of child care or preschool through high school graduation.`,
+      `The bill also covers preschools and child care centers, so for ${one?c.them:"the youngest"} it would start on the first day of child care and last through high school graduation.`]));
+  }
+  if(s.acts.length) out.push(pick("acts",[
+    `${c.one?c.They:"Between them, they"} ${listJoin(s.acts.map(a=>ACT_VERB[a][c.pl?1:0]))}.`,
+    `${c.They} ${c.pl?"stay":"stays"} busy with ${listJoin(s.acts.map(a=>ACT_TEXT[a]))}.`]));
+  if(s.outside){
+    const also=s.acts.length?" also":"";
+    out.push(s.outsideName
+      ? `${c.They} ${c.pl?"are":"is"}${also} involved with ${s.outsideName}, which holds events at a school.`
+      : `${c.They}${also} ${c.pl?"take":"takes"} part in an outside program that meets or performs at a school.`);
+  }
+  return out.join(" ");
+}
+const GAP_W=[
+  `As passed by the Senate, SB 422 bars a qualified offender from school premises, preschool and child care center premises, and premises where a school-affiliated ticketed event is taking place. A parent can raise an affirmative defense for being on school grounds for a "legitimate purpose," and division (A)(1) lists what counts. For school events, the only purpose listed is dropping a child off before the event or picking the child up afterward. Attending the event itself is not on the list, so a parent could not be there for a game, a concert, an awards night, or a graduation. Events that outside groups hold in school buildings, such as a dance recital or a scout meeting, are not school-sponsored, so even drop-off is not covered. And no one, not a principal and not a superintendent, has the authority to make an exception, even with an escort.`,
+  `Under SB 422 as passed by the Senate, a qualified offender may not knowingly be present on school premises, preschool or child care center premises, or premises where a school-affiliated ticketed event is occurring. The bill gives a parent an affirmative defense for a short list of "legitimate purposes." For a school-sponsored event, that list covers only dropping a child off before it or picking the child up after it. It does not cover attending the event. A principal who would gladly approve a parent for a graduation, under escort, would have no legal way to do so. For events run by outside groups in school buildings, which are not school-sponsored, there is no legitimate purpose at all, not even drop-off.`,
+  `The problem is in division (A)(1) of the new section 2950.036, which defines "legitimate purpose." A parent may drop a child off for a school-sponsored activity and pick the child up afterward, but nothing in the list allows the parent to stay. That rules out games, concerts, award ceremonies, and graduations, even with supervision. Events that outside groups hold on school property are not school-sponsored, so the drop-off purpose does not apply to them either. The bill gives no one, including the school, the authority to make an exception.`,
+  `As SB 422 reads now, the line falls at drop-off. A parent the bill restricts may bring a child to a school-sponsored event and pick the child up afterward, but may not stay for it, whether it is a game, a play, an awards night, or a graduation. Because only school-sponsored activities are covered, an event an outside group holds in a school building, like a dance recital or a scout meeting, does not allow even drop-off. And the bill leaves no room for a principal or superintendent to approve a parent, under any conditions.`];
+const GAP_IP=[
+  `As written, SB 422 lets a parent drop a child off before a school event and pick the child up afterward, but not stay for it: not for a game, a concert, an awards night, or a graduation. Events that outside groups hold in school buildings do not allow even drop-off. And no principal or superintendent has the authority to make an exception, even with an escort.`,
+  `Right now the bill draws the line at drop-off. A restricted parent can bring a child to a school event and pick the child up afterward, but cannot stay for the game, the concert, or the graduation. For events outside groups hold in school buildings, there is no exception at all. And no one, including the school, can make one.`,
+  `The gap is in the bill's list of "legitimate purposes." It allows a parent to drop off and pick up, but nothing that lets a parent attend their own child's event, even under supervision. Events run by outside groups on school property get no exception at all, and no one has the authority to make one.`,
+  `As SB 422 reads now, a principal who is comfortable with a parent attending a child's graduation under escort would have no legal way to allow it. For school events, the bill covers drop-off and pick-up only, and for events outside groups hold on school property, it covers nothing.`];
+function pGap(s){ return pick("gap-"+s.fmt, s.fmt==="inperson"?GAP_IP:GAP_W); }
+function ptText(k,s){
+  const c=C(s), sw=s.spouseword, direct=s.role==="parent"&&s.selfdesc==="direct";
+  const pf=s.role==="parent"||s.role==="spouse";
+  switch(k){
+    case "otherparent":
+      if(direct) return pick("pt-op-d",[
+        `When the other parent cannot go because of work, travel, or illness, there is no backup. The school has no way to approve me, so ${c.kids} would have no parent in the audience.`,
+        `There is no backup plan. If the other parent is working, traveling, or sick, the school cannot approve me instead, and ${c.kids} ${c.pl?"go":"goes"} without a parent in the audience.`,
+        `Everything depends on one parent's schedule. On the nights the other parent cannot make it, ${c.kids} would have no parent there at all.`]);
+      if(s.role==="spouse") return pick("pt-op-s",[
+        `When I cannot go because of work, travel, or illness, there is no backup. The school has no way to approve my ${sw}, so ${c.kids} would have no parent in the audience.`,
+        `There is no backup plan. If I am working, traveling, or sick, the school cannot approve my ${sw} instead, and ${c.kids} ${c.pl?"go":"goes"} without a parent in the audience.`,
+        `Everything depends on my schedule. On the nights I cannot make it, ${c.kids} would have no parent there at all.`]);
+      if(s.role==="parent") return pick("pt-op-f",[
+        `When the parent who is able to attend is working, traveling, or sick, there is no backup, and ${c.kids} would have no parent in the audience.`,
+        `Everything depends on one parent's schedule. On the nights that parent cannot make it, ${c.kids} would have no parent there at all.`]);
+      return pick("pt-op-o",[
+        `When the other parent cannot go because of work, travel, or illness, there is no backup, and ${c.kids} would have no parent in the audience.`,
+        `Everything depends on one parent's schedule. On the nights that parent cannot make it, ${c.kids} would have no parent there at all.`]);
+    case "siblings":
+      { const two=c.n===2, ys=two?s.kids[1].sex:"many", os=s.kids[0].sex;
+        const yp=ys==="girl"?"she":ys==="boy"?"he":"they", pos=ys==="girl"?"her":ys==="boy"?"his":"their", pl=yp==="they";
+        const sib=two?(os==="girl"?"sister's":os==="boy"?"brother's":"sibling's"):"brother's or sister's";
+        const Y=two?"The younger child is":"The younger children are", yc=two?"The younger child cannot":"The younger children cannot";
+        const subj=two?yp:"they", ppos=two?pos:"their", p2=two?pl:true;
+        const miss=`${subj} ${p2?"miss":"misses"} ${ppos} ${sib} game or performance`;
+        if(direct) return pick("pt-sib-d",[
+          `${Y} too young to sit in an audience alone. When I drop one child off for an event, ${two?"the younger one has":"the younger ones have"} to leave with me, so ${miss}.`,
+          `Bringing the whole family to a game or recital is not possible. ${yc} be left in the audience alone, so ${subj} ${p2?"go":"goes"} home with me after drop-off.`]);
+        const who=s.role==="spouse"?`my ${sw}`:s.role==="parent"?"the parent the bill restricts":"their parent";
+        return pick("pt-sib",[
+          `${Y} too young to sit in an audience alone, so when ${who} has to leave after drop-off, ${subj} ${p2?"leave":"leaves"} too and ${p2?"miss":"misses"} ${ppos} ${sib} game or performance.`,
+          `Bringing the whole family to a game or recital is not possible. ${yc} be left in the audience alone, so ${subj} ${p2?"go":"goes"} home with ${who} after drop-off.`]); }
+    case "away":
+      return pick("pt-away",[
+        `Many games, tournaments, and recitals happen at other schools. The bill ties a parent's defense to "the related school," so it is not clear a parent could even drop a child off at an away event, let alone stay.`,
+        `When an event is at another school, the bill's defense for parents may not apply at all, because it covers only a parent of a child who attends "the related school."`]);
+    case "choices":
+      return pf ? pick("pt-ch-p",[
+        `It already shapes our family's choices. When we consider committing a child to a team or an activity, we have to weigh that one parent could never be there. A child should choose an activity because of what they love, not because of which parent is allowed at the field.`,
+        `It changes which activities our children sign up for. We have to think about whether one parent could ever attend, and a child should not have to choose a sport or a program around that.`])
+        : pick("pt-ch-o",[
+        `It already shapes the family's choices. Every time a child wants to join a team or an activity, the family has to weigh that one parent could never be there. A child should choose an activity because of what they love, not because of which parent is allowed at the field.`,
+        `It changes which activities the children sign up for. The family has to think about whether one parent could ever attend, and a child should not have to choose a sport or a program around that.`]);
+  }
+  return "";
+}
+function pStory(s){
+  const lines=s.pts.map(k=>ptText(k,s)).filter(Boolean);
+  if(s.outside) lines.push(s.fmt==="inperson"
+    ? `When ${s.outsideName||"that group"} holds an event at a school, the bill does not allow even drop-off.`
+    : pick("pt-out",[
+      `When ${s.outsideName||"that group"} holds an event at a school, the bill offers no exception at all, not even drop-off, because its drop-off purpose covers only school-sponsored activities.`,
+      `Because ${s.outsideName||"that group"} is not the school, its events in a school building fall outside every legitimate purpose in the bill. A restricted parent could not even drop a child off.`]));
+  if(!lines.length) return "";
+  const pf=s.role==="parent"||s.role==="spouse";
+  const intro=pick("story-intro", pf
+    ? ["Here is what that looks like for our family.","For our family, this is not hypothetical.","This is what it would mean in our home.","In practice, this is how it plays out for us."]
+    : ["Here is what that looks like for my family.","For my family, this is not hypothetical.","I can tell you how this plays out in my own family."]);
+  return `${intro} ${lines.join(" ")}`;
+}
+const AMEND_W=[
+  `The amendment would let the principal or designee of the school hosting an event give a parent or guardian prior written permission, including by email, to attend specific events involving their own child. Each permission would name its events and dates, could carry any safety, supervision, or seating conditions the school chooses, and would grant no general access to school property. A request could come from the parent, from a coach or official responsible for the event, or, for an event an outside group runs on school property, from its organizer. A parent who is present with permission and follows its conditions would not be in violation, and a school would not be liable for granting, denying, or conditioning permission, absent bad faith or reckless conduct.`,
+  `The amendment is narrow. The principal or designee of the school hosting an event could give a parent or guardian prior written permission, including by email, to attend specific events involving their own child. Each permission would apply only to the events and dates it names and could include any safety, supervision, or location conditions the school sets. It would not grant general access to school property. A coach, an event official, or, for outside-group events, the organizer could also submit the request. A parent present with permission and following its conditions would not be in violation, and a school would not be liable in a civil action for its decision, absent bad faith or reckless conduct.`,
+  `What I am asking for is a written-permission process. With prior written approval, which could be given by email, from the principal or designee of the host school, a parent or guardian could attend specific events involving their own child. The school would set any conditions it wants, such as an escort or assigned seating, and each approval would cover only the events and dates it names. The request could come from the parent, a coach or event official, or the organizer of an outside-group event. A parent following an approval would not be violating the law, and a school would not be liable in a civil action for granting, denying, or conditioning permission, absent bad faith or reckless conduct.`,
+  `The amendment would keep every protection in SB 422 and add one tool for schools. The principal or designee of the school hosting an event could grant a parent or guardian prior written permission, including by email, for specific events involving their own child. Every approval would be limited to the events and dates it names, could carry any conditions the school chooses, and would give no general access to the building. Requests could come from the parent, a coach or official responsible for the event, or an outside group's organizer. A parent following the permission would not be in violation, and a school would not be liable for its decision, absent bad faith or reckless conduct.`];
+const AMEND_IP=[
+  `The amendment would let the principal of the school hosting an event give a parent prior written permission, including by email, to attend specific events involving their own child, under any conditions the school sets. It grants no general access to school property. A parent who follows the permission would not be in violation, and a school would not be liable for granting or denying it, absent bad faith or reckless conduct. It adds no mandate: a school can say no every time.`,
+  `The fix is simple. The principal of the school hosting an event could give a parent prior written permission, including by email, for specific events involving their own child, with whatever conditions the school wants. It grants no general access, it adds no mandate, and the school would not be liable for its decision, absent bad faith or reckless conduct. A school could say no every time.`,
+  `The amendment adds one option for schools: prior written permission, from the principal of the host school, for a parent to attend specific events involving their own child. Each approval names its events and dates and can include an escort or any other condition. A parent who follows it would not be in violation, the school would not be liable for its decision absent bad faith or reckless conduct, and nothing about it is automatic.`,
+  `What I am asking for is modest. Let the school hosting an event approve, in writing and in advance, a parent's attendance at specific events involving their own child, under the school's own conditions. The permission would grant no general access, the parent would not be in violation while following it, and the school would not be liable for its decision, absent bad faith or reckless conduct.`];
+function pAmend(s){ return pick("amend-"+s.fmt, s.fmt==="inperson"?AMEND_IP:AMEND_W); }
+const WHY=[
+  `This adds no mandate. A school can say no every time. What it changes is that a principal who knows a family, and is willing to supervise a parent at a graduation or a game, would finally be allowed to say yes.`,
+  `Schools already decide who may enter their buildings and under what conditions. This amendment trusts them with one more decision of the same kind, and requires nothing of a school that would rather say no.`,
+  `Nothing in the amendment is automatic. Every exception would be in writing, approved by the school, limited to the events it names, and subject to the school's conditions. That keeps SB 422's protections intact while giving schools room for judgment.`,
+  `A school can supervise a parent at an event far more easily than it can explain to a child why that parent is never allowed to come. The amendment simply lets a principal make that call.`];
+function pWhy(s){ return s.fmt==="inperson"?"":pick("why",WHY); }
+function pClose(s){
+  const ask=pick("ask",["I respectfully ask the committee to adopt this amendment to SB 422.","I respectfully ask you to add this amendment to SB 422.","I ask the committee to include this narrow amendment in SB 422.","Please consider adopting this amendment as SB 422 moves forward."]);
+  if(s.fmt==="inperson") return `${ask} ${pick("close-ip",["Thank you for your time. I would be glad to answer any questions.",`Thank you, Chair${CHAIR?" "+CHAIR:""}, and members of the committee. I would be happy to answer any questions.`,"Thank you for listening. I would welcome any questions."])}`;
+  const contact=[s.email,s.phone].filter(Boolean);
+  const thanks=pick("close-w",["Thank you for considering my testimony.","Thank you for your time and attention to this request.","I appreciate your consideration."]);
+  const reach=contact.length?" "+pick("reach",[`If you have any questions, I can be reached at ${listJoin(contact)}.`,`Please feel free to contact me at ${listJoin(contact)} with any questions.`]):"";
+  return `${ask} ${thanks}${reach}`;
+}
+function genBody(s){
+  s=s||state();
+  const order=pick("order",["role-first","role-first","gap-first"]);
+  const mid = order==="gap-first" ? [pGap(s),pRole(s),pFamily(s)] : [pRole(s),pFamily(s),pGap(s)];
+  const sal=salutationParts(s);
+  const head = sal.merged ? [`${sal.text} ${pOpening(s,true)}`] : [sal.text, pOpening(s)];
+  return [...head,...mid,pStory(s),s.own,pAmend(s),pWhy(s),pClose(s)]
+    .filter(Boolean).join("\n\n");
+}
+function hearingDate(){
+  if(!HEARING_DATE) return null;
+  const [y,m,d]=HEARING_DATE.split("-").map(Number); return new Date(y,m-1,d);
+}
+const fmtDate=dt=>dt.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+function headLines(s){
+  const hd=hearingDate();
+  return [
+    COMMITTEE?`Ohio House ${COMMITTEE} Committee`:"Ohio House of Representatives",
+    `${s.name||"[Your name]"}${s.org?`, ${s.org}`:""}`,
+    s.loc==="out" ? `${s.city||"[Your city]"}${s.state?`, ${s.state}`:""}` : `${s.city||"[Your city]"}, Ohio${s.district?` · House District ${s.district}`:""}`,
+    `${fmtDate(hd||new Date())} · ${s.fmt==="inperson"?"In-person testimony":"Written testimony only"}`
+  ];
+}
+
+/* ---------- PDF: letter size, 1-inch margins, Times ---------- */
+function makePdf(s,body){
+  const {jsPDF}=window.jspdf; const doc=new jsPDF({unit:"pt",format:"letter"});
+  const PW=612,PH=792,M=72,BOT=PH-64,W=PW-2*M; let y=M-6;
+  const line=(str,size,style,align,gapAfter)=>{
+    doc.setFont("times",style); doc.setFontSize(size); doc.setTextColor(17,17,17);
+    doc.splitTextToSize(str,W).forEach(l=>{
+      if(y+size*1.4>BOT){doc.addPage();y=M-6;}
+      y+=size*1.4;
+      if(align==="center") doc.text(l,PW/2,y-size*0.3,{align:"center"}); else doc.text(l,M,y-size*0.3);
+    });
+    y+=gapAfter||0;
+  };
+  line("Interested Party Testimony",16,"bold","center",0);
+  line("Senate Bill 422",13,"bold","center",10);
+  headLines(s).forEach(l=>line(l,11,"normal","left",0));
+  y+=10; doc.setDrawColor(150); doc.setLineWidth(0.6); doc.line(M,y,PW-M,y); y+=12;
+  body.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean).forEach(p=>{
+    if(y+12*1.4*2>BOT){doc.addPage();y=M-6;}   // don't strand a paragraph's first line
+    line(p,12,"normal","left",9);
+  });
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont("times","normal");doc.setFontSize(9);doc.setTextColor(110,110,110);
+    doc.text(`${s.name||""} · Interested party testimony, SB 422`,M,PH-36);
+    doc.text(`Page ${i} of ${n}`,PW-M,PH-36,{align:"right"});}
+  return doc.output("blob");
+}
+/* Saving: claude.ai viewer capability, else share sheet (iPhone, in-app browsers), else a normal download */
+let dlCap;
+async function saveFile(filename,blob){
+  if(window.claude&&typeof window.claude.use==="function"){
+    if(dlCap===undefined){try{dlCap=await window.claude.use("downloads");}catch(e){dlCap=null;}}
+    if(!dlCap) throw {code:"unavailable"};
+    return dlCap.save({filename,data:blob});
+  }
+  const ua=navigator.userAgent||"";
+  const ios=/iP(hone|ad|od)/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const inApp=/; wv\)|FBAN|FBAV|Instagram|Line\/|Snapchat|TikTok/i.test(ua);
+  if((ios||inApp)&&navigator.canShare&&typeof File==="function"){
+    const file=new File([blob],filename,{type:"application/pdf"});
+    if(navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:filename});return {status:"shared"};}
+      catch(e){if(e&&e.name==="AbortError") throw {code:"declined"};}
+    }
+  }
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
+  return {status:"saved"};
+}
+
+/* ---------- Page rendering ---------- */
+const flow={page:1};
+let edited=false, genCache="";
+function applyRules(){
+  const s=state();
+  document.querySelectorAll('input[name=pt]').forEach(inp=>{
+    const why=ptRule(inp.value,s), lab=inp.closest(".chk"), em=lab.querySelector(".why");
+    inp.disabled=!!why; if(why) inp.checked=false;
+    lab.classList.toggle("off",!!why); em.textContent=why; em.hidden=!why;
+  });
+  $("outsidenamefield").hidden=!$("outside").checked;
+  const oos=curLoc()==="out";
+  $("districtfield").hidden=oos; $("distnote").hidden=oos; $("statefield").hidden=!oos; $("connfield").hidden=!oos; $("oosnote").hidden=!oos;
+  $("citylabel").firstChild.textContent=oos?"City or town ":"City or township ";
+  $("conn").querySelector('option[value="kids"]').hidden=!["parent","spouse"].includes(curRole());
+  const fam=FAMILY_ROLES.includes(s.role)&&!!curRole();
+  $("famstory").hidden=!fam||!!s.future;
+  $("actswho").textContent=s.role==="grandparent"?"your grandchildren take part in":s.role==="relative"?"the children take part in":"your children take part in";
+  $("selfdescnote").hidden=s.future==="none";
+  renderPrompts(s);
+}
+function renderPrompts(s){
+  const P={
+    parent:["A specific event you would miss: a game, recital, or graduation coming up.","What your children have said about it, or what you'd tell them.","What you'd accept from the school: an escort, a set seat, arriving and leaving at set times."],
+    spouse:["A time you couldn't make an event and what happened.","What it means to your children to see both parents involved at school.","What you'd want the school to be able to approve."],
+    grandparent:["A school event you've attended and what family presence meant to the child.","How your family covers events now, and where that falls short."],
+    relative:["How your family covers school events now, and where that falls short.","A moment you've seen that shows why a parent being there matters."],
+    teacher:["How your school already handles visitors and supervision at events.","A student you've seen look for family in the audience (no names)."],
+    admin:["How your district decides who may attend events today.","Why you'd want the authority to say yes, and the conditions you'd use."],
+    coach:["Which of your events happen in school buildings or at other schools.","How you'd handle a permission request for a family."],
+    community:["Why this matters to you.","Anything about your town's schools or families that makes it concrete."]
+  };
+  const list=(P[s.role]||P.community).slice();
+  if(s.loc==="out") list.unshift("Your connection to Ohio, in specifics: which school, which tournament, which relatives.");
+  $("prompts").innerHTML=list.map(x=>`<li>${x}</li>`).join("");
+}
+function renderHearing(){
+  const hd=hearingDate(), box=$("hearingbox");
+  if(hd){
+    const due=new Date(hd); due.setDate(due.getDate()-1);
+    box.innerHTML=`<div class="hearing"><b>Hearing: ${hd.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}${HEARING_TIME?`, ${HEARING_TIME}`:""}${HEARING_ROOM?`, ${HEARING_ROOM}`:""}${COMMITTEE?` · House ${COMMITTEE} Committee`:""}</b>
+      <span>Testimony is due at least 24 hours before the hearing starts${HEARING_TIME?`, by ${HEARING_TIME} on ${due.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}`:""}. Late testimony is often not accepted.</span>
+      ${TAKING_IP?"<span>The notice lists interested party testimony for SB 422 at this hearing.</span>":"<span>Check the hearing notice to confirm it lists interested party testimony for SB 422 that day.</span>"}</div>`;
+  } else {
+    box.innerHTML=`<div class="tipbox"><b>No hearing is scheduled yet.</b>SB 422 is expected to be assigned to a House committee around November 9 or 10. You can write your testimony now and save it. Hearing notices usually come out late in the week before the hearing, and testimony is due 24 hours before it starts, so having it ready matters.</div>`;
+  }
+}
+function renderSteps(){
+  const s=state(), hd=hearingDate(), ip=s.fmt==="inperson";
+  const items=[];
+  items.push(`<li><b>Wait for the hearing notice${COMMITTEE?` from the ${COMMITTEE} Committee`:""}.</b><p>Committees often take proponents, opponents, and interested parties at different hearings, and the upload form only accepts the positions listed for that meeting. Submit when interested party testimony is on the agenda for SB 422 (it may appear as "IP" or "Prop/Opp/IP").${hd?"":` Track the bill on <a href="https://www.legislature.ohio.gov/legislation/136/sb422" target="_blank" rel="noopener">legislature.ohio.gov</a> to get an email when that happens.`}</p></li>`);
+  items.push(`<li><b>Upload it at least 24 hours before the hearing.</b><p>On ohiohouse.gov, open the committee's page, pick the meeting date, and choose <strong>Upload Testimony</strong>. Fill in your name and witness information, choose <strong>Interested Party</strong>, choose <strong>${ip?"In Person":"Written Only"}</strong>, and attach the PDF.${CHAIR_EMAIL?` You can also email the PDF to <a href="mailto:${CHAIR_EMAIL}?subject=${encodeURIComponent("SB 422 interested party testimony")}">${CHAIR_EMAIL}</a>.`:" If the hearing notice gives an email address for the chair's office instead, send it there."}</p>${MEETING_URL?`<div class="row" style="margin-top:6px"><a class="btn small" href="${MEETING_URL}" target="_blank" rel="noopener">Open the hearing page</a></div>`:""}</li>`);
+  if(ip) items.push(`<li><b>Go to the Statehouse on hearing day.</b><p>Bring a printed copy to read from. Members may ask a question or two. The tips below cover the rest.</p></li>`);
+  else items.push(`<li><b>That's it.</b><p>Written testimony goes to every committee member and is posted with the hearing. You don't need to attend.</p></li>`);
+  items.push(`<li><b>Let your own representative know.</b><p>A short email saying you submitted testimony, with the PDF attached, puts it in front of them again. The <a href="./">email page</a> has their address.</p></li>`);
+  $("steps").innerHTML=items.join("");
+  $("inpersoncard").hidden=!ip;
+}
+function renderHead(s){
+  $("thead").innerHTML=`<div class="t1">Interested Party Testimony</div><div class="t2">Senate Bill 422</div>`+headLines(s).map(l=>`<div class="ln">${l.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}</div>`).join("");
+}
+function renderCount(){
+  const s=state(), t=$("tbody").value.trim(), w=t?t.split(/\s+/).length:0;
+  const min=w/140, mm=Math.floor(min), ss=Math.round((min-mm)*60/15)*15;
+  const time=`${mm}:${String(ss===60?0:ss).padStart(2,"0")}`;
+  const long=s.fmt==="inperson"&&w>500;
+  $("wc").innerHTML=`<span><b>${w}</b> words</span>`+(s.fmt==="inperson"
+    ? `<span>About <b>${ss===60?mm+1+":00":time}</b> to read aloud</span>${long?`<span class="long">Consider trimming to about 3 minutes; the chair may limit time.</span>`:""}`
+    : `<span>About <b>${Math.max(1,Math.ceil(w/350))}</b> page${w>350?"s":""}</span>`);
+}
+function update(){
+  const s=state();
+  genCache=genBody(s);
+  if(!edited) $("tbody").value=genCache;
+  $("resetbody").hidden=!edited;
+  $("ownnudge").hidden=!!s.own;
+  renderHead(s); renderCount(); renderSteps(); validate(); persist();
+}
+
+/* ---------- Validation and paging ---------- */
+function missing(p){
+  if(p===1){const m=[]; if(!curFmt())m.push("how you'll testify"); if(!$("ack").checked)m.push("the public-record box"); return m.length?`Still needed: ${listJoin(m)}.`:"";}
+  if(p===2){const m=[],role=curRole();
+    if(!curLoc())m.push("where you live");
+    if(!v("name"))m.push("your name"); if(!v("city"))m.push(curLoc()==="out"?"your city":"your city or township");
+    if(curLoc()==="out"&&!v("state"))m.push("your state"); if(!role)m.push("which best describes you");
+    if(role==="spouse"&&!v("x-spouseword"))m.push("husband, wife, or partner");
+    if(role==="relative"&&!v("x-relword"))m.push("your relationship to the children");
+    if(role==="parent"&&$("kidcount").value!=="none"&&!v("selfdesc"))m.push("how to describe yourself");
+    if(FAMILY_ROLES.includes(role)){
+      const kc=$("kidcount").value, n=Number(kc)||0, fut=FUT_VALUES.includes(kc);
+      if(!n&&!fut) m.push(role==="parent"?"whether you have children":"how many children");
+      else if(n){const k=readKids(); if(k.some(x=>!x.sex))m.push("girl or boy for each child"); if(k.some(x=>x.age==null))m.push("each child's age");}
+    }
+    return m.length?`Still needed: ${listJoin(m)}.`:"";}
+  return "";
+}
+function validate(){
+  [1,2,3].forEach(p=>{const sec=document.querySelector(`.page[data-page="${p}"]`),m=missing(p);
+    sec.querySelector("[data-next]").disabled=!!m; $("need"+p).textContent=m;});
+}
+function go(p){
+  flow.page=Math.max(1,Math.min(4,p));
+  for(let q=1;q<flow.page;q++) if(missing(q)){flow.page=q;break;}
+  document.querySelectorAll(".page").forEach(sec=>sec.hidden=Number(sec.dataset.page)!==flow.page);
+  [...$("progress").children].forEach((li,i)=>{li.className=i+1<flow.page?"done":i+1===flow.page?"cur":""; if(i+1===flow.page)li.setAttribute("aria-current","step");else li.removeAttribute("aria-current");});
+  window.scrollTo(0,0);
+  const h=document.querySelector(`.page[data-page="${flow.page}"] h2`); if(h) h.focus({preventScroll:true});
+  persist();
+}
+
+/* ---------- Persist (this browser only). Edits to the testimony are kept too. ---------- */
+function persist(){
+  const keep={};
+  document.querySelectorAll("#f input[type=text],#f input[type=email],#f input[type=tel],#f select,#f textarea").forEach(e=>{if(e.id&&e.id!=="tbody")keep[e.id]=e.value;});
+  document.querySelectorAll("#f input[type=checkbox],#f input[type=radio]").forEach(e=>{if(e.checked&&e.id)keep["c:"+e.id]=1;});
+  keep.page=flow.page; if(edited) keep.body=$("tbody").value;
+  try{localStorage.setItem(TKEY,JSON.stringify(keep));}catch(e){}
+  saved=keep;
+}
+function restore(){
+  Object.entries(saved).forEach(([k,val])=>{
+    if(k.startsWith("c:")){const e=$(k.slice(2)); if(e)e.checked=true;}
+    else if(!k.startsWith("x-")&&!k.startsWith("kid-")&&k!=="page"&&k!=="body"){const e=$(k); if(e&&typeof val==="string")e.value=val;}
+  });
+  renderExtra(curRole()); renderKids(); renderHearing(); applyRules();
+  if(saved.body){edited=true; $("tbody").value=saved.body;}
+  if(fromIndex) $("prefillnote").textContent="We filled in what you entered on the email page. Check it over; your name and town go at the top of your testimony.";
+  update(); go(saved.page||1);
+}
+
+/* ---------- Events ---------- */
+function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,3200);}
+function onChange(e){
+  const id=e.target.id;
+  if(id==="tbody") return;
+  if(e.target.name==="role") renderExtra(e.target.value);
+  if(id==="kidcount") renderKids();
+  applyRules(); update();
+}
+$("f").addEventListener("input",onChange);
+$("f").addEventListener("change",e=>{if(e.target.tagName==="SELECT"||e.target.type==="radio"||e.target.type==="checkbox") onChange(e);});
+$("f").addEventListener("submit",e=>e.preventDefault());
+$("tbody").addEventListener("input",()=>{edited=$("tbody").value!==genCache; $("resetbody").hidden=!edited; renderCount(); persist();});
+
+document.addEventListener("click",async e=>{
+  const el=e.target.closest("button,a"); if(!el) return;
+  if(el.matches("[data-next]")){
+    if(el.disabled) return;
+    go(flow.page+1); return;
+  }
+  if(el.matches("[data-back]")){go(flow.page-1);return;}
+  if(el.id==="toown"){go(3); setTimeout(()=>$("own").focus(),50); return;}
+  if(el.id==="reroll"){
+    if(edited&&!confirm("New wording will replace the edits you made in the box. Continue?")) return;
+    reseed(); edited=false; update(); toast("New wording."); return;
+  }
+  if(el.id==="resetbody"){edited=false;update();toast("Back to the written-for-you text.");return;}
+  if(el.id==="dl"){
+    if(!window.jspdf){toast("The PDF tool didn't load. Check your connection and reload.");return;}
+    const s=state(), last=(s.name.split(/\s+/).pop()||"Witness").replace(/[^A-Za-z0-9-]/g,"");
+    try{const r=await saveFile(`SB422-Interested-Party-Testimony-${last}.pdf`,makePdf(s,$("tbody").value));
+      toast(r&&r.status==="shared"?"Done. If you chose Save to Files, it’s in your Files app.":"PDF saved.");}
+    catch(err){toast(err&&err.code==="declined"?"Canceled. Tap the button again when you’re ready.":"The download didn't start. Try again, or open this page in Chrome or Safari.");}
+    return;
+  }
+  if(el.id==="startover"){
+    if(!confirm("Clear everything on this page and start over? Your email page answers are not affected.")) return;
+    try{localStorage.removeItem(TKEY);}catch(_){}
+    saved={}; edited=false; $("f").reset(); renderExtra(""); renderKids(); applyRules(); update(); go(1); return;
+  }
+  if(el.dataset.copy){
+    const s=state(), text=["Interested Party Testimony","Senate Bill 422",...headLines(s),"",$("tbody").value].join("\n");
+    try{await navigator.clipboard.writeText(text);toast("Copied.");}
+    catch(_){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+      let ok=false;try{ok=document.execCommand("copy");}catch(__){} ta.remove(); toast(ok?"Copied.":"Copying is blocked here. Select the text and copy it by hand.");}
+  }
+});
+
+restore();
+</script>
+</body>
+</html>
