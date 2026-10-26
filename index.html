@@ -192,14 +192,6 @@ a{color:var(--accent)}
   <p class="eyebrow">Step 1 of 4</p>
   <h2 tabindex="-1">Who represents you in the Ohio House?</h2>
   <p class="hint">SB 422 keeps certain registered offenders off school property. As written, it would keep some parents away from nearly every part of their child's school life, and the school would have no way to make an exception, even with an escort. In about five minutes you'll send your state representative a short, polite request to fix that.</p>
-  <details class="morecard">
-    <summary>Why amend SB 422 instead of opposing it?</summary>
-    <div class="mbody">
-      <p><strong style="color:var(--ink)">The bill is going to pass.</strong> It cleared the Senate 33–0. Opposing it won't stop it, but a narrow fix can still be added before the House votes.</p>
-      <p><strong style="color:var(--ink)">The goal is right; the wording has a gap.</strong> Keeping kids safe at school matters. The problem is that the bill gives schools no way to say yes. Not for a game, not for a concert, not even for a graduation.</p>
-      <p><strong style="color:var(--ink)">Nothing is weakened.</strong> Every restriction stays in place. A parent could attend only the specific events the school approves in writing, under the school's conditions. Some other states already include a process like this.</p>
-    </div>
-  </details>
   <div class="grid2">
     <div class="field"><label for="county">Your county</label>
       <select id="county"><option value="">Choose a county…</option></select></div>
@@ -912,7 +904,7 @@ parent:[
  (s,c)=>`I am a parent this bill would bar from school property. Every milestone ${c.kids} ${c.hasN} in school, from awards to graduation, would happen without me, with no way for anyone to make an exception. I am asking that the school be allowed to make that call.`,
  (s,c)=>`I write as a parent who is subject to this bill's restrictions. I am not seeking unsupervised access or any special treatment. I am asking that a principal be able to approve my attendance at ${c.ownPoss} events, with escorts, seating limits, or any other conditions the school chooses.`,
  (s,c)=>`I am a parent subject to SB 422's restrictions, and I accept the rules it sets. What I ask is that ${c.kidsPoss} school not be legally barred from saying yes when it believes my attendance at an event is appropriate.`,
- (s,c)=>`I am one of the parents SB 422 would bar from school property. The bill lets me drop ${c.kids} off, but not stand at the back of a gym for ${c.their} game or sit in an auditorium for ${c.their} concert. I am asking you to support a way for schools to approve that, on their own terms.`,
+ (s,c)=>`I am one of the parents SB 422 would bar from school property. At most, the bill treats dropping ${c.kids} off as a defense in court. It does not let me stand at the back of a gym for ${c.their} game or sit in an auditorium for ${c.their} concert. I am asking you to support a way for schools to approve that, on their own terms.`,
  (s,c)=>`${c.Kids} ${c.isN} the reason I am writing. I am a parent the bill would bar from school property, and as written ${c.they} would go without me at ${c.their} school games, concerts, and ceremonies. I am asking that ${c.their} school be allowed to decide otherwise, event by event.`,
  (s,c)=>`I am a parent subject to this bill's restrictions. I am not asking you to take my side over the school's. I am asking you to give the school the final word on whether I may attend ${c.kidsPoss} events.`,
  (s,c)=>`I am among the parents SB 422 would keep off school grounds. I have no objection to strict rules. My concern is that the bill leaves no process at all, so even a principal who is comfortable with me attending under supervision would have no legal way to allow it.`,
@@ -980,7 +972,7 @@ relative:[
  (s,w)=>`As ${w}, I trust local principals to make careful decisions. The bill as written does not let them make any decision at all about a parent attending a child's event.`,
  (s,w)=>`I write as ${w}. A child should not have to perform or compete knowing their parent is not allowed to come, when the school itself might be willing to allow it with supervision.`,
  (s,w)=>`As ${w}, I am asking you to support a small but important change: written permission from the school for specific events involving a parent's own child, each approved on its own.`,
- (s,w)=>`I am ${w}, and I see this from the children's side. As written, the bill lets a parent drop a child off but never stay, not even for a graduation.`,
+ (s,w)=>`I am ${w}, and I see this from the children's side. As written, a parent could never stay for a school event, not even a graduation, and even dropping a child off is only a defense in court.`,
  (s,w)=>`As ${w}, I want schools safe and I want children supported. The amendment keeps the bill's protections and adds a controlled way for schools to make exceptions.`,
  (s,w)=>`I am writing as ${w} who helps with school pickups and events. There are many days when no one else can go, and the bill gives the school no way to let the parent attend instead.`,
  (s,w)=>`As ${w}, I believe the school is the right one to decide who attends its events. This amendment would give principals that authority instead of a ban no one can adjust.`,
@@ -1005,7 +997,7 @@ teacher:[
  (s,a)=>`As a school employee${a}, I am asking you to support this amendment. It keeps SB 422's protections and lets the school, not the parent, decide whether attendance is appropriate.`,
  (s,a)=>`I teach${a}, and I have seen what it does to a child when no family shows up. I would like our principal to have the legal option to approve a parent, event by event, when it is safe.`,
  (s,a)=>`As someone who works ${a?a.trim():"in a school"}, I appreciate that this amendment adds no mandate. A school can say no every time. It simply can say yes when it believes that is right.`,
- (s,a)=>`I am an educator${a}. Back-to-school nights, award ceremonies, and graduations are planned for every student. The law should not make it impossible for a school to say yes to a student's parent attending, on the school's terms.`,
+ (s,a)=>`I am an educator${a}. Back-to-school nights, award ceremonies, and graduations are planned for every student. The law should not make it impossible for a school to include a student's parent under supervision.`,
  (s,a)=>`As a teacher${a}, I would like to see SB 422 pass with this amendment. It respects the bill's purpose and gives schools the same judgment they already use for every other visitor question.`
 ],
 admin:[
@@ -1031,9 +1023,9 @@ admin:[
  (s,t)=>`Speaking as ${t}, I believe this change makes SB 422 stronger, not weaker. Every exception would be in writing, approved by the school, and limited to the events it names.`
 ],
 coach:[
- (s,o)=>`I ${o.run}. Our events are often held in school gyms, fields, and auditoriums. Under SB 422 as written, a restricted parent could not even drop a child off at an event an outside group runs on school property, because the bill's drop-off exception for events covers only school-sponsored events. The amendment would let the host school decide, and would let organizers like me request permission for a family.`,
+ (s,o)=>`I ${o.run}. Our events are often held in school gyms, fields, and auditoriums. Under SB 422 as written, a restricted parent could not even drop a child off at an event an outside group runs on school property, because the bill's drop-off provision for events covers only school-sponsored events. The amendment would let the host school decide, and would let organizers like me request permission for a family.`,
  (s,o)=>`As a coach${o.with}, I see how much it matters to kids when their parents are in the stands. Under SB 422 as written, a restricted parent could not attend any game held on school property, and the school would have no way to allow it.`,
- (s,o)=>`I organize youth activities${o.for}, and many of our events happen in school buildings. The bill's drop-off exception for events covers only school-sponsored events, so for groups like ours, a parent restricted by SB 422 could not even drop a child off.`,
+ (s,o)=>`I organize youth activities${o.for}, and many of our events happen in school buildings. The bill's drop-off provision for events covers only school-sponsored events, so for groups like ours, a parent restricted by SB 422 could not even drop a child off.`,
  (s,o)=>`As someone who ${o.run3}, I would like to be able to request permission from the host school on behalf of a family. The amendment allows exactly that, and the school keeps the final word.`,
  (s,o)=>`I ${o.run}. We use school gyms, fields, and auditoriums for practices, games, and recitals. As written, SB 422 offers no exception for a parent at any of those events, not even drop-off.`,
  (s,o)=>`As a coach${o.with}, I am asking for a narrow change. Let the school hosting an event decide whether a parent may attend, in writing, with any supervision it wants.`,
@@ -1155,28 +1147,35 @@ const HELLO_V=[
  (dl,cp,s)=>`I am ${dl}${cp}, and I am contacting you about Senate Bill 422, now in the Ohio House. I agree with its purpose, and I hope you will support a narrow amendment that keeps that purpose intact.`
 ];
 const GAP_V=[
- `As written, the bill lets a parent restricted by SB 422 drop off or pick up a child, but not attend the event itself. That includes graduations, award ceremonies, concerts, and games. Events that outside groups hold in school buildings have no exception at all. The school has no way to say yes, even once.`,
- `Under the bill's current wording, a restricted parent may drop off or pick up a child but may not stay for the event itself, whether it is a game, a concert, an awards night, or a graduation. Events that outside groups hold in school buildings have no exception at all, and the school has no way to say yes.`,
- `The gap is in the bill's list of "legitimate purposes." It allows drop-off and pick-up, but nothing that lets a parent attend their own child's event, even under supervision. Events run by outside groups in school buildings get no exception at all.`,
- `As SB 422 reads now, a principal who is comfortable with a parent attending a child's graduation under escort would have no legal way to allow it. For events, the bill covers drop-off and pick-up only, and it offers no exception for events outside groups hold on school property.`,
- `Right now the bill draws the line at drop-off: a parent restricted by SB 422 can bring a child to an event and pick them up afterward, but cannot stay to see the concert, the game, or the graduation. For events outside groups hold in school buildings, there is no exception at all. Schools are left with no option.`,
- `For school events, the bill's exceptions cover getting a child there and back, but not being there for the child. A parent restricted by SB 422 could not attend a graduation, an award ceremony, or a game, and the school could not approve it under any conditions.`,
+ `As written, the bill's list of reasons a restricted parent may be on school grounds stops at dropping off or picking up a child. Attending the event itself is not on the list. That includes graduations, award ceremonies, concerts, and games. Events that outside groups hold in school buildings have no exception at all. The school has no way to say yes, even once.`,
+ `Under the bill's current wording, nothing covers a restricted parent staying for the event itself, whether it is a game, a concert, an awards night, or a graduation. The bill mentions only dropping off and picking up. Events that outside groups hold in school buildings have no exception at all, and the school has no way to say yes.`,
+ `The gap is in the bill's list of "legitimate purposes." It mentions drop-off and pick-up, but nothing that lets a parent attend their own child's event, even under supervision. Events run by outside groups in school buildings get no exception at all.`,
+ `As SB 422 reads now, a principal who is comfortable with a parent attending a child's graduation under escort would have no legal way to allow it. For events, the bill mentions drop-off and pick-up only, and it offers no exception for events outside groups hold on school property.`,
+ `Right now the bill draws the line at drop-off: nothing in it covers a restricted parent staying to see the concert, the game, or the graduation. For events outside groups hold in school buildings, there is no exception at all. Schools are left with no option.`,
+ `For school events, the bill's list of reasons covers getting a child there and back, but not being there for the child. A parent restricted by SB 422 could not attend a graduation, an award ceremony, or a game, and the school could not approve it under any conditions.`,
  `SB 422 lists a handful of "legitimate purposes" for a restricted parent to be on school grounds, such as dropping off or picking up a child. Attending that child's game, concert, or graduation is not one of them, and the school has no way to make an exception.`,
- `The problem is a narrow one. A restricted parent may bring a child to a school event and pick them up afterward, but may not stay for it. That is true even for a graduation, and even if the school would supervise the parent. For events outside groups hold in school buildings, the bill allows no exception at all.`,
- `Under the current text, a school could not approve a restricted parent to attend a child's game, concert, or graduation under any conditions. The bill allows drop-off and pick-up for school events, but nothing more, and events run by outside groups in school buildings get no exception at all.`,
- `As written, the bill gives schools no discretion. A restricted parent can drop a child off for a school event but cannot stay for it, whether it is a game, an awards night, or a graduation, and no amount of supervision changes that.`
+ `The problem is a narrow one. The bill's list of reasons stops at bringing a child to a school event and picking them up afterward. Nothing covers staying, even for a graduation, and even if the school would supervise the parent. For events outside groups hold in school buildings, the bill allows no exception at all.`,
+ `Under the current text, a school could not approve a restricted parent to attend a child's game, concert, or graduation under any conditions. For school events, the bill mentions only drop-off and pick-up, and events run by outside groups in school buildings get no exception at all.`,
+ `As written, the bill gives schools no discretion. Nothing in it covers a restricted parent staying for a school event, whether it is a game, an awards night, or a graduation, and no amount of supervision changes that.`
+];
+/* Drop-off and pick-up are only an affirmative defense in the bill, not an exception. Plain-language version of that point. */
+const DROPOFF_V=[
+ `There is a second problem. Even drop-off and pick-up are not truly allowed. The bill treats them only as a defense in court, so a parent picking up their own child could still be arrested in front of them and would have to prove they had a good reason.`,
+ `Drop-off and pick-up are not really exceptions in the bill either. They are only a defense a parent can raise after being charged. That means a parent following the bill's own rules could be arrested at the school door and left to prove their innocence.`,
+ `Even the part of the bill that sounds like an exception is not one. Drop-off and pick-up are written as a defense in court, so a parent who picks up their own child has technically broken the law and must prove they were there for an allowed reason.`,
+ `One more gap matters a great deal. As written, a parent who drops off or picks up their child has technically committed the offense, and can only raise it as a defense in court. Following the rules does not stop the arrest or the charge.`
 ];
 const ASK_V=[
- `The amendment would let the principal (or designee) of the school hosting an event give a parent or guardian prior written permission to attend specific events involving their own child. Each event would be approved on its own, under any safety or supervision conditions the school sets. It grants no general access to school property, and the decision stays entirely with the school.`,
- `The amendment is narrow. The principal or designee of the school hosting an event could grant a parent or guardian prior written permission to attend specific events involving their own child. Each permission would name its events and dates, carry any conditions the school sets, and give no general access to school property. The school would decide every time.`,
- `What I am asking for is a written-permission process. A parent or guardian could attend specific events involving their own child only with prior written approval from the principal or designee of the host school, with each event approved on its own and under whatever supervision the school requires. The school keeps full control.`,
- `The fix would let the school hosting an event approve, in writing and in advance, a parent's attendance at specific events involving their own child. Each approval would be limited to the events and dates the school names and could include escorts, seating, or any other condition. It would not open the building to anyone, and the school could always say no.`,
- `Under the proposed amendment, the decision belongs to the school. Its principal or designee could give a parent or guardian prior written permission for specific events involving their own child, each approved on its own, under any safety or supervision conditions. No general access would be granted.`,
- `The amendment adds one tool for schools: prior written permission, from the principal or designee of the school hosting an event, for a parent or guardian to attend specific events involving their own child. Each event would be approved separately and could carry any conditions the school chooses. Nothing about it is automatic.`,
- `The fix is simple: let the principal or designee of the school hosting an event give a parent or guardian prior written permission to attend specific events involving their own child. Each event would be approved separately, under whatever safety or supervision conditions the school sets, and no general access would be granted.`,
- `The amendment would keep every protection in SB 422 and add one option for schools. With prior written permission from the principal or designee of the host school, a parent or guardian could attend specific events involving their own child, each approved on its own and subject to any conditions the school sets.`,
- `What the amendment asks is modest. A school could approve, in writing and ahead of time, a parent or guardian's attendance at specific events involving their own child. Each approval would cover only the events and dates the school names and could include an escort, assigned seating, or any other condition.`,
- `The amendment puts the decision where it belongs, with the school. The principal or designee of the school hosting an event could grant prior written permission for a parent or guardian to attend specific events involving their own child, with each event approved separately and under the school's own conditions.`
+ `The amendment would let the principal (or designee) of the school hosting an event give a parent or guardian prior written permission to attend specific events involving their own child. Each event would be approved on its own, under any safety or supervision conditions the school sets. It grants no general access to school property, and the decision stays entirely with the school. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `The amendment is narrow. The principal or designee of the school hosting an event could grant a parent or guardian prior written permission to attend specific events involving their own child. Each permission would name its events and dates, carry any conditions the school sets, and give no general access to school property. The school would decide every time. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `What I am asking for is a written-permission process. A parent or guardian could attend specific events involving their own child only with prior written approval from the principal or designee of the host school, with each event approved on its own and under whatever supervision the school requires. The school keeps full control. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `The fix would let the school hosting an event approve, in writing and in advance, a parent's attendance at specific events involving their own child. Each approval would be limited to the events and dates the school names and could include escorts, seating, or any other condition. It would not open the building to anyone, and the school could always say no. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `Under the proposed amendment, the decision belongs to the school. Its principal or designee could give a parent or guardian prior written permission for specific events involving their own child, each approved on its own, under any safety or supervision conditions. No general access would be granted. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `The amendment adds one tool for schools: prior written permission, from the principal or designee of the school hosting an event, for a parent or guardian to attend specific events involving their own child. Each event would be approved separately and could carry any conditions the school chooses. Nothing about it is automatic. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `The fix is simple: let the principal or designee of the school hosting an event give a parent or guardian prior written permission to attend specific events involving their own child. Each event would be approved separately, under whatever safety or supervision conditions the school sets, and no general access would be granted. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `The amendment would keep every protection in SB 422 and add one option for schools. With prior written permission from the principal or designee of the host school, a parent or guardian could attend specific events involving their own child, each approved on its own and subject to any conditions the school sets. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `What the amendment asks is modest. A school could approve, in writing and ahead of time, a parent or guardian's attendance at specific events involving their own child. Each approval would cover only the events and dates the school names and could include an escort, assigned seating, or any other condition. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+ `The amendment puts the decision where it belongs, with the school. The principal or designee of the school hosting an event could grant prior written permission for a parent or guardian to attend specific events involving their own child, with each event approved separately and under the school's own conditions. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`
 ];
 const CLOSE_V=[
  `I am asking you to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether you can support it.`,
@@ -1228,7 +1227,9 @@ ${hello}
 
 ${roleEmail(s)}${fam?"\n\n"+fam:""}
 
-${pick("gap",GAP_V)}${sits}
+${pick("gap",GAP_V)}
+
+${pick("dropoff",DROPOFF_V)}${sits}
 
 ${pick("ask",ASK_V)}
 
@@ -1297,8 +1298,9 @@ Hi, my name is ${n}. I live in ${where}, in House ${d}. I'm calling about Senate
 > If not, keep going. The person who answers can take the message.
 ## Your message
 I support SB 422's goal of keeping kids safe at school. I'm calling to ask ${R} to support one narrow amendment.
-As written, the bill lets a parent restricted by SB 422 drop a child off at school but never attend the event itself, not even a graduation. Events that outside groups hold in school buildings have no exception at all.
+As written, the bill never lets a parent restricted by SB 422 attend their child's school event, not even a graduation. Events that outside groups hold in school buildings have no exception at all.
 The amendment would let the principal of the host school give written permission for specific events, approved event by event, with whatever supervision the school wants. The school stays in control.
+It would also make drop-off and pick-up truly allowed, not just a defense in court. Right now a parent could be arrested for picking up their own kid and have to prove they had a good reason.
 ${roleShort(s)}
 Could I send the one-page amendment summary to ${em}?
 ## Before you hang up
@@ -1306,7 +1308,7 @@ Does ${R} have a position on SB 422 yet?
 Thank you for your time.
 > Leave your name, street address, and phone number so they can confirm you are a constituent.
 ## If you get voicemail
-Hi, this is ${n} from ${where}, in House ${d}. I'm asking ${R} to support a narrow amendment to Senate Bill 422 that lets a school give a parent written permission to attend specific events involving their own child, approved event by event, on the school's terms. I'm sending a one-page summary by email.${s.phone?` My number is ${s.phone}.`:""} Thank you.`;
+Hi, this is ${n} from ${where}, in House ${d}. I'm asking ${R} to support a narrow amendment to Senate Bill 422 that lets a school give a parent written permission to attend specific events involving their own child, approved event by event, on the school's terms, and that makes drop-off and pick-up truly allowed, not just a defense in court. I'm sending a one-page summary by email.${s.phone?` My number is ${s.phone}.`:""} Thank you.`;
 }
 function genAmend(s){
   const rep = s.t ? `Representative ${s.t.last}` : "Representative [Name]";
@@ -1314,7 +1316,7 @@ function genAmend(s){
 > Parent/Guardian Access for Specific Child-Related Events
 
 ## Purpose:
-Creates a narrow, controlled exception allowing a parent or legal guardian who is otherwise subject to the restrictions of SB 422 to attend a specific event on school premises involving their own child.
+Makes two narrow changes. It lets a school allow a parent or legal guardian who is otherwise subject to the restrictions of SB 422 to attend a specific event involving their own child, and it makes dropping off and picking up a child truly allowed, not just a defense in court.
 
 ## Proposed Approach:
 A parent or legal guardian would be permitted to be physically present on school premises, or at a school-affiliated ticketed event, for a specific event involving their own child only when:
@@ -1328,19 +1330,22 @@ A parent or legal guardian would be permitted to be physically present on school
 - A parent or guardian who is present with permission and follows its conditions would not be in violation of SB 422.
 - A school and its employees would not be liable in a civil action for granting, denying, or conditioning permission, absent bad faith or reckless conduct.
 
+## Drop-off and pick-up:
+- As written, a parent who drops off or picks up their own child has technically broken the law and must prove in court that they had a good reason. This amendment would make drop-off, pick-up, and the bill's other listed reasons simply allowed.
+- If a parent is charged, the state would have to show the parent was not there for one of those allowed reasons. The parent would not have to prove their innocence.
+
 ## Examples:
 This narrowly tailored provision could allow a parent or guardian, with prior written permission, to attend an important milestone involving their own child, such as:
 - An athletic event or competition
 - A school performance
 - A graduation or commencement
 - An award or recognition ceremony
-- Another significant school-sponsored event involving the parent’s or guardian’s child
 - An event run by an outside group on school property in which the child participates, such as scouts, 4-H, or a dance recital
 
 ## Why This Amendment
 SB 422 establishes important restrictions concerning the presence of certain registered offenders on school premises. The proposed amendment would preserve those restrictions while creating a controlled process for a school to determine, on an individual event-by-event basis, whether a parent or guardian may attend an important event involving their own child.
 
-The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued.
+The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued. A parent following the bill's own rules should not risk arrest in front of their children for picking them up from school.
 
 ## Requested Action:
 I am asking ${rep} to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether ${rep} can support it.`;
@@ -1612,7 +1617,7 @@ function makeAmendPdf(s, repOverride){
     {t:"title",x:"Proposed Amendment to SB 422"},
     {t:"sub",x:"Parent/Guardian Access for Specific Child-Related Events"},
     {t:"h",x:"Purpose:"},
-    {t:"p",x:"Creates a narrow, controlled exception allowing a parent or legal guardian who is otherwise subject to the restrictions of SB 422 to attend a specific event on school premises involving their own child."},
+    {t:"p",x:"Makes two narrow changes. It lets a school allow a parent or legal guardian who is otherwise subject to the restrictions of SB 422 to attend a specific event involving their own child, and it makes dropping off and picking up a child truly allowed, not just a defense in court."},
     {t:"h",x:"Proposed Approach:"},
     {t:"p",x:"A parent or legal guardian would be permitted to be physically present on school premises, or at a school-affiliated ticketed event, for a specific event involving their own child only when:"},
     {t:"gap"},
@@ -1624,17 +1629,19 @@ function makeAmendPdf(s, repOverride){
     {t:"li",x:"The permission would not provide general or unrestricted access to school property."},
     {t:"li",x:"A parent or guardian who is present with permission and follows its conditions would not be in violation of SB\u00a0422."},
     {t:"li",x:"A school and its employees would not be liable in a civil action for granting, denying, or conditioning permission, absent bad faith or reckless conduct."},
+    {t:"h",x:"Drop-off and pick-up:"},
+    {t:"li",x:"As written, a parent who drops off or picks up their own child has technically broken the law and must prove in court that they had a good reason. This amendment would make drop-off, pick-up, and the bill’s other listed reasons simply allowed."},
+    {t:"li",x:"If a parent is charged, the state would have to show the parent was not there for one of those allowed reasons. The parent would not have to prove their innocence."},
     {t:"h",x:"Examples:"},
     {t:"p",x:"This narrowly tailored provision could allow a parent or guardian, with prior written permission, to attend an important milestone involving their own child, such as:",tight:true},
     {t:"li",x:"An athletic event or competition"},
     {t:"li",x:"A school performance"},
     {t:"li",x:"A graduation or commencement"},
     {t:"li",x:"An award or recognition ceremony"},
-    {t:"li",x:"Another significant school-sponsored event involving the parent’s or guardian’s child"},
     {t:"li",x:"An event run by an outside group on school property in which the child participates, such as scouts, 4-H, or a dance recital"},
     {t:"h",x:"Why This Amendment"},
     {t:"p",x:"SB 422 establishes important restrictions concerning the presence of certain registered offenders on school premises. The proposed amendment would preserve those restrictions while creating a controlled process for a school to determine, on an individual event-by-event basis, whether a parent or guardian may attend an important event involving their own child."},
-    {t:"p",x:"The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued."},
+    {t:"p",x:"The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued. A parent following the bill’s own rules should not risk arrest in front of their children for picking them up from school."},
     {t:"h",x:"Requested Action:"},
     {t:"p",x:`I am asking ${rep} to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether ${rep} can support it.`,last:true}
   ];
