@@ -320,7 +320,7 @@ a{color:var(--accent)}
       <summary><span class="num">3</span>Speak at the committee hearing, or send written testimony <span class="badge">Very important</span></summary>
       <div class="mbody">
       <p>When the House committee schedules a hearing on SB 422, members of the public may testify. You can speak in person at the Statehouse in Columbus, or submit written testimony without making the trip. Testimony and a witness form are due about 24 hours before the hearing. A clear, respectful two-minute statement from a parent, grandparent, teacher, or neighbor carries real weight.</p>
-      <p>The testimony page writes an interested party statement for you, using the answers you already gave here. It takes about ten minutes, and you can save it now and submit it once the hearing is posted.</p>
+      <p>The testimony page writes a statement for you, as an interested party or an opponent, using the answers you already gave here. It takes about ten minutes, and you can save it now and submit it once the hearing is posted.</p>
       <div class="row"><a class="btn" href="testimony.html">Write your testimony</a></div>
       <p><strong style="color:var(--ink)">Want help or a second look?</strong> Reach out at <span class="cmail" data-subj="SB 422 testimony">ohiosb422 [at] proton [dot] me</span>. You don't need any experience. I can help you plan what to say, review your statement, and get it in on time.</p>
       <p id="hearinginfo" hidden></p>
@@ -613,6 +613,23 @@ const townsFor=c=>(TOWNS[c]||"").split(";").filter(Boolean).map(x=>{const [n,k,d
 const pad = d=>String(d).padStart(2,"0");
 const repEmail = d=>`rep${pad(d)}@ohiohouse.gov`;
 const JUDICIARY_CHAIR = 49;
+/* House Judiciary members other than the chair. Their constituents get a Requested Action asking them to
+   vote for the amendment and raise the gap at the hearing, instead of only telling the chair.
+   57 = Callender. If SB 422 is assigned to a different committee, update or empty this list. */
+const JUDICIARY_MEMBERS = [57];
+/* "chair" = the message goes to the Judiciary chair (his own constituents, or a vacant district routed to him);
+   "member" = another Judiciary member; "" = everyone else. */
+function askMode(s){
+  if(!s.t) return "";
+  if(s.t.d===JUDICIARY_CHAIR) return "chair";
+  return JUDICIARY_MEMBERS.includes(s.t.d) ? "member" : "";
+}
+function requestedAction(rep, mode){
+  if(mode==="chair") return `I am asking ${rep}, as chair of the House Judiciary Committee, where SB 422 is expected to be heard, to support this narrowly tailored amendment and to include it when the committee takes up SB 422. I would welcome a reply letting me know whether ${rep} can support it.`;
+  return mode==="member"
+    ? `I am asking ${rep}, as a member of the House Judiciary Committee, where SB 422 is expected to be heard, to support this narrowly tailored amendment, to vote for it if it is offered in committee, and to ask about the parent-attendance gap when SB 422 is heard. I would welcome a reply letting me know whether ${rep} can support it.`
+    : `I am asking ${rep} to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether ${rep} can support it.`;
+}
 
 /* ---------- Questions ---------- */
 const ROLES = [
@@ -1108,6 +1125,22 @@ const ASK_V=[
  `The fix is simple: let the principal of the school hosting an event give a parent written permission ahead of time to come to specific events involving their own child, under whatever conditions the school sets, with no general access. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
  `The change would keep every protection in SB 422 and add one option for schools. With written permission ahead of time from the host school's principal, a parent could come to specific events involving their own child, each one approved on its own and on the school's terms. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`
 ];
+const CLOSE_MEMBER_V=[
+ `Since you serve on the House Judiciary Committee, where SB 422 is expected to be heard, I'm asking you to support this change, to vote for it if it's offered in committee, and to ask about the parent-attendance gap when the bill is heard. I'd really appreciate a reply letting me know whether you can.`,
+ `As a member of the House Judiciary Committee, you'll be in the room when SB 422 is heard. Would you support this change, vote for it if it's offered, and ask about the parent-attendance gap at the hearing? I'd welcome a reply letting me know whether you can.`,
+ `You serve on the committee expected to hear SB 422, so your voice there matters. I hope you'll support this change, vote for it if it comes up in committee, and raise the parent-attendance gap when the bill is heard. I'd be grateful to hear whether you can.`,
+ `I'm asking for your support of this change as a member of the House Judiciary Committee: a vote for it if it's offered, and a question about the parent-attendance gap when SB 422 is heard. A short reply letting me know whether you can support it would mean a lot.`
+];
+const CLOSE_CHAIR_V=[
+ `As chair of the House Judiciary Committee, where SB 422 is expected to be heard, you're in the best position to make this change. I'm asking you to support it and to include it when the committee takes up the bill. I'd really appreciate a reply letting me know whether you can.`,
+ `Since SB 422 is expected to come before your committee, I'm asking you to support this change and include it when the committee takes up the bill. I'd welcome a reply letting me know whether you can.`,
+ `I hope you'll support this change and include it when the House Judiciary Committee takes up SB 422. I'd be grateful to hear whether you can.`,
+ `Would you support this change and include it when your committee considers SB 422? A short reply letting me know whether you can would mean a lot.`
+];
+function closeFor(s){
+  const m=askMode(s);
+  return pick("close", m==="chair"?CLOSE_CHAIR_V : m==="member"?CLOSE_MEMBER_V : CLOSE_V);
+}
 const CLOSE_V=[
  `I'm asking you to support this change, and to let the chair of the committee hearing SB 422 know you support it. I'd really appreciate a reply letting me know whether you can.`,
  `Would you support this change and let the chair of the committee hearing SB 422 know you're in favor of it? I'd welcome a reply letting me know whether you can.`,
@@ -1164,7 +1197,7 @@ ${pick("dropoff",DROPOFF_V)}${sits}
 
 ${pick("ask",ASK_V)}
 
-${att?att+" ":""}${pick("close",CLOSE_V)}
+${att?att+" ":""}${closeFor(s)}
 
 ${pick("thanks",THANKS_V)(d)}
 
@@ -1181,7 +1214,7 @@ function genSponsorEmail(s){
   const hello = s.t&&s.t.viaVacancy
     ? `I live in Ohio House District ${s.t.home}, which doesn't have a representative right now, so I'm writing to you as chair of the House Judiciary Committee about Senate Bill 422. I support what the bill is trying to do, keeping kids safe at school, and I'm asking you to support one change to it.`
     : pick("hello",HELLO_V)(districtLine(s), s.city?` (${s.city})`:"", s);
-  const att=attachLine(s), close=pick("close",CLOSE_V);
+  const att=attachLine(s), close=closeFor(s);
   const d = s.t&&!s.t.viaVacancy ? s.t.d : null;
   const thanks=pick("thanks",THANKS_V)(d);
   const who = s.city ? `${s.name||"[Your name]"}, and I live in ${s.city}, Ohio` : `${s.name||"[Your name]"}, and I live in Ohio`;
@@ -1218,6 +1251,12 @@ function roleShort(s){
     default: return "I'm a community member who wants kids protected and wants schools to have this one tool.";
   }
 }
+function callCommitteeAsk(s,R){
+  const m=askMode(s);
+  if(m==="chair") return `Since SB 422 is expected to go to the Judiciary Committee, I'm also asking ${R}, as chair, to include this amendment when the committee takes up the bill.`;
+  if(m==="member") return `Since ${R} serves on the Judiciary Committee, where SB 422 is expected to be heard, I'm also asking ${R} to vote for the amendment if it's offered and to ask about this gap at the hearing.`;
+  return "";
+}
 function genCall(s){
   const R=repName(s), n=s.name||"[your name]", where=s.city||"[your city]";
   const d = s.t?(s.t.viaVacancy?`District ${s.t.home}`:`District ${s.t.d}`):"[your district]";
@@ -1232,14 +1271,14 @@ I support SB 422's goal of keeping kids safe at school. I'm calling to ask ${R} 
 As it's written, the bill never lets a parent it applies to stay for their kid's school event, not even a graduation. Events that outside groups hold in school buildings have no exception at all.
 The change would let the principal of the host school give written permission for specific events, each one approved on its own, with whatever supervision the school wants. The school stays in control.
 It would also make drop-off and pick-up truly allowed, not just a defense in court. Right now a parent could be arrested picking up their own kid and have to prove they had a good reason.
-${roleShort(s)}
+${roleShort(s)}${callCommitteeAsk(s,R)?"\n"+callCommitteeAsk(s,R):""}
 Could I send the one-page amendment summary to ${em}?
 ## Before you hang up
 Does ${R} have a position on SB 422 yet?
 Thank you for your time.
 > Leave your name, street address, and phone number so they can confirm you are a constituent.
 ## If you get voicemail
-Hi, this is ${n} from ${where}, in House ${d}. I'm asking ${R} to support a narrow amendment to Senate Bill 422 that lets a school give a parent written permission to attend specific events involving their own child, approved event by event, on the school's terms, and that makes drop-off and pick-up truly allowed, not just a defense in court. I'm sending a one-page summary by email.${s.phone?` My number is ${s.phone}.`:""} Thank you.`;
+Hi, this is ${n} from ${where}, in House ${d}. I'm asking ${R} to support a narrow amendment to Senate Bill 422 that lets a school give a parent written permission to attend specific events involving their own child, approved event by event, on the school's terms, and that makes drop-off and pick-up truly allowed, not just a defense in court.${askMode(s)==="chair"?` I hope ${R} will include it when the Judiciary Committee takes up the bill.`:askMode(s)==="member"?` I hope ${R} will vote for it in the Judiciary Committee.`:""} I'm sending a one-page summary by email.${s.phone?` My number is ${s.phone}.`:""} Thank you.`;
 }
 function genAmend(s){
   const rep = s.t ? `Representative ${s.t.last}` : "Representative [Name]";
@@ -1279,7 +1318,7 @@ SB 422 establishes important restrictions concerning the presence of certain reg
 The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued. A parent following the bill's own rules should not risk arrest in front of their children for picking them up from school.
 
 ## Requested Action:
-I am asking ${rep} to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether ${rep} can support it.`;
+${requestedAction(rep, askMode(s))}`;
 }
 
 /* ---------- Mini-markup → HTML / PDF blocks ---------- */
@@ -1576,7 +1615,7 @@ function makeAmendPdf(s, repOverride){
     {t:"p",x:"SB 422 establishes important restrictions concerning the presence of certain registered offenders on school premises. The proposed amendment would preserve those restrictions while creating a controlled process for a school to determine, on an individual event-by-event basis, whether a parent or guardian may attend an important event involving their own child."},
     {t:"p",x:"The school, not the parent or guardian, would control whether access is granted, and permission would be limited to the specific event for which it was issued. A parent following the bill’s own rules should not risk arrest in front of their children for picking them up from school."},
     {t:"h",x:"Requested Action:"},
-    {t:"p",x:`I am asking ${rep} to support this narrowly tailored amendment, and to let the chair of the committee hearing SB 422 know of that support. I would welcome a reply letting me know whether ${rep} can support it.`,last:true}
+    {t:"p",x:requestedAction(rep, repOverride ? "" : askMode(s)),last:true}
   ];
   const {jsPDF}=window.jspdf;
   const W=612, H=792, M=29, TOP=24, BOTTOM=H-29; // 0.4" side/bottom margins
