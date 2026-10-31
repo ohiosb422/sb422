@@ -257,6 +257,11 @@ ol.steps p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
     <div class="roles" id="roles"></div>
   </fieldset>
   <div class="grid2" id="roleextra"></div>
+  <div class="field" id="parentselffield" hidden style="max-width:22rem">
+    <label for="parentself">Are you a parent yourself? <span class="opt">(optional)</span></label>
+    <select id="parentself"><option value="">Leave it out</option><option value="mom">Yes, I'm a mom</option><option value="dad">Yes, I'm a dad</option><option value="parent">Yes (just say "parent")</option></select>
+    <p class="note">For parents whose own kids aren't affected by SB 422. Adds a line speaking as a parent.</p>
+  </div>
 
   <div class="field" id="selfdescfield" hidden>
     <label for="selfdesc">How should your testimony describe you? <span class="req">*</span></label>
@@ -460,7 +465,7 @@ if(!saved){
   /* First visit: carry over answers from the email page (same site, same browser) */
   let ix={}; try{ix=JSON.parse(localStorage.getItem(IKEY)||"{}")||{};}catch(e){ix={};}
   saved={};
-  ["name","city","email","phone","kidcount","outsidename","x-spouseword","x-relword","x-school","x-title"].forEach(k=>{ if(typeof ix[k]==="string"&&ix[k]) saved[k]=ix[k]; });
+  ["name","city","email","phone","kidcount","outsidename","parentself","x-spouseword","x-relword","x-school","x-title"].forEach(k=>{ if(typeof ix[k]==="string"&&ix[k]) saved[k]=ix[k]; });
   if(ix["x-org"]) saved["x-org2"]=ix["x-org"];
   Object.keys(ix).forEach(k=>{
     if(/^kid-(sex|age)-\d$/.test(k)) saved[k]=ix[k];
@@ -485,6 +490,7 @@ function renderExtra(role){
   $("familywrap").hidden=fam||!role;
   $("famsec").hidden=!fam;
   $("selfdescfield").hidden=role!=="parent";
+  $("parentselffield").hidden=!["relative","teacher","admin","coach","community"].includes(role);
   $("famh").textContent=role==="grandparent"?"Your grandchildren":role==="relative"?"The children in your family":"Your children";
   const futOk=FUTURE_ROLES.includes(role), kc=$("kidcount");
   kc.querySelectorAll(".futopt").forEach(o=>{const ok=futOk&&(!o.classList.contains("noneopt")||role==="parent"); o.hidden=!ok; if(o.value) o.disabled=!ok;});
@@ -521,6 +527,7 @@ function state(){
     email:$("showemail").checked?v("email"):"", phone:$("showphone").checked?v("phone"):"",
     selfdesc: role==="parent"&&future!=="none" ? (v("selfdesc")||"direct") : "direct",
     family:$("family").checked&&!$("familywrap").hidden,
+    parentself:$("parentselffield").hidden?"":v("parentself"),
     school:v("x-school"), title:v("x-title"), org2:v("x-org2"),
     spouseword:v("x-spouseword")||"spouse",
     relword:v("x-relword")==="other relative"?"":v("x-relword"),
@@ -550,32 +557,45 @@ function kidPhrase(s,k){
   if(k.age===0) return n==="child"?"a baby":`a baby ${n}`;
   return `${anA(k.age)}${k.age}-year-old ${n}`;
 }
+function relPlural(s){
+  const k=s.kids; if(!k.length) return "";
+  const nouns=k.map(x=>nounFor(s.role,x.sex,s.relword,false)), same=nouns.every(n=>n===nouns[0]);
+  if(s.role==="grandparent") return same&&nouns[0]!=="grandchild"?nounFor(s.role,k[0].sex,s.relword,true):"grandkids";
+  if(same&&nouns[0]!=="child") return nounFor(s.role,k[0].sex,s.relword,true);
+  const r=s.relword;
+  const g=k.filter(x=>x.sex==="girl").length, b=k.filter(x=>x.sex==="boy").length;
+  if(r==="aunt"||r==="uncle") return k.some(x=>x.sex==="x")?"":`${g>1?"nieces":"niece"} and ${b>1?"nephews":"nephew"}`;
+  if(r==="older sister"||r==="older brother") return k.some(x=>x.sex==="x")?"younger siblings":`younger ${g>1?"sisters":"sister"} and ${b>1?"brothers":"brother"}`;
+  if(r==="cousin") return "cousins";
+  return "";
+}
 function C(s){
-  const k=s.kids, n=k.length, one=n===1, poss=s.role==="spouse"?"our":"my";
-  let txt;
-  if(one) txt=`${poss} ${nounFor(s.role,k[0].sex,s.relword,false)}`;
-  else if(s.role==="grandparent") txt="my grandchildren";
-  else if(s.role==="relative") txt="the children";
-  else txt=`${poss} children`;
+  const k=s.kids, n=k.length, one=n===1, poss=s.role==="spouse"?"our":"my", pf=s.role==="parent"||s.role==="spouse";
+  let txt, generic=false;
+  if(one){
+    const nn=nounFor(s.role,k[0].sex,s.relword,false);
+    if(nn==="child"&&!pf){txt="the child in my family";generic=true;} else txt=`${poss} ${nn}`;
+  } else if(pf) txt=`${poss} kids`;
+  else { const p=relPlural(s); if(p) txt=`my ${p}`; else {txt="the kids in my family";generic=true;} }
   const sx=one?k[0].sex:"many";
   const pr=sx==="girl"?["she","her","her"]:sx==="boy"?["he","him","his"]:["they","them","their"];
   const pl=pr[0]==="they";
-  return {n,one,kids:txt,Kids:cap1(txt),poss:txt+(txt.endsWith("s")?"'":"'s"),they:pr[0],They:cap1(pr[0]),them:pr[1],their:pr[2],Their:cap1(pr[2]),pl,is:pl?"are":"is"};
+  const poss2=generic?pr[2]:txt+(txt.endsWith("s")?"'":"'s");
+  return {n,one,generic,kids:txt,Kids:cap1(txt),poss:poss2,they:pr[0],They:cap1(pr[0]),them:pr[1],their:pr[2],Their:cap1(pr[2]),pl,is:pl?"are":"is"};
 }
+const agesList=s=>listJoin(s.kids.map(k=>k.age===0?"a baby":String(k.age)));
 function kidsSentence(s){
   const c=C(s); if(!c.n) return "";
-  const list=listJoin(s.kids.map(k=>kidPhrase(s,k)));
-  const ages=listJoin(s.kids.map(k=>k.age===0?"under 1":String(k.age)));
+  const list=listJoin(s.kids.map(k=>kidPhrase(s,k))), ages=agesList(s);
   if(s.role==="parent") return c.one
-    ? pick("ks-p1",[`I have ${list}.`,`I am the parent of ${list}.`])
-    : pick("ks-p",[`I have ${NUMW[c.n]} children: ${list}.`,`I am the parent of ${NUMW[c.n]} children, ages ${ages}.`,`Our family includes ${list}.`]);
+    ? pick("ks-p1",[`I have ${list}.`,`I'm the parent of ${list}.`])
+    : pick("ks-p",[`I have ${NUMW[c.n]} kids: ${list}.`,`I have ${NUMW[c.n]} kids. They're ${ages}.`,`My kids are ${ages}.`]);
   if(s.role==="spouse") return c.one
-    ? pick("ks-s1",[`My ${s.spouseword} and I have ${list}.`,`We are the parents of ${list}.`])
-    : pick("ks-s",[`My ${s.spouseword} and I have ${NUMW[c.n]} children: ${list}.`,`We are the parents of ${NUMW[c.n]} children, ages ${ages}.`,`Our family includes ${list}.`]);
-  if(s.role==="grandparent") return c.one
-    ? `I have ${list}.`
-    : pick("ks-g",[`I have ${NUMW[c.n]} grandchildren this bill would affect: ${list}.`,`This bill would affect ${NUMW[c.n]} of my grandchildren, ages ${ages}.`]);
-  return c.one?`This bill affects ${list} in my family.`:pick("ks-r",[`This bill affects ${NUMW[c.n]} children in my family: ${list}.`,`It affects ${NUMW[c.n]} children in my family, ages ${ages}.`]);
+    ? pick("ks-s1",[`My ${s.spouseword} and I have ${list}.`,`We have ${list}.`])
+    : pick("ks-s",[`My ${s.spouseword} and I have ${NUMW[c.n]} kids: ${list}.`,`We have ${NUMW[c.n]} kids. They're ${ages}.`]);
+  if(c.generic) return c.one ? `This affects ${kidPhrase(s,s.kids[0])} in my family.` : `This affects ${NUMW[c.n]} kids in my family. They're ${ages}.`;
+  if(c.one){ const a=s.kids[0].age; return `${c.Kids} is ${a===0?"just a baby":a}.`; }
+  return `${c.Kids} are ${ages}.`;
 }
 
 /* ---------- Wording variety ----------
@@ -590,17 +610,17 @@ function pick(key,arr){let h=2166136261;const str=SEED+"|"+key;for(let i=0;i<str
 
 /* ---------- Testimony text ---------- */
 const OOS_CONN={
-  kids:  ["My children attend school in Ohio, so this bill would reach my family directly.","Although I live outside Ohio, my children go to school there, so this bill would affect us directly."],
-  family:["I have family in Ohio, and this bill would affect them.","My family ties to Ohio are close, and this bill would reach people I love there."],
-  travel:["My family regularly travels to Ohio for youth sports, competitions, and school events.","Our children's teams and activities often bring us to Ohio schools for games, tournaments, and performances."],
-  border:["I live near the Ohio line, and our children's activities often take us into Ohio schools.","We live close to Ohio, and many of our children's games and events are held at Ohio schools."],
-  former:["I grew up in Ohio and still have close ties to the state.","Ohio is where I grew up, and I still care a great deal about its schools and families."],
+  kids:  ["My kids go to school in Ohio, so this would hit my family directly.","I live outside Ohio, but my kids go to school there."],
+  family:["I have family in Ohio, and this would affect them.","A lot of my family lives in Ohio, and this bill would reach people I love."],
+  travel:["We're in Ohio a lot for our kids' games, tournaments, and school events.","Our kids' teams play at Ohio schools all the time."],
+  border:["We live close to the Ohio line, and a lot of our kids' games and events are at Ohio schools.","We live right near Ohio, so our kids end up at Ohio schools for games and events all the time."],
+  former:["I grew up in Ohio and still feel connected to it.","Ohio is where I grew up, and I still care about its schools and families."],
   none:  [""]
 };
-const OOS_NOTE=["I recognize that I am not one of your constituents, and I appreciate the committee's willingness to hear from people outside Ohio.","I know this committee's first responsibility is to Ohioans, and I am grateful that you accept testimony from people outside the state.","I am not an Ohio resident, and I appreciate the chance to share my perspective with the committee."];
+const OOS_NOTE=["I know I'm not one of your constituents, and I appreciate you taking testimony from people outside Ohio.","I know Ohioans come first for this committee. Thank you for hearing from me anyway.","I don't live in Ohio, so thank you for letting me share this.",
+    "I live outside Ohio, but I hope you\'ll still hear me out."];
 
-/* Salutations, modeled on real Ohio testimony openings: full Chair/Vice Chair/Ranking Member form,
-   Chair + Ranking Member only, "Dear ..." letter style, and salutations folded into the thank-you sentence. */
+/* Salutations follow the usual Ohio committee form; everything after them is plain speech. */
 function addressees(){
   const C=CHAIR?`Chair ${CHAIR}`:"Chair", V=VICE_CHAIR?`Vice Chair ${VICE_CHAIR}`:"Vice Chair", R=RANKING?`Ranking Member ${RANKING}`:"Ranking Member";
   const COM=COMMITTEE?`the ${COMMITTEE} Committee`:"the committee", HCOM=COMMITTEE?`the House ${COMMITTEE} Committee`:"the House committee";
@@ -611,7 +631,7 @@ function addressees(){
     `${C}, ${R}, and members of the committee`,
     `${C} and members of ${COM}`,
     `${C} and members of the committee`,
-    `${C}, ${V}, ${R}, and distinguished members of ${COM}`,
+    `${C}, ${V}, ${R}, and members of the committee`,
     `${C}, ${V}, ${R}, and all members of the committee`,
     `${C}, ${V}, ${R}, and members of ${HCOM}`,
     `${C} and committee members`,
@@ -623,51 +643,55 @@ function salutationParts(s){
     ...L.map(x=>`${x}:`),
     `${L[0]},`, `${L[2]},`, `${L[4]},`,
     `Dear ${L[0]}:`, `Dear ${L[2]}:`, `Dear ${L[5]}:`, `Dear ${L[9]}:`,
-    `To ${A.C} and the members of ${A.HCOM}:`, `To the members of ${A.HCOM}:`,
-    `Honorable ${A.C} and members of ${A.COM}:`, `Members of ${A.HCOM}:`];
-  const verb=ip?pick("sal-verb-ip",["provide interested party testimony","testify as an interested party","offer interested party testimony"]):pick("sal-verb-w",["submit written interested party testimony","provide written interested party testimony"]);
+    `To ${A.C} and the members of ${A.HCOM}:`, `To the members of ${A.HCOM}:`];
+  const verb=ip?pick("sal-verb-ip",["speak","speak with you","testify as an interested party"]):pick("sal-verb-w",["share my thoughts","share testimony as an interested party","share my thoughts in writing"]);
   const a=pick("sal-a",L);
   const merged=[
-    `${a}, thank you for the opportunity to ${verb} on Senate Bill 422.`,
-    `Thank you, ${a}, for the opportunity to ${verb} on Senate Bill 422.`,
-    `${a}, thank you for allowing me to ${verb} on Senate Bill 422.`,
-    `${a}, I appreciate the opportunity to ${verb} on Senate Bill 422.`];
+    `${a}, thank you for letting me ${verb} on Senate Bill 422.`,
+    `Thank you, ${a}, for letting me ${verb} on Senate Bill 422.`,
+    `${a}, thank you for the chance to ${verb} on Senate Bill 422.`];
   if(ip && HEARING_TIME){
     const t=HEARING_TIME.toLowerCase(), hr=parseInt(t,10)||0, pm=/p\.?\s*m/.test(t);
     const part=!pm?"morning":(hr>=5&&hr<12?"evening":"afternoon");
-    merged.push(`Good ${part}, ${a}. Thank you for the opportunity to ${verb} on Senate Bill 422.`);
+    merged.push(`Good ${part}, ${a}. Thank you for letting me speak on Senate Bill 422.`);
   }
   const useMerged=pick("sal-mode",[false,false,true,false,true])===true;
   return useMerged ? {merged:true,text:pick("sal-m",merged)} : {merged:false,text:pick("sal-s",standalone)};
 }
 const THANKS_IP=[
-  "Thank you for the opportunity to provide interested party testimony on Senate Bill 422.",
-  "Thank you for allowing me to testify today as an interested party on Senate Bill 422.",
-  "Thank you for the chance to speak with you today about Senate Bill 422.",
-  "I appreciate the opportunity to offer interested party testimony on Senate Bill 422.",
-  "Thank you for hearing my testimony on Senate Bill 422 today."];
+  "Thank you for letting me speak today on Senate Bill 422.",
+  "Thank you for the chance to talk with you about Senate Bill 422.",
+  "Thank you for hearing from me today on Senate Bill 422.",
+  "I appreciate the chance to speak about Senate Bill 422.",
+    "Thank you for having me today. I\'m here about Senate Bill 422.",
+    "Thanks for the chance to speak today about Senate Bill 422."];
 const THANKS_W=[
-  "Thank you for the opportunity to submit written interested party testimony on Senate Bill 422.",
-  "Please accept this written interested party testimony on Senate Bill 422.",
-  "Thank you for considering my written testimony on Senate Bill 422, which I submit as an interested party.",
-  "I appreciate the opportunity to submit interested party testimony on Senate Bill 422.",
-  "I respectfully submit this written testimony as an interested party on Senate Bill 422."];
+  "Thank you for taking the time to read my testimony on Senate Bill 422.",
+  "Thank you for the chance to share my thoughts on Senate Bill 422.",
+  "Thank you for reading this. I'm writing about Senate Bill 422.",
+  "I appreciate the chance to share testimony on Senate Bill 422.",
+    "Thank you for taking a few minutes to read this. It\'s about Senate Bill 422.",
+    "I\'m grateful for the chance to share my thoughts on Senate Bill 422."];
 const POS_SHORT=[
-  "I support the goal of SB 422, keeping children safe at school, and I am here as an interested party to ask for one narrow amendment that keeps every protection in the bill and leaves the final decision with the school.",
-  "I agree with what SB 422 sets out to do. I am testifying as an interested party because I am asking for one narrow change: a way for a school to say yes, on its own terms.",
-  "I support protecting children at school, and I support the purpose of this bill. I am asking the committee to add one narrow amendment that keeps the decision in the school's hands.",
-  "My testimony is neither for nor against SB 422. I support its goal, and I am asking for a single, narrow amendment that leaves every protection in place and lets schools make one kind of decision for themselves.",
-  "I want to be clear that I support keeping children safe at school. I am testifying as an interested party to ask for one amendment that would let a school, and only the school, approve a parent for specific events."];
+  "I'm submitting this as an interested party. I'm not against SB 422. I agree kids need to be safe at school. I'm asking for one change that would let a school decide whether a parent can come to their own child's events.",
+  "I'm not here to fight this bill. I want kids safe at school too. I'm asking you to add one thing: a way for a school to say yes to a parent, on the school's terms.",
+  "I support what SB 422 is trying to do. That's why I'm testifying as an interested party and not as an opponent. I'm hoping you'll fix one gap in it.",
+  "Keeping kids safe at school matters to me. I'm asking for one change to SB 422 that keeps every protection in place and lets the school make the call on a parent coming to their child's events.",
+    "I\'ll say up front that I\'m not against SB 422. I\'m testifying as an interested party because I think it needs one fix, and I\'m hoping you\'ll make it.",
+    "I want kids safe at school, same as you do. I\'m here as an interested party to ask for one change that keeps the bill\'s protections and lets the school decide about a parent coming to their child\'s events.",
+    "I\'m filing as an interested party. I don\'t want this bill to fail. I just want it to leave room for a school to say yes to a parent when it makes sense."];
 const POS_LONG=[
-  "I support the goal of SB 422: keeping children safe at school. I am testifying as an interested party because I am not asking you to defeat this bill, and I am not asking you to pass it exactly as it is. I am asking you to adopt one narrow amendment that keeps every protection in the bill and leaves the final decision with the school.",
-  "I am not writing to oppose SB 422. I share its goal of keeping children safe at school. I am writing as an interested party because the bill, as passed by the Senate, leaves out one thing: a way for a school to approve a parent's attendance at their own child's events. I am asking the committee to add it."];
+  "First, I'm not against SB 422. Kids should be safe at school, and I understand why the Senate passed it. But the way it's written leaves something out, and I'm hoping the House will fix it.",
+  "I'm not asking you to vote this bill down, and I'm not asking you to pass it as it is. I'm asking you to add one thing to it.",
+    "I agree with the goal of SB 422. I\'m writing because one piece of it got left out, and the people it hurts most are kids."];
 function pOpening(s,skipThanks){
   const ip=s.fmt==="inperson", oos=s.loc==="out", n=s.name||"[Your name]", city=s.city||"[your city]";
   const thanks=pick("thanks-"+s.fmt, ip?THANKS_IP:THANKS_W);
   let who;
   if(oos){
     const where=`${city}, ${s.state||"[your state]"}`;
-    who=pick("who-oos",[`My name is ${n}, and I live in ${where}.`,`I am ${n}, from ${where}.`,`My name is ${n}. I live in ${where}.`]);
+    who=pick("who-oos",[`My name is ${n}, and I live in ${where}.`,`I'm ${n}, from ${where}.`,`My name is ${n}. I live in ${where}.`,
+    `My name is ${n}. I\'m from ${where}.`]);
     const conn=pick("conn-"+s.conn,OOS_CONN[s.conn]||OOS_CONN.none);
     if(conn) who+=" "+conn;
     who+=" "+pick("oosnote",OOS_NOTE);
@@ -675,12 +699,26 @@ function pOpening(s,skipThanks){
     const d=s.district;
     who=pick("who",[
       `My name is ${n}, and I live in ${city}${d?`, in House District ${d}`:""}.`,
-      `My name is ${n}. I live in ${city}${d?` and am a constituent of House District ${d}`:""}.`,
-      `I am ${n}, a resident of ${city}${d?` in House District ${d}`:""}.`]);
+      `I'm ${n}, and I live in ${city}${d?`, in House District ${d}`:""}.`,
+      `My name is ${n}. I live in ${city}${d?`, which is in House District ${d}`:""}.`,
+    `My name is ${n}, and I\'m from ${city}${d?` in House District ${d}`:""}.`]);
   }
-  const org=s.org?` I am testifying on behalf of ${s.org}.`:"";
+  const org=s.org?` I'm ${ip?"here":"writing"} on behalf of ${s.org}.`:"";
   const pos=pick("pos-"+s.fmt, ip?POS_SHORT:POS_SHORT.concat(POS_LONG));
   return `${skipThanks?"":thanks+" "}${who}${org} ${pos}`;
+}
+/* "Are you a parent yourself?" for roles whose own kids aren't affected */
+const PS_ROLES=["relative","teacher","admin","coach","community"];
+function psWord(s){ return PS_ROLES.includes(s.role)&&["mom","dad","parent"].includes(s.parentself)?s.parentself:""; }
+function psLine(s){
+  const p=psWord(s); if(!p) return "";
+  return pick("ps",[
+    `I'm a ${p} myself. My own kids aren't affected by this bill, but I know how much it means to a kid to look out and see you there.`,
+    `I'm a ${p} too. I can't imagine telling my own kids I wasn't allowed to come to their game or their concert, and that nobody at the school could do anything about it.`,
+    `As a ${p}, I've been to more school concerts and ball games than I can count. I can't picture missing all of them.`,
+    `I\'m a ${p} too, and my kids have no connection to this bill. But I know what my kids would say if I told them I couldn\'t come to their games anymore.`,
+    `I\'m a ${p} myself, so this hits close to home even though my own family isn\'t affected. Showing up for your kids is a big part of being a ${p}.`,
+    `I\'m a ${p}. My kids aren\'t affected by this, but I\'ve seen the look on a kid\'s face when their family shows up, and when nobody does.`]);
 }
 function pRole(s){
   const c=C(s), sw=s.spouseword, oos=s.loc==="out";
@@ -689,86 +727,115 @@ function pRole(s){
   switch(s.role){
     case "parent":
       if(s.future==="none"){ t=pick("role-none",[
-        `I am subject to SB 422's restrictions myself. I do not have children, so this amendment would never apply to me. I am testifying because the children of parents in my position have done nothing wrong, and their schools should be allowed to decide whether a parent may attend.`,
-        `SB 422 would bar me from school property. I have no children, and the amendment I am asking for would never benefit me. I support it because, as written, the bill leaves schools no way to let a parent attend their own child's events, even under supervision.`]); break; }
-      { const fut=s.future==="expecting"?" I am expecting my first child.":s.future==="planning"?" I hope to become a parent someday.":"";
+        `This bill applies to me. I don't have kids, so the change I'm asking for would never help me. I'm writing because the kids of parents in my situation haven't done anything wrong, and their schools should get to decide whether their mom or dad can come to their events.`,
+        `SB 422 would bar me from school property. I don't have children, so I have nothing to gain from this. I'm speaking up because, as written, the bill leaves schools no way to let a parent come to their own kid's events, even with supervision.`,
+    `I\'m someone this bill applies to, and I don\'t have any kids. I\'m testifying anyway because there are parents in my situation who\'d give anything to be at their kid\'s graduation, and their school should at least be allowed to say yes.`,
+    `SB 422 applies to me, but I\'m not a parent, so this change wouldn\'t touch my life at all. I\'m asking for it because kids shouldn\'t lose their mom or dad at every school event when the school would be willing to supervise.`]); break; }
+      { const fut=s.future==="expecting"?" I'm expecting my first child.":s.future==="planning"?" I'm hoping to be a parent someday.":"";
         t = s.selfdesc==="family" ? pick("role-pfam",[
-          `SB 422 would directly affect my family.${fut} As written, it would keep a parent in our home away from ${kp} games, concerts, and graduation, and no school would have any way to make an exception.`,
-          `This bill would directly affect my family.${fut} As written, one parent in our home could drop ${k} off at school but never stay for a game, a concert, or a graduation, and no school could make an exception.`,
-          `I am testifying because SB 422 would affect my own family.${fut} It would keep a parent in our home from ${kp} school events, with no way for any principal to approve that parent, even under supervision.`,
-          `My family is one of the families this bill would reach.${fut} As written, it would leave ${kp} school with no way to let a parent in our home attend ${th} events, no matter what conditions the school was willing to set.`])
+          `This bill would affect my family directly.${fut} As written, one parent in our home could drop ${k} off at school but couldn't stay for a game, a concert, or a graduation, and the school couldn't make an exception.`,
+          `My family is one of the families this bill would reach.${fut} The way it's written, ${kp} school would have no way to let one of ${th} parents come to ${th} events, no matter what conditions the school was willing to set.`,
+          `I'm testifying because SB 422 would affect my own family.${fut} It would keep a parent in our home away from ${kp} school events, and no principal could approve that parent, even with supervision.`,
+    `My family would feel this bill directly.${fut} As written, ${kp} school couldn\'t let one of ${th} parents stay for a single game or concert, no matter how careful the school wanted to be.`,
+    `I\'m here because this bill would change things for my own family.${fut} One parent in our home would be shut out of ${kp} school events, and nobody at the school would have a way to make an exception.`])
         : pick("role-pdir",[
-          `I am one of the parents SB 422 would bar from school property.${fut} I accept the rules this bill sets, and I am not asking for open access to any school. I am asking that ${kp} school be allowed to decide, event by event and on its own terms, whether I may attend.`,
-          `I am a parent this bill would bar from school property.${fut} I am not asking you to change who the bill applies to. I am asking that ${kp} school be allowed to decide whether I may attend a specific event, under whatever conditions it sets.`,
-          `I am one of the people SB 422 applies to, and I am also a parent.${fut} I accept the rules this bill sets. What I am asking for is a process: written permission from ${kp} school for specific events, each approved on its own.`,
-          `I am a parent who would be barred from school property under SB 422.${fut} I do not expect to walk into a school whenever I want. I am asking only that a principal have the authority to approve me for events involving ${k}, under conditions the school chooses.`,
-          `I am one of the parents this bill would keep off school grounds.${fut} I support strong rules around schools. I also believe the people best placed to decide whether I can safely attend an event involving ${k} are the principals who run those events.`]); }
+          `I'm one of the parents this bill would keep off school property.${fut} I'm not asking for a free pass. I'm asking that ${kp} school be allowed to decide, one event at a time, whether I can be there.`,
+          `I'm a parent, and this bill would bar me from school property.${fut} I'll follow whatever rules it sets. All I'm asking is for ${kp} principal to have the option of saying yes to me for specific events, with whatever conditions the school wants.`,
+          `I'm one of the people SB 422 is about, and I'm also a parent.${fut} I don't expect to come and go at a school whenever I want. I'd just like ${kp} school to have a way to let me come to ${th} events if it decides that's okay.`,
+          `I'm a parent who'd be barred from school property under SB 422.${fut} I support strong rules around schools. I also think the people who should decide whether I can be at ${kp} game or concert are the people who run the school.`,
+    `I\'m a parent, and SB 422 would keep me off school property.${fut} I\'m not trying to get out of anything. I\'d just like ${kp} school to be able to say yes to me for certain events, with any rules it wants to set.`,
+    `I\'m one of the parents this bill is about.${fut} I accept that there need to be rules. What I\'m hoping for is a way for ${kp} principal to let me come to ${th} events, one at a time, if the school is comfortable with it.`,
+    `SB 422 would bar me from school property, and I\'m a parent.${fut} The hardest part for me isn\'t the rules. It\'s knowing ${kp} school wouldn\'t even be allowed to consider letting me come to ${th} events.`]); }
       break;
     case "spouse":
-      { const fut=s.future==="expecting"?" We are expecting our first child.":s.future==="planning"?" We hope to start a family.":"";
+      { const fut=s.future==="expecting"?" We're expecting our first child.":s.future==="planning"?" We're hoping to start a family.":"";
         const k2=s.future?"our child":c.kids, kp2=s.future?"our child's":c.poss, th2=s.future?"their":c.their;
         t=pick("role-spouse",[
-          s.future ? `My ${sw} is a parent SB 422 would bar from school property.${fut} Under the bill as written, I would be the only parent who could ever attend our child's school events, and the school would have no way to approve my ${sw}, even with an escort.`
-                   : `My ${sw} is a parent SB 422 would bar from school property. We share the work of raising ${k2}. Under the bill as written, I would be the only parent who could ever attend ${th2} school events, and the school would have no way to approve my ${sw}, even with an escort.`,
-          `My ${sw} would be barred from school property under SB 422.${fut} As written, the bill would put every one of ${kp2} school events on my shoulders alone.`,
-          `My ${sw} is subject to SB 422's restrictions.${fut} I support the bill's purpose, but under its current wording, ${k2} could have at most one parent at ${th2} school events, and none at all when I cannot go.`,
-          `I am the other parent in a home this bill affects: my ${sw} would be barred from school property.${fut} I am asking that ${kp2} school be allowed to approve my ${sw} for specific events, under whatever conditions the school sets.`]); }
+          s.future ? `My ${sw} is one of the parents this bill would keep off school property.${fut} Under the bill as written, I'd be the only one of us who could ever go to our child's school events, and the school would have no way to approve my ${sw}, even with supervision.`
+                   : `My ${sw} is one of the parents this bill would keep off school property. We raise ${k2} together. Under the bill as written, I'd be the only one of us who could ever go to ${th2} school events, and the school would have no way to approve my ${sw}, even with supervision.`,
+          `My ${sw} would be barred from school property under SB 422.${fut} That means every one of ${kp2} games, concerts, and school programs would fall on me alone.`,
+          `My ${sw} is affected by SB 422.${fut} I understand why the bill exists, but the way it's written, ${k2} would have one parent at ${th2} school events at most, and none at all on the nights I can't make it.`,
+          `I'm the other parent in a home this bill affects. My ${sw} would be barred from school property.${fut} I'm asking that ${kp2} school be allowed to approve my ${sw} for specific events, under whatever conditions the school sets.`,
+    `My ${sw} is one of the people this bill applies to.${fut} I\'m the one who\'d be going to every game, concert, and school program by myself, and I\'m asking that the school be allowed to approve my ${sw} for some of them.`,
+    `${fut?fut.trim()+" ":""}My ${sw} and I share the work of raising ${k2}. Under this bill, school events would be the one thing I\'d always have to do alone, because my ${sw} would be barred from school property.`,
+    `My ${sw} would be barred from school property under SB 422.${fut} I want ${k2} to see both of us show up for school events. As written, the school couldn\'t allow that, no matter what conditions it set.`]); }
       break;
     case "grandparent":
-      { const ks=kidsSentence(s), par=c.n?`${c.Their} parent is subject to SB 422's restrictions.`:"";
-        const never=c.n?`${c.they} never ${c.pl?"find":"finds"}`:"some children never find";
+      { const ks=kidsSentence(s), par=c.n?`One of ${c.their} parents would be barred from school property under this bill.`:"";
+        const them=c.n?c.them:"them", they=c.n?c.they:"they";
         t=pick("role-gp",[
-          `I am a grandparent. ${ks} ${par} Children look for their family in the audience at games and concerts. As written, this bill would make sure ${never} that parent there, and the school could not decide otherwise.`,
-          `I am a grandparent. ${ks} ${par} I have spent plenty of time in school gyms and auditoriums, and I know a child looks for family in the crowd. As written, the bill gives the school no way to let that parent be there.`,
-          `As a grandparent, I care about two things here: that children are safe at school, and that they are not the ones who lose out. ${ks} ${par} The amendment protects both by leaving the decision with the school.`,
-          `I am testifying as a grandparent. ${ks} ${par} Grandparents fill in for a lot, but we cannot take a parent's place in the audience at a graduation.`]); }
+          `I'm a grandparent. ${ks} ${par} I've sat in a lot of bleachers and auditoriums over the years, and every kid looks for their family. As this bill is written, ${they} would never find that parent there, and the school couldn't change that.`,
+          `As a grandparent, I care about two things: kids being safe at school, and kids not paying for something they didn't do. ${ks} ${par} The change I'm asking for protects both.`,
+          `I'm testifying as a grandparent. ${ks} ${par} Grandparents fill in for a lot, but I can't take a parent's place at a graduation.`,
+          `I'm a grandparent. ${ks} ${par} I've seen how much it means to ${them} when family shows up, and it breaks my heart to think of ${them} going through every game and every concert knowing one parent isn't allowed to come.`,
+    `I\'m a grandparent. ${ks} ${par} I go to everything I can, and I can tell you the first thing a kid does after a game or a concert is look for their family. I\'d like their school to be able to let that parent be there.`,
+    `I\'m testifying as a grandparent. ${ks} ${par} I\'m not asking for anything for myself. I\'m asking for ${them}.`,
+    `As a grandparent, I raised my own kids, and now I get to cheer on my grandkids. ${ks} ${par} I want both parents cheering too, and as written, this bill makes that impossible.`]); }
       break;
     case "relative":
-      { const who=["aunt","uncle","older sister","older brother","cousin"].includes(s.relword)?art(s.relword):"a family member";
-        const ks=kidsSentence(s), par=c.n?`${c.Their} parent is subject to SB 422's restrictions.`:"";
+      { const who=["aunt","uncle","older sister","older brother","cousin"].includes(s.relword)?art(s.relword):"a relative";
+        const ks=kidsSentence(s), sib=s.relword==="older sister"||s.relword==="older brother";
+        const par=c.n?(sib?"One of our parents would be barred from school property under this bill.":`One of ${c.their} parents would be barred from school property under this bill.`):"";
+        const them=c.n?c.them:"them", their=c.n?c.their:"their", they=c.n?c.they:"they", pl=!c.n||c.pl;
         t=pick("role-rel",[
-          `I am writing as ${who}. ${ks} ${par} The rest of our family helps where we can, but none of us can take a parent's place at a graduation or a game.`,
-          `I am testifying as ${who}. ${ks} ${par} When a parent cannot attend school events, the rest of the family tries to fill the gap, and often we cannot.`,
-          `As ${who}, I have seen how much school events mean to children. ${ks} ${par} As written, the bill would keep that parent away from every one of them, with no exception possible.`]); }
+          `I'm ${who}. ${ks} ${par} I go to as many of ${their} games and programs as I can, but I can't take a parent's place.`,
+          `I'm writing as ${who}. ${ks} ${par} Our family helps however we can, but at a concert or a graduation, a kid wants their parent there.`,
+          `I'm ${who}. ${ks} ${par} I've seen how ${they} light${pl?"":"s"} up when family shows up for ${them}. As this bill reads now, that parent could never be one of those people, and the school couldn't do anything about it.`,
+    `I\'m ${who}, and I\'m close with the kids in my family. ${ks} ${par} I show up for them every chance I get, but I know it\'s not the same as having their parent there.`,
+    `I\'m ${who}. ${ks} ${par} When I go to ${their} events, I\'m happy to be there, but I know who ${they} ${pl?"are":"is"} really looking for in the crowd.`,
+    `I\'m writing as ${who}. ${ks} ${par} I love being there for ${them}. I just don\'t think a law should decide that ${their} parent never can be, when the school might be willing to allow it.`,
+    `I\'m ${who}. ${ks} ${par} Our family does a lot of covering for each other, but there are some days, like a graduation, where nobody else will do.`]); }
       break;
     case "teacher":
       { const at=s.school?` at ${s.school}`:"", P=oos?"an Ohio principal":"our principal";
         t=pick("role-teacher",[
-          `I work in a school${at}. We plan games, concerts, and award nights for every student, and our staff already supervise every event we hold. As written, SB 422 gives ${P} no way to approve a parent for an event, even with an escort. This amendment would give schools a tool, not an obligation.`,
-          `As a teacher${at}, I want students safe, and I want them to have family at their events. SB 422 as written takes the decision out of school leaders' hands entirely. The amendment would put it back with the principal.`,
-          `I am an educator${at}. School staff already supervise every event we hold. If a principal is comfortable allowing a parent to attend with conditions, the law should let that happen.`,
-          `I work in a school${at}. I see what it means to a child when a parent is in the audience, and what it means when no one comes. The amendment would let schools prevent the second where it is safe to do so.`]); }
+          `I work ${s.school?`at ${s.school}`:"in a school"}. We put on games, concerts, and award nights for every kid, and our staff are already at every one of them. Right now SB 422 gives ${P} no way to say yes to a parent, even with a staff member right beside them. This change would give schools an option. It wouldn't force anything on us.`,
+          `I'm a teacher${at}. I want my students safe, and I want them to have their families at their events. As written, SB 422 takes the decision away from school leaders completely. This change would give it back to the principal.`,
+          `I work ${s.school?`at ${s.school}`:"in a school"}. Every year I see kids scan the crowd for their family before a concert starts. I also see the ones who don't find anyone. This change would let a school keep that from happening when it's safe.`,
+          `I'm an educator${at}. Our staff already manage visitors at every event we hold. If a principal is comfortable letting a parent come under certain conditions, the law should let that happen.`,
+    `I teach${at}. Every teacher has seen a student look out at the audience during a concert, find nobody, and try not to let it show. I\'d like our principals to be able to prevent that when it\'s safe.`,
+    `I work ${s.school?`at ${s.school}`:"in a school"}, and safety is part of my job. That\'s why I think the decision about a parent coming to an event belongs with the principal, who knows the family and the building.`,
+    `I\'m a teacher${at}. Schools already handle all kinds of visitors with supervision. A parent coming to their own kid\'s concert, with whatever conditions the principal sets, shouldn\'t be impossible.`]); }
       break;
     case "admin":
       { const ti=(s.title?art(s.title.toLowerCase()):"a school leader")+(s.school?` with ${s.school}`:"");
         t=pick("role-admin",[
-          `I serve as ${ti}. Schools already decide who may be on their campuses and under what conditions. This amendment would let us apply that same judgment to a parent who wants to see their own child perform, compete, or graduate, instead of leaving us with a ban that no one can adjust. It requires nothing of a school that chooses to say no.`,
-          `I am ${ti}. The amendment does not require schools to admit anyone. It gives administrators the authority to approve a parent for specific events, in writing, under conditions the school sets.`,
-          `Speaking as ${ti}, a ban with no way to review a family's situation leaves a school unable to respond to the families in front of it. A written permission process keeps control with the school and keeps students safe.`,
-          `As ${ti}, I would welcome the flexibility to approve a parent for specific events involving their child, each approved on its own, with whatever supervision the school determines is necessary.`]); }
+          `I'm ${ti}. Schools already decide who comes into our buildings and under what conditions. This change would let us use that same judgment for a parent who wants to be there for their own child's game, concert, or graduation. If a school wants to say no, it still can.`,
+          `I'm ${ti}. This wouldn't require any school to let anyone in. It would just give principals the authority to approve a parent for specific events, in writing, on the school's terms.`,
+          `As ${ti}, I don't like rules that leave us no room to deal with the families in front of us. A written permission process keeps the decision with the school and keeps kids safe.`,
+          `I'm ${ti}, and I'd welcome having this option. We'd decide each request on its own, with whatever supervision we think is needed.`,
+    `I\'m ${ti}. I\'d much rather have a clear, written process I control than a flat ban that leaves me no way to help a family.`,
+    `As ${ti}, I can tell you schools are used to making careful calls about who\'s on campus. This would just add one more, and we could always say no.`]); }
       break;
     case "coach":
       { const o=s.org2;
         t=pick("role-coach",[
-          `I ${o?`help run ${o}`:"coach and organize youth activities"}. Many of our games, practices, and recitals take place in school gyms, fields, and auditoriums. Because those events are not school-sponsored, SB 422 as written would not even let a restricted parent drop a child off. The amendment would let the host school decide, and would let organizers like me request permission on a family's behalf.`,
-          `As a coach${o?` with ${o}`:""}, I see how much it matters to kids when their parents are in the stands. Many of our events take place on school property, and because they are not school-sponsored, SB 422 as written would not allow a restricted parent even to drop a child off.`,
-          `I organize youth activities${o?` for ${o}`:""}, and many of our games and recitals happen in school buildings. I would like to be able to request permission from the host school on a family's behalf. The amendment allows exactly that, and the school keeps the final word.`]); }
+          `I ${o?`help run ${o}`:"coach and run youth activities"}. A lot of our games, practices, and recitals happen in school gyms, fields, and auditoriums. Because those aren't school-sponsored events, SB 422 as written wouldn't even let a parent it applies to drop a kid off. This change would let the host school decide, and would let someone like me ask on a family's behalf.`,
+          `I'm a coach${o?` with ${o}`:""}. I see how much it matters to kids when their parents are in the stands. Many of our events are on school property, and because they aren't school-sponsored, the bill as written wouldn't even let a parent it applies to drop their kid off.`,
+          `I organize youth activities${o?` for ${o}`:""}, and a lot of them happen in school buildings. I'd like to be able to ask the host school for permission on a family's behalf. This change allows that, and the school still gets the final say.`,
+    `I ${o?`coach with ${o}`:"coach youth sports"}, and a lot of our games are on school fields. When a kid looks to the stands and their parent isn\'t allowed to be there, there\'s nothing I can do about it. This change would at least let the school decide.`,
+    `I run youth activities${o?` with ${o}`:""}, and families are a big part of what we do. I\'d like the school hosting our events to be able to say yes to a parent, with whatever conditions it wants.`]); }
       break;
     default:
       t = oos ? pick("role-comm-oos",[
-          `I care about safe schools and strong families, wherever they are. This amendment protects both: the bill's rules stay in place, and the school decides, event by event, whether a parent may attend.`,
-          `I want children to be safe at school, and I want them to have their families at the events that matter to them. This amendment protects both by leaving the decision with the school.`,
-          `I believe the people who run a school are best placed to decide who attends its events. The amendment would give Ohio principals that authority instead of a ban no one can adjust.`])
+          `I care about kids being safe at school, and I care about them having their families at the events that matter to them. This change does both by leaving the decision with the school.`,
+          `I believe the people who run a school are the right ones to decide who comes to its events. This change would give Ohio principals that choice instead of a ban nobody can adjust.`,
+    `I\'m writing because I care about kids, wherever they live. This change keeps the bill\'s protections and lets the school decide about a parent coming to their kid\'s event.`,
+    `Kids shouldn\'t lose a parent at every school event when the school would be willing to supervise. That\'s why I\'m asking for this change.`])
         : pick("role-comm",[
-          `I am a member of this community. I want children to be safe at school, and I want them to have their families at the events that matter to them. This amendment protects both by leaving the decision with the school.`,
-          `I am testifying as a neighbor and a voter. SB 422 has a good purpose, and I would like it to pass with a way for schools to approve a parent for a child's event under supervision.`,
-          `As a member of this community, I trust our principals to make careful decisions. The bill as written does not let them decide at all whether a parent may attend a child's event.`,
-          `I care about safe schools and strong families. This amendment protects both: the bill's rules stay in place, and the school decides, event by event, whether a parent may attend.`]);
+          `I live in this community and I care about the kids in it. I want them safe at school, and I want them to have their families at the events that matter to them. This change does both by leaving the decision with the school.`,
+          `I'm writing as a neighbor and a voter. SB 422 has a good purpose. I'd just like it to pass with a way for a school to say yes to a parent coming to their kid's event, with supervision.`,
+          `I trust our principals to make good decisions. As written, this bill doesn't let them decide at all whether a parent can come to their own kid's event.`,
+          `I care about safe schools and I care about families. This change keeps the bill's rules in place and lets the school decide, event by event, whether a parent can come.`,
+    `I\'m writing as someone who goes to a lot of local school games and concerts. I want those events safe, and I want every kid to have a shot at having family there.`,
+    `I\'m just a regular member of this community. I think principals are smart enough to decide whether a parent can safely come to an event, and the law should let them.`,
+    `This matters to me because kids shouldn\'t be punished for something they didn\'t do. The change I\'m asking for keeps kids safe and leaves the decision with the school.`]);
   }
-  if(s.family&&!FAMILY_ROLES.includes(s.role)) t+=" "+pick("famline",["This is also personal for me: it affects someone in my own family.","I also know this firsthand, because it affects my own family.","This is not abstract for me. It touches my own family."]);
+  if(s.family&&!FAMILY_ROLES.includes(s.role)) t+=" "+pick("famline",["This is personal for me, too. It affects someone in my own family.","I also have someone in my own family this would affect.","This one is personal. It touches my own family."]);
+  const ps=psLine(s); if(ps) t+=" "+ps;
   return t.replace(/ {2,}/g," ");
 }
-const ACT_TEXT={sports:"sports",music:"school music",plays:"school plays and musicals",academic:"academic events and clubs"};
+const ACT_TEXT={sports:"sports",music:"school music",plays:"school plays",academic:"academic clubs and events"};
 function pFamily(s){
   if(!FAMILY_ROLES.includes(s.role)||!s.kids.length) return "";
   const c=C(s), out=[];
@@ -776,38 +843,45 @@ function pFamily(s){
   if(s.kids.some(k=>k.age<=4)){
     const one=c.one&&s.kids[0].age<=4, who=one?c.them:"the youngest", whose=one?c.their:"their";
     out.push(pick("young",[
-      `Because the bill also covers preschool and child care center premises, it would reach ${who} from ${whose} first day of child care or preschool through high school graduation.`,
-      `The bill also covers preschools and child care centers, so for ${one?c.them:"the youngest"} it would start on the first day of child care and last through high school graduation.`]));
+      `The bill also covers preschools and child care centers, so for ${who} it would start on the first day of child care and last through high school graduation.`,
+      `Since it covers preschools and child care centers too, it would reach ${who} from ${whose} first day of child care all the way to graduation.`,
+    `It covers preschools and child care centers too, so for ${who} this wouldn\'t start in kindergarten. It would start on day one of child care.`]));
   }
   if(s.acts.length) out.push(pick("acts",[
     `${c.one?c.They:"Between them, they"} ${listJoin(s.acts.map(a=>ACT_VERB[a][c.pl?1:0]))}.`,
-    `${c.They} ${c.pl?"stay":"stays"} busy with ${listJoin(s.acts.map(a=>ACT_TEXT[a]))}.`]));
+    `${c.They} ${c.pl?"keep":"keeps"} busy with ${listJoin(s.acts.map(a=>ACT_TEXT[a]))}.`]));
   if(s.outside){
     const also=s.acts.length?" also":"";
     out.push(s.outsideName
-      ? `${c.They} ${c.pl?"are":"is"}${also} involved with ${s.outsideName}, which holds events at a school.`
-      : `${c.They}${also} ${c.pl?"take":"takes"} part in an outside program that meets or performs at a school.`);
+      ? `${c.They} ${c.pl?"are":"is"}${also} in ${s.outsideName}, which holds events at a school.`
+      : `${c.They}${also} ${c.pl?"do":"does"} an outside activity that meets or performs at a school.`);
   }
   return out.join(" ");
 }
 const GAP_W=[
-  `As passed by the Senate, SB 422 bars a qualified offender from school premises, preschool and child care center premises, and premises where a school-affiliated ticketed event is taking place. A parent can raise an affirmative defense for being on school grounds for a "legitimate purpose," and division (A)(1) lists what counts. For school events, the only purpose listed is dropping a child off before the event or picking the child up afterward. Attending the event itself is not on the list, so a parent could not be there for a game, a concert, an awards night, or a graduation. Events that outside groups hold in school buildings, such as a dance recital or a scout meeting, are not school-sponsored, so even drop-off is not covered. And no one, not a principal and not a superintendent, has the authority to make an exception, even with an escort.`,
-  `Under SB 422 as passed by the Senate, a qualified offender may not knowingly be present on school premises, preschool or child care center premises, or premises where a school-affiliated ticketed event is occurring. The bill gives a parent an affirmative defense for a short list of "legitimate purposes." For a school-sponsored event, that list covers only dropping a child off before it or picking the child up after it. It does not cover attending the event. A principal who would gladly approve a parent for a graduation, under escort, would have no legal way to do so. For events run by outside groups in school buildings, which are not school-sponsored, there is no legitimate purpose at all, not even drop-off.`,
-  `The problem is in division (A)(1) of the new section 2950.036, which defines "legitimate purpose." The list mentions dropping a child off for a school-sponsored activity and picking the child up afterward, but nothing in it covers the parent staying. That rules out games, concerts, award ceremonies, and graduations, even with supervision. Events that outside groups hold on school property are not school-sponsored, so the drop-off purpose does not apply to them either. The bill gives no one, including the school, the authority to make an exception.`,
-  `As SB 422 reads now, the line falls at drop-off. The bill's list of reasons stops at bringing a child to a school-sponsored event and picking the child up afterward. Nothing covers staying for it, whether it is a game, a play, an awards night, or a graduation. Because only school-sponsored activities are covered, an event an outside group holds in a school building, like a dance recital or a scout meeting, does not allow even drop-off. And the bill leaves no room for a principal or superintendent to approve a parent, under any conditions.`];
+  `Here's the problem. SB 422 keeps certain registered offenders away from school property, preschools, child care centers, and school ticketed events. It lists a few reasons a parent can give for being there, and for school events, the only ones are dropping a child off before and picking them up after. Staying for the event isn't on the list. So a parent couldn't be at a game, a concert, an awards night, or a graduation. If an outside group like a dance studio or a scout troop holds an event at a school, it isn't school-sponsored, so even drop-off isn't covered. And nobody, not the principal and not the superintendent, can make an exception.`,
+  `As the bill reads now, a parent it applies to can give a short list of reasons for being on school grounds. For a school event, that list stops at dropping a child off and picking them up afterward. Nothing covers staying. A principal who would gladly let a parent come to a graduation with a staff member beside them would have no legal way to do it. For events that outside groups hold in school buildings, there's no reason on the list at all, not even drop-off.`,
+  `The bill draws the line at drop-off. A parent can bring their kid to a school event and pick them up after, but can't stay for the game, the play, the awards night, or the graduation. Events that outside groups hold in a school building, like a dance recital or a scout meeting, don't even allow drop-off, because they aren't school-sponsored. And the bill doesn't give a principal or superintendent any way to approve a parent, no matter what conditions they'd set.`,
+    `What the bill leaves out is simple: staying. A parent it applies to can drop their kid off at a school event and pick them up afterward, but can\'t stay for the game, the concert, or the graduation. If the event is run by an outside group, like a dance studio or a scout troop, even drop-off isn\'t covered. And the school isn\'t allowed to make an exception, even with supervision.`,
+    `Here\'s how the bill works now. Its list of reasons a parent it applies to can be at a school covers dropping a kid off and picking them up, but not staying for anything. That rules out games, concerts, awards nights, and graduations. Events outside groups hold at a school don\'t even allow drop-off. And there\'s no way for a principal or superintendent to say yes.`];
 const GAP_IP=[
-  `As written, SB 422's list of reasons stops at dropping a child off before a school event and picking the child up afterward. Nothing covers staying for it: not for a game, a concert, an awards night, or a graduation. Events that outside groups hold in school buildings do not allow even drop-off. And no principal or superintendent has the authority to make an exception, even with an escort.`,
-  `Right now the bill draws the line at drop-off. Nothing in it covers a restricted parent staying for the game, the concert, or the graduation. For events outside groups hold in school buildings, there is no exception at all. And no one, including the school, can make one.`,
-  `The gap is in the bill's list of "legitimate purposes." It mentions drop-off and pick-up, but nothing that lets a parent attend their own child's event, even under supervision. Events run by outside groups on school property get no exception at all, and no one has the authority to make one.`,
-  `As SB 422 reads now, a principal who is comfortable with a parent attending a child's graduation under escort would have no legal way to allow it. For school events, the bill mentions drop-off and pick-up only, and for events outside groups hold on school property, it covers nothing.`];
+  `As it's written, the bill lets a parent drop their child off at a school event and pick them up after, but not stay. Not for a game, a concert, or a graduation. Events that outside groups hold in school buildings don't even allow drop-off. And no principal can make an exception, even with supervision.`,
+  `Right now the bill stops at drop-off. Nothing in it lets a parent stay for the game, the concert, or the graduation. For events outside groups hold at a school, there's no exception at all. And nobody, including the school, can make one.`,
+  `As SB 422 reads now, a principal who's fine with a parent coming to their child's graduation under supervision has no legal way to allow it. For school events the bill only mentions drop-off and pick-up, and for events outside groups hold at a school, it covers nothing.`,
+    `The bill covers dropping a kid off and picking them up, but not staying. So a parent it applies to couldn\'t be at the game, the concert, or the graduation, and the school couldn\'t make an exception.`,
+    `Here\'s the gap. The bill lets a parent drop off and pick up, but never stay. For events outside groups hold at a school, there\'s nothing at all. And the school can\'t make an exception, even with supervision.`];
 /* Drop-off and pick-up are only an affirmative defense in the bill, not an exception. */
 const DROPOFF_W=[
-  `There is a second problem. Even drop-off and pick-up are not truly allowed. Under Ohio law, an affirmative defense means the parent has already been charged and must prove the defense in court (R.C. 2901.05). A parent following the bill's own rules could be arrested picking up their child, in front of that child, and then have to prove they had a good reason.`,
-  `It is also important to understand what "affirmative defense" means here. It does not stop an arrest or a charge. Under R.C. 2901.05, the parent must prove the defense in court. So a parent who simply picks up their own child has technically committed the offense and carries the burden of proving otherwise.`,
-  `Even the part of the bill that sounds like an exception is not one. Drop-off and pick-up are written as an affirmative defense, which under R.C. 2901.05 the accused must prove. A parent following the rules could still be arrested at the school door and left to prove their innocence.`];
+  `There's another problem. Even drop-off and pick-up aren't really allowed. They're only something a parent can argue in court after being charged. So a parent following the bill's own rules could be arrested picking up their kid, right in front of them, and then have to prove they had a good reason to be there.`,
+  `Even the drop-off part isn't what it sounds like. It's written as a defense, which means a parent can be arrested and charged first and then has to prove in court why they were there. Picking up your own kid shouldn't work that way.`,
+  `And the part about drop-off and pick-up isn't a real exception. It's a defense a parent can raise after being charged. Following the rules wouldn't stop an arrest at the school door.`,
+    `There\'s one more thing people don\'t realize. Drop-off and pick-up aren\'t actually allowed under the bill. They\'re a defense, which means the parent gets charged first and has to prove their reason later. A parent doing exactly what the bill says could still be arrested in front of their kid.`,
+    `Even drop-off isn\'t safe under this bill. It\'s only a defense in court, so a parent who picks up their own kid could be charged and have to prove they had a good reason to be there.`];
 const DROPOFF_IP=[
-  `And even drop-off and pick-up are not truly allowed. They are only a defense in court, so a parent picking up their own child could be arrested in front of them and have to prove they had a good reason.`,
-  `Even the drop-off provision is not a real exception. It is only a defense a parent can raise after being charged, so following the rules does not stop an arrest.`];
+  `And even drop-off isn't really allowed. It's only a defense in court, so a parent picking up their own kid could be arrested in front of them and have to prove they had a good reason.`,
+  `Even the drop-off part is only a defense after someone has been charged. Following the rules wouldn't stop an arrest.`,
+    `And drop-off is only a defense after a parent has been charged, so even following the rules doesn\'t stop an arrest.`,
+    `Even picking up your own kid is only a defense in court under this bill, not something that\'s actually allowed.`];
 function pGap(s){ const ip=s.fmt==="inperson"; return pick("gap-"+s.fmt, ip?GAP_IP:GAP_W)+"\n\n"+pick("drop-"+s.fmt, ip?DROPOFF_IP:DROPOFF_W); }
 function ptText(k,s){
   const c=C(s), sw=s.spouseword, direct=s.role==="parent"&&s.selfdesc==="direct";
@@ -815,84 +889,96 @@ function ptText(k,s){
   switch(k){
     case "otherparent":
       if(direct) return pick("pt-op-d",[
-        `When the other parent cannot go because of work, travel, or illness, there is no backup. The school has no way to approve me, so ${c.kids} would have no parent in the audience.`,
-        `There is no backup plan. If the other parent is working, traveling, or sick, the school cannot approve me instead, and ${c.kids} ${c.pl?"go":"goes"} without a parent in the audience.`,
-        `Everything depends on one parent's schedule. On the nights the other parent cannot make it, ${c.kids} would have no parent there at all.`]);
+        `When the other parent can't go because of work, travel, or being sick, there's no backup. The school can't approve me, so ${c.kids} would have nobody there.`,
+        `Everything depends on one parent's schedule. On the nights the other parent can't make it, ${c.kids} ${c.pl?"go":"goes"} without a parent in the crowd.`,
+    `If the other parent gets stuck at work or gets sick, that\'s it. ${c.Kids} ${c.pl?"go":"goes"} without a parent, because the school isn\'t allowed to approve me.`]);
       if(s.role==="spouse") return pick("pt-op-s",[
-        `When I cannot go because of work, travel, or illness, there is no backup. The school has no way to approve my ${sw}, so ${c.kids} would have no parent in the audience.`,
-        `There is no backup plan. If I am working, traveling, or sick, the school cannot approve my ${sw} instead, and ${c.kids} ${c.pl?"go":"goes"} without a parent in the audience.`,
-        `Everything depends on my schedule. On the nights I cannot make it, ${c.kids} would have no parent there at all.`]);
-      if(s.role==="parent") return pick("pt-op-f",[
-        `When the parent who is able to attend is working, traveling, or sick, there is no backup, and ${c.kids} would have no parent in the audience.`,
-        `Everything depends on one parent's schedule. On the nights that parent cannot make it, ${c.kids} would have no parent there at all.`]);
+        `When I can't go because of work or being sick, there's no backup. The school can't approve my ${sw}, so ${c.kids} would have no parent there.`,
+        `It all depends on my schedule. On the nights I can't make it, ${c.kids} would have nobody.`,
+    `If I get stuck at work or come down with something, that\'s it. ${c.Kids} would have nobody there, because the school can\'t approve my ${sw}.`]);
       return pick("pt-op-o",[
-        `When the other parent cannot go because of work, travel, or illness, there is no backup, and ${c.kids} would have no parent in the audience.`,
-        `Everything depends on one parent's schedule. On the nights that parent cannot make it, ${c.kids} would have no parent there at all.`]);
+        `When the parent who can go is working, traveling, or sick, there's no backup, and ${c.kids} would have no parent there.`,
+        `It all comes down to one parent's schedule. When that parent can't make it, ${c.kids} would have nobody there.`,
+    `If the parent who can go gets stuck at work or gets sick, that\'s it. ${c.Kids} would have nobody there.`]);
     case "siblings":
       { const two=c.n===2, ys=two?s.kids[1].sex:"many", os=s.kids[0].sex;
-        const yp=ys==="girl"?"she":ys==="boy"?"he":"they", pos=ys==="girl"?"her":ys==="boy"?"his":"their", pl=yp==="they";
         const sib=two?(os==="girl"?"sister's":os==="boy"?"brother's":"sibling's"):"brother's or sister's";
-        const Y=two?"The younger child is":"The younger children are", yc=two?"The younger child cannot":"The younger children cannot";
-        const subj=two?yp:"they", ppos=two?pos:"their", p2=two?pl:true;
-        const miss=`${subj} ${p2?"miss":"misses"} ${ppos} ${sib} game or performance`;
+        const ypos=two?(ys==="girl"?"her":ys==="boy"?"his":"their"):"their";
+        const Y=two?"The younger one is":"The younger ones are", yc=two?"The younger one can't":"The younger ones can't";
+        const subj=two?"the younger one":"the younger ones", p2=!two, yp=two?(ys==="girl"?"she":ys==="boy"?"he":"they"):"they", yp2=yp==="they";
         if(direct) return pick("pt-sib-d",[
-          `${Y} too young to sit in an audience alone. When I drop one child off for an event, ${two?"the younger one has":"the younger ones have"} to leave with me, so ${miss}.`,
-          `Bringing the whole family to a game or recital is not possible. ${yc} be left in the audience alone, so ${subj} ${p2?"go":"goes"} home with me after drop-off.`]);
-        const who=s.role==="spouse"?`my ${sw}`:s.role==="parent"?"the parent the bill restricts":"their parent";
+          `${Y} too young to sit in the stands alone. So when I drop one kid off, ${subj} ${p2?"have":"has"} to leave with me and miss ${ypos} ${sib} game or show.`,
+          `We can't all go as a family. ${yc} sit in the audience alone, so ${yp} ${yp2?"go":"goes"} home with me after drop-off.`]);
+        const who=s.role==="spouse"?`my ${sw}`:s.role==="parent"?"the parent the bill applies to":(s.relword==="older sister"||s.relword==="older brother")?"our parent":"that parent";
         return pick("pt-sib",[
-          `${Y} too young to sit in an audience alone, so when ${who} has to leave after drop-off, ${subj} ${p2?"leave":"leaves"} too and ${p2?"miss":"misses"} ${ppos} ${sib} game or performance.`,
-          `Bringing the whole family to a game or recital is not possible. ${yc} be left in the audience alone, so ${subj} ${p2?"go":"goes"} home with ${who} after drop-off.`]); }
+          `${Y} too young to sit in the stands alone, so when ${who} has to leave after drop-off, ${subj} ${p2?"leave":"leaves"} too and ${p2?"miss":"misses"} ${ypos} ${sib} game or show.`,
+          `${pf?"We can't all go as a family.":"The family can't all go together."} ${yc} sit in the audience alone, so ${yp} ${yp2?"go":"goes"} home with ${who} after drop-off.`]); }
     case "away":
       return pick("pt-away",[
-        `Many games, tournaments, and recitals happen at other schools. The bill ties a parent's defense to "the related school," so it is not clear a parent could even drop a child off at an away event, let alone stay.`,
-        `When an event is at another school, the bill's defense for parents may not apply at all, because it covers only a parent of a child who attends "the related school."`]);
+        `A lot of games, tournaments, and recitals are at other schools. The bill ties a parent's defense to "the related school," so it isn't even clear a parent could drop a kid off at an away game.`,
+        `When the event is at another school, the bill's defense for parents might not apply at all, since it only covers a parent of a child who goes to "the related school."`,
+    `Some events are at other schools, like away games and tournaments. Because the bill only talks about "the related school," a parent might not even be able to drop their kid off there.`]);
     case "choices":
       return pf ? pick("pt-ch-p",[
-        `It already shapes our family's choices. When we consider committing a child to a team or an activity, we have to weigh that one parent could never be there. A child should choose an activity because of what they love, not because of which parent is allowed at the field.`,
-        `It changes which activities our children sign up for. We have to think about whether one parent could ever attend, and a child should not have to choose a sport or a program around that.`])
+        `It already affects the choices we make. When one of our kids wants to join a team or an activity, we have to think about the fact that one parent could never be there. A kid should pick an activity because they love it, not because of which parent is allowed at the field.`,
+        `It changes what our kids sign up for. We have to think about whether one parent could ever come, and kids shouldn't have to pick a sport or a program around that.`,
+    `It\'s already changing what our kids sign up for. We have to think about which activities one parent could never come to, and that\'s not a choice a kid should have to make.`])
         : pick("pt-ch-o",[
-        `It already shapes the family's choices. Every time a child wants to join a team or an activity, the family has to weigh that one parent could never be there. A child should choose an activity because of what they love, not because of which parent is allowed at the field.`,
-        `It changes which activities the children sign up for. The family has to think about whether one parent could ever attend, and a child should not have to choose a sport or a program around that.`]);
+        `It already shapes what the kids sign up for. Every time one of them wants to join a team, the family has to think about the fact that one parent could never be there. A kid should pick an activity because they love it, not because of which parent is allowed at the field.`,
+        `It changes what the kids sign up for. The family has to think about whether one parent could ever come, and kids shouldn't have to pick a sport or a program around that.`,
+    `It\'s already changing what the kids sign up for, because the family has to think about which activities one parent could never come to.`]);
   }
   return "";
 }
 function pStory(s){
   const lines=s.pts.map(k=>ptText(k,s)).filter(Boolean);
+  const nm=s.outsideName||"that group";
   if(s.outside) lines.push(s.fmt==="inperson"
-    ? `When ${s.outsideName||"that group"} holds an event at a school, the bill does not allow even drop-off.`
+    ? `When ${nm} holds an event at a school, the bill doesn't allow even drop-off.`
     : pick("pt-out",[
-      `When ${s.outsideName||"that group"} holds an event at a school, the bill offers no exception at all, not even drop-off, because its drop-off purpose covers only school-sponsored activities.`,
-      `Because ${s.outsideName||"that group"} is not the school, its events in a school building fall outside every legitimate purpose in the bill. A restricted parent could not even drop a child off.`]));
+      `When ${nm} holds an event at a school, the bill doesn't allow even drop-off, because it isn't a school-sponsored activity.`,
+      `Because ${nm} isn't the school, nothing in the bill covers its events in a school building. A parent the bill applies to couldn't even drop a kid off.`]));
   if(!lines.length) return "";
   const pf=s.role==="parent"||s.role==="spouse";
   const intro=pick("story-intro", pf
-    ? ["Here is what that looks like for our family.","For our family, this is not hypothetical.","This is what it would mean in our home.","In practice, this is how it plays out for us."]
-    : ["Here is what that looks like for my family.","For my family, this is not hypothetical.","I can tell you how this plays out in my own family."]);
-  return `${intro} ${lines.join(" ")}`;
+    ? ["For our family, it looks like this.","Here's what that means for us.","This is what it would mean in our house.",""]
+    : ["For my family, it looks like this.","Here's what that means for my family.","I can tell you how this would play out in my family."]);
+  return `${intro?intro+" ":""}${lines.join(" ")}`;
 }
 const AMEND_W=[
-  `The amendment would let the principal or designee of the school hosting an event give a parent or guardian prior written permission, including by email, to attend specific events involving their own child. Each permission would name its events and dates, could carry any safety, supervision, or seating conditions the school chooses, and would grant no general access to school property. A request could come from the parent, from a coach or official responsible for the event, or, for an event an outside group runs on school property, from its organizer. A parent who is present with permission and follows its conditions would not be in violation, and a school would not be liable for granting, denying, or conditioning permission, absent bad faith or reckless conduct. The amendment would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court, so the state would have to show a parent was there for some other reason.`,
-  `The amendment is narrow. The principal or designee of the school hosting an event could give a parent or guardian prior written permission, including by email, to attend specific events involving their own child. Each permission would apply only to the events and dates it names and could include any safety, supervision, or location conditions the school sets. It would not grant general access to school property. A coach, an event official, or, for outside-group events, the organizer could also submit the request. A parent present with permission and following its conditions would not be in violation, and a school would not be liable in a civil action for its decision, absent bad faith or reckless conduct. The amendment would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court, so the state would have to show a parent was there for some other reason.`,
-  `What I am asking for is a written-permission process. With prior written approval, which could be given by email, from the principal or designee of the host school, a parent or guardian could attend specific events involving their own child. The school would set any conditions it wants, such as an escort or assigned seating, and each approval would cover only the events and dates it names. The request could come from the parent, a coach or event official, or the organizer of an outside-group event. A parent following an approval would not be violating the law, and a school would not be liable in a civil action for granting, denying, or conditioning permission, absent bad faith or reckless conduct. The amendment would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court, so the state would have to show a parent was there for some other reason.`,
-  `The amendment would keep every protection in SB 422 and add one tool for schools. The principal or designee of the school hosting an event could grant a parent or guardian prior written permission, including by email, for specific events involving their own child. Every approval would be limited to the events and dates it names, could carry any conditions the school chooses, and would give no general access to the building. Requests could come from the parent, a coach or official responsible for the event, or an outside group's organizer. A parent following the permission would not be in violation, and a school would not be liable for its decision, absent bad faith or reckless conduct. The amendment would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court, so the state would have to show a parent was there for some other reason.`];
+  `The change I'm asking for is simple. The principal of the school hosting an event, or someone they choose, could give a parent written permission ahead of time, even by email, to come to specific events their own child is part of. The school would decide which events and dates, and could set any conditions it wants, like where the parent sits or who stays with them. It wouldn't give the parent access to the school otherwise. The parent, a coach, or the organizer of an outside group's event could ask. A parent who has permission and follows the conditions wouldn't be breaking the law, and the school couldn't be sued over its decision unless it acted in bad faith or recklessly. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed instead of just a defense in court, so the state would have to show a parent was there for some other reason.`,
+  `What I'm asking for is a way for the school to say yes. With written permission from the principal of the host school, which could come by email, a parent could attend specific events involving their own child. Each permission would name its events and dates, and the school could attach any conditions it likes. Nobody would get general access to the building. The request could come from the parent, a coach, or the organizer of an outside group's event. A parent following the permission wouldn't be in violation, and the school wouldn't be liable for saying yes or no unless it acted in bad faith or recklessly. The change would also make drop-off, pick-up, and the bill's other listed reasons actually allowed, not just a defense after being charged, so the state would have to show a parent was there for some other reason.`,
+  `The fix keeps every protection in SB 422 and adds one tool for schools. The principal of the school hosting an event could give a parent written permission ahead of time, even by email, for specific events involving their own child. Each permission would cover only the events and dates it names, could come with any conditions the school wants, and wouldn't open the rest of the building. A parent, a coach, or an outside group's organizer could ask. A parent following the permission wouldn't be breaking the law, and the school couldn't be sued over its decision unless it acted in bad faith or recklessly. It would also make drop-off, pick-up, and the bill's other listed reasons truly allowed, not just a defense in court.`,
+    `Here\'s what I\'m asking for. Let the principal of the school hosting an event give a parent written permission ahead of time, even by email, to come to specific events their own kid is part of. The school picks the events and dates and sets any conditions it wants. The parent doesn\'t get access to the school otherwise. The parent, a coach, or an outside group\'s organizer could ask. A parent with permission who follows the conditions wouldn\'t be breaking the law, and the school couldn\'t be sued over its decision unless it acted in bad faith or recklessly. And drop-off, pick-up, and the bill\'s other listed reasons would be truly allowed, not just a defense in court, so the state would have to show a parent was there for some other reason.`,
+    `The fix doesn\'t take anything out of the bill. It adds a way for the school to say yes. The host school\'s principal could give a parent written permission ahead of time, even by email, for specific events involving their own child, with any conditions the school wants and no general access to the building. A parent, a coach, or an outside group\'s organizer could make the request. A parent following the permission wouldn\'t be in violation, and the school wouldn\'t be liable for its decision unless it acted in bad faith or recklessly. It would also make drop-off, pick-up, and the bill\'s other listed reasons truly allowed, not just a defense in court.`];
 const AMEND_IP=[
-  `The amendment would let the principal of the school hosting an event give a parent prior written permission, including by email, to attend specific events involving their own child, under any conditions the school sets. It grants no general access to school property. A parent who follows the permission would not be in violation, and a school would not be liable for granting or denying it, absent bad faith or reckless conduct. It adds no mandate: a school can say no every time. The amendment would also make drop-off and pick-up truly allowed, not just a defense in court.`,
-  `The fix is simple. The principal of the school hosting an event could give a parent prior written permission, including by email, for specific events involving their own child, with whatever conditions the school wants. It grants no general access, it adds no mandate, and the school would not be liable for its decision, absent bad faith or reckless conduct. A school could say no every time. The amendment would also make drop-off and pick-up truly allowed, not just a defense in court.`,
-  `The amendment adds one option for schools: prior written permission, from the principal of the host school, for a parent to attend specific events involving their own child. Each approval names its events and dates and can include an escort or any other condition. A parent who follows it would not be in violation, the school would not be liable for its decision absent bad faith or reckless conduct, and nothing about it is automatic. The amendment would also make drop-off and pick-up truly allowed, not just a defense in court.`,
-  `What I am asking for is modest. Let the school hosting an event approve, in writing and in advance, a parent's attendance at specific events involving their own child, under the school's own conditions. The permission would grant no general access, the parent would not be in violation while following it, and the school would not be liable for its decision, absent bad faith or reckless conduct. The amendment would also make drop-off and pick-up truly allowed, not just a defense in court.`];
+  `The fix would let the principal of the school hosting an event give a parent written permission ahead of time, even by email, to come to specific events involving their own child, with whatever conditions the school wants. It doesn't open up the building. A parent following the permission wouldn't be breaking the law, and the school couldn't be sued over its decision unless it acted in bad faith or recklessly. Any school could still say no every time. It would also make drop-off and pick-up actually allowed, not just a defense in court.`,
+  `What I'm asking for is simple: let the school hosting an event approve a parent ahead of time, in writing, for specific events involving their own child, on the school's terms. Nobody gets general access, a parent following the permission isn't breaking the law, and the school can't be sued over its decision unless it acted in bad faith or recklessly. It would also make drop-off and pick-up actually allowed, not just a defense in court.`,
+  `The change adds one option for schools: written permission, from the principal of the host school, for a parent to come to specific events involving their own child. Each permission names its events and dates and can come with any conditions the school wants. Nothing about it is automatic. It would also make drop-off and pick-up actually allowed, not just a defense in court.`,
+    `Here\'s the fix. The host school\'s principal could give a parent written permission ahead of time, even by email, for specific events involving their own child, with any conditions the school wants. No general access, no requirement that any school say yes, and no liability for the school unless it acted in bad faith or recklessly. It would also make drop-off and pick-up truly allowed, not just a defense in court.`];
 function pAmend(s){ return pick("amend-"+s.fmt, s.fmt==="inperson"?AMEND_IP:AMEND_W); }
 const WHY=[
-  `This adds no mandate. A school can say no every time. What it changes is that a principal who knows a family, and is willing to supervise a parent at a graduation or a game, would finally be allowed to say yes.`,
-  `Schools already decide who may enter their buildings and under what conditions. This amendment trusts them with one more decision of the same kind, and requires nothing of a school that would rather say no.`,
-  `Nothing in the amendment is automatic. Every exception would be in writing, approved by the school, limited to the events it names, and subject to the school's conditions. That keeps SB 422's protections intact while giving schools room for judgment.`,
-  `A school can supervise a parent at an event far more easily than it can explain to a child why that parent is never allowed to come. The amendment simply lets a principal make that call.`];
+  `Nothing about this forces a school to do anything. A school can say no every time. It just means a principal who knows a family, and is willing to supervise a parent at a game or a graduation, would finally be allowed to say yes.`,
+  `Schools already decide who comes into their buildings and under what conditions. This just trusts them with one more decision like that.`,
+  `None of this would be automatic. Every yes would be in writing, from the school, for events the school names, on the school's terms.`,
+  `It's a lot easier for a school to supervise a parent at an event than to explain to a kid why their mom or dad can never come.`,
+    `If a school isn\'t comfortable, it says no and nothing changes. If it is comfortable, a kid gets their parent at their graduation. That\'s the whole idea.`,
+    `This doesn\'t weaken the bill. It just puts one decision in the hands of the people who already run these events.`,
+    `Principals make judgment calls about safety every day. This would let them make one more, for a kid\'s sake.`];
 function pWhy(s){ return s.fmt==="inperson"?"":pick("why",WHY); }
 function pClose(s){
-  const ask=pick("ask",["I respectfully ask the committee to adopt this amendment to SB 422.","I respectfully ask you to add this amendment to SB 422.","I ask the committee to include this narrow amendment in SB 422.","Please consider adopting this amendment as SB 422 moves forward."]);
-  if(s.fmt==="inperson") return `${ask} ${pick("close-ip",["Thank you for your time. I would be glad to answer any questions.",`Thank you, Chair${CHAIR?" "+CHAIR:""}, and members of the committee. I would be happy to answer any questions.`,"Thank you for listening. I would welcome any questions."])}`;
+  const ask=pick("ask",["I'm asking the committee to add this change to SB 422.","Please add this change to SB 422.","I hope you'll add this to SB 422.","Please consider adding this change as SB 422 moves forward.",
+    "I hope you\'ll make this change before SB 422 moves forward.",
+    "Please make room in SB 422 for schools to say yes.",
+    "I\'m hoping you\'ll add this one change to SB 422."]);
+  if(s.fmt==="inperson") return `${ask} ${pick("close-ip",["Thank you for your time. I'm happy to answer any questions.",`Thank you, Chair${CHAIR?" "+CHAIR:""}, and members of the committee. I'm glad to answer any questions.`,"Thank you for listening. I'll take any questions you have.",
+    "Thank you for hearing me out. I\'m happy to take questions."])}`;
   const contact=[s.email,s.phone].filter(Boolean);
-  const thanks=pick("close-w",["Thank you for considering my testimony.","Thank you for your time and attention to this request.","I appreciate your consideration."]);
-  const reach=contact.length?" "+pick("reach",[`If you have any questions, I can be reached at ${listJoin(contact)}.`,`Please feel free to contact me at ${listJoin(contact)} with any questions.`]):"";
+  const thanks=pick("close-w",["Thank you for reading this.","Thank you for your time.","I appreciate you taking the time to read this.",
+    "Thank you for hearing me out.",
+    "Thank you for considering this."]);
+  const reach=contact.length?" "+pick("reach",[`If you have any questions, you can reach me at ${listJoin(contact)}.`,`Feel free to contact me at ${listJoin(contact)} if you have questions.`,
+    `You\'re welcome to reach me at ${listJoin(contact)}.`]):"";
   return `${ask} ${thanks}${reach}`;
 }
 function genBody(s){
