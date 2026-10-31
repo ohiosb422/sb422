@@ -187,7 +187,7 @@ ol.steps p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
 <body>
 
 <header class="top"><div class="wrap">
-  <div class="billref"><span><b>Senate Bill 422</b></span><span>136th General Assembly</span><span>Interested party testimony</span></div>
+  <div class="billref"><span><b>Senate Bill 422</b></span><span>136th General Assembly</span><span id="stancehdr">Interested party testimony</span></div>
   <h1>Tell the House committee how to fix SB 422</h1>
   <div class="status"><i></i>Passed the Senate 33–0 on June 10, 2026 · now in the Ohio House</div>
   <a class="backlink" id="backtop" href="./">&larr; Back to the email page</a>
@@ -206,10 +206,18 @@ ol.steps p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
   <h2 tabindex="-1">Testimony goes to every member of the committee</h2>
   <p class="hint">When a House committee holds a hearing on SB 422, anyone can submit testimony. It goes into the public record and to every member who will vote on the bill and its amendments. This page writes a clear, respectful statement for you in about ten minutes. You can change every word of it.</p>
 
+  <fieldset>
+    <legend>Where do you stand on SB 422? <span class="req">*</span></legend>
+    <div class="choices">
+      <label class="choice"><input type="radio" name="stance" id="stance-ip" value="ip" checked><b>Interested party <span class="badge">Recommended</span></b><span>You want the bill fixed. You're asking the committee to add this change, not to pass the bill as is or defeat it.</span></label>
+      <label class="choice"><input type="radio" name="stance" id="stance-opp" value="opp"><b>Opponent</b><span>You want SB 422 voted down as written. Your testimony will still ask for this change if the bill moves forward.</span></label>
+    </div>
+  </fieldset>
+
   <div class="explain">
-    <b>Why "interested party"?</b>
-    <div class="stances" aria-hidden="true"><span>Proponent</span><span>Opponent</span><span class="me">Interested party</span></div>
-    <p>Ohio House committees take testimony as a proponent (for the bill), an opponent (against it), or an interested party. Interested party fits this request: you support what SB 422 is trying to do, and you're asking the committee to change one part of it, not to pass it as is or to defeat it.</p>
+    <b id="stancewhy">Why "interested party"?</b>
+    <div class="stances" aria-hidden="true"><span id="st-prop">Proponent</span><span id="st-opp">Opponent</span><span id="st-ip" class="me">Interested party</span></div>
+    <p id="stanceexp"></p>
   </div>
 
   <div id="hearingbox"></div>
@@ -394,7 +402,7 @@ ol.steps p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
 const COMMITTEE="", CHAIR="", VICE_CHAIR="", RANKING="";
 const HEARING_DATE="", HEARING_TIME="", HEARING_ROOM="";
 const MEETING_URL="", CHAIR_EMAIL="";
-const TAKING_IP=false;
+const TAKING_IP=false, TAKING_OPP=false;   /* TAKING_OPP: true once the notice lists opponent testimony for SB 422 */
 
 /* Contact address, assembled here so simple scrapers reading the HTML don't pick it up. */
 (function(){const u="ohiosb422",d="proton.me",e=u+"@"+d;
@@ -522,7 +530,7 @@ function state(){
   const role=curRole()||"community", fam=FAMILY_ROLES.includes(role), kc=$("kidcount").value;
   const future=fam&&FUTURE_ROLES.includes(role)&&FUT_VALUES.includes(kc)&&!(kc==="none"&&role!=="parent")?kc:"";
   return {
-    role, fmt:curFmt()||"written", name:v("name"), city:v("city"), org:v("org"),
+    role, fmt:curFmt()||"written", stance:curStance(), name:v("name"), city:v("city"), org:v("org"),
     loc:curLoc()||"ohio", district:curLoc()==="out"?"":v("district"), state:v("state")==="Outside the U.S."?"":v("state"), conn:v("conn")||"none",
     email:$("showemail").checked?v("email"):"", phone:$("showphone").checked?v("phone"):"",
     selfdesc: role==="parent"&&future!=="none" ? (v("selfdesc")||"direct") : "direct",
@@ -606,7 +614,16 @@ let SEED; try{SEED=localStorage.getItem(SEED_KEY);}catch(e){}
 if(!SEED){SEED=String(Math.floor(Math.random()*1e9)); try{localStorage.setItem(SEED_KEY,SEED);}catch(e){}}
 let ROLL=0; try{ROLL=Number(localStorage.getItem(SEED_KEY+".roll"))||0;}catch(e){}
 function reseed(){ROLL++; try{localStorage.setItem(SEED_KEY+".roll",String(ROLL));}catch(e){}}
-function pick(key,arr){let h=2166136261;const str=SEED+"|"+key;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return arr[((h>>>0)+ROLL)%arr.length];}
+/* Stance: "ip" (interested party) or "opp" (opponent). Opponents never get wording that says they support the bill or want it to pass. */
+let CUR_STANCE="ip";
+const OPP_SKIP=/good purpose|to pass with|not against SB 422|fight this bill|bill to fail|vote this bill down/i;
+const STANCE={
+  ip:{label:"Interested Party",lower:"interested party",art:"an interested party",file:"Interested-Party",code:'"IP" or "Prop/Opp/IP"'},
+  opp:{label:"Opponent",lower:"opponent",art:"an opponent",file:"Opponent",code:'"Opp" or "Prop/Opp/IP"'}};
+const curStance=()=>(document.querySelector('input[name=stance]:checked')||{}).value||"ip";
+function pick(key,arr){
+  if(CUR_STANCE==="opp"){const f=arr.filter(x=>typeof x!=="string"||!OPP_SKIP.test(x)); if(f.length) arr=f;}
+  let h=2166136261;const str=SEED+"|"+key;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return arr[((h>>>0)+ROLL)%arr.length];}
 
 /* ---------- Testimony text ---------- */
 const OOS_CONN={
@@ -644,7 +661,8 @@ function salutationParts(s){
     `${L[0]},`, `${L[2]},`, `${L[4]},`,
     `Dear ${L[0]}:`, `Dear ${L[2]}:`, `Dear ${L[5]}:`, `Dear ${L[9]}:`,
     `To ${A.C} and the members of ${A.HCOM}:`, `To the members of ${A.HCOM}:`];
-  const verb=ip?pick("sal-verb-ip",["speak","speak with you","testify as an interested party"]):pick("sal-verb-w",["share my thoughts","share testimony as an interested party","share my thoughts in writing"]);
+  const sa=STANCE[s.stance].art;
+  const verb=ip?pick("sal-verb-ip",["speak","speak with you",`testify as ${sa}`]):pick("sal-verb-w",["share my thoughts",`share testimony as ${sa}`,"share my thoughts in writing"]);
   const a=pick("sal-a",L);
   const merged=[
     `${a}, thank you for letting me ${verb} on Senate Bill 422.`,
@@ -673,17 +691,26 @@ const THANKS_W=[
     "Thank you for taking a few minutes to read this. It\'s about Senate Bill 422.",
     "I\'m grateful for the chance to share my thoughts on Senate Bill 422."];
 const POS_SHORT=[
-  "I'm submitting this as an interested party. I'm not against SB 422. I agree kids need to be safe at school. I'm asking for one change that would let a school decide whether a parent can come to their own child's events.",
+  "I'm submitting this as an interested party. I agree kids need to be safe at school. I'm asking for one change that would let a school decide whether a parent can come to their own child's events.",
   "I'm not here to fight this bill. I want kids safe at school too. I'm asking you to add one thing: a way for a school to say yes to a parent, on the school's terms.",
-  "I support what SB 422 is trying to do. That's why I'm testifying as an interested party and not as an opponent. I'm hoping you'll fix one gap in it.",
+  "I want what SB 422 is trying to do, which is keep kids safe. I'm testifying as an interested party because I think it needs one fix, and I'm hoping you'll make it.",
   "Keeping kids safe at school matters to me. I'm asking for one change to SB 422 that keeps every protection in place and lets the school make the call on a parent coming to their child's events.",
-    "I\'ll say up front that I\'m not against SB 422. I\'m testifying as an interested party because I think it needs one fix, and I\'m hoping you\'ll make it.",
-    "I want kids safe at school, same as you do. I\'m here as an interested party to ask for one change that keeps the bill\'s protections and lets the school decide about a parent coming to their child\'s events.",
-    "I\'m filing as an interested party. I don\'t want this bill to fail. I just want it to leave room for a school to say yes to a parent when it makes sense."];
+  "I'll say up front that I want kids safe at school. I'm testifying as an interested party because I think this bill needs one fix, and I'm hoping you'll make it.",
+  "I want kids safe at school, same as you do. I'm here as an interested party to ask for one change that keeps the bill's protections and lets the school decide about a parent coming to their child's events.",
+  "I'm filing as an interested party. I'm not asking you to defeat this bill. I just want it to leave room for a school to say yes to a parent when it makes sense."];
 const POS_LONG=[
-  "First, I'm not against SB 422. Kids should be safe at school, and I understand why the Senate passed it. But the way it's written leaves something out, and I'm hoping the House will fix it.",
+  "First, I want kids safe at school, and I understand why the Senate passed this bill. But the way it's written leaves something out, and I'm hoping the House will fix it.",
   "I'm not asking you to vote this bill down, and I'm not asking you to pass it as it is. I'm asking you to add one thing to it.",
-    "I agree with the goal of SB 422. I\'m writing because one piece of it got left out, and the people it hurts most are kids."];
+  "I agree with the goal of keeping kids safe. I'm writing because one piece of this bill got left out, and the people it hurts most are kids."];
+const POS_OPP_SHORT=[
+  "I'm testifying as an opponent of SB 422 as it's written. I want kids safe at school, but this bill goes too far for families, and it leaves schools no room to make any exception for a parent.",
+  "I oppose SB 422 in its current form. Keeping kids safe matters to me. But the way this bill is written, it shuts parents out of their kids' school lives with no way for a school to ever say yes.",
+  "I'm here as an opponent. I want schools safe, and I don't think this bill gets the balance right. At the very least, it needs one change before it goes any further.",
+  "I'm against SB 422 as written. I'm not against keeping kids safe. I'm against a law that tells every school in Ohio it can never let a parent this bill applies to come to their own kid's game or graduation, no matter what.",
+  "I'm submitting this as an opponent. I care about kids being safe at school, but I can't support a bill that takes every decision away from the schools themselves."];
+const POS_OPP_LONG=[
+  "I oppose this bill as it's written. I'll explain why, and I'll also tell you the one change that would make the biggest difference if the committee moves it forward anyway.",
+  "I'm asking you not to pass SB 422 as it is. If it does move forward, there's one change I'm asking you to make, and I'll explain both."];
 function pOpening(s,skipThanks){
   const ip=s.fmt==="inperson", oos=s.loc==="out", n=s.name||"[Your name]", city=s.city||"[your city]";
   const thanks=pick("thanks-"+s.fmt, ip?THANKS_IP:THANKS_W);
@@ -704,7 +731,8 @@ function pOpening(s,skipThanks){
     `My name is ${n}, and I\'m from ${city}${d?` in House District ${d}`:""}.`]);
   }
   const org=s.org?` I'm ${ip?"here":"writing"} on behalf of ${s.org}.`:"";
-  const pos=pick("pos-"+s.fmt, ip?POS_SHORT:POS_SHORT.concat(POS_LONG));
+  const opp=s.stance==="opp";
+  const pos=pick("pos-"+s.stance+"-"+s.fmt, opp?(ip?POS_OPP_SHORT:POS_OPP_SHORT.concat(POS_OPP_LONG)):(ip?POS_SHORT:POS_SHORT.concat(POS_LONG)));
   return `${skipThanks?"":thanks+" "}${who}${org} ${pos}`;
 }
 /* "Are you a parent yourself?" for roles whose own kids aren't affected */
@@ -956,7 +984,15 @@ const AMEND_IP=[
   `What I'm asking for is simple: let the school hosting an event approve a parent ahead of time, in writing, for specific events involving their own child, on the school's terms. Nobody gets general access, a parent following the permission isn't breaking the law, and the school can't be sued over its decision unless it acted in bad faith or recklessly. It would also make drop-off and pick-up actually allowed, not just a defense in court.`,
   `The change adds one option for schools: written permission, from the principal of the host school, for a parent to come to specific events involving their own child. Each permission names its events and dates and can come with any conditions the school wants. Nothing about it is automatic. It would also make drop-off and pick-up actually allowed, not just a defense in court.`,
     `Here\'s the fix. The host school\'s principal could give a parent written permission ahead of time, even by email, for specific events involving their own child, with any conditions the school wants. No general access, no requirement that any school say yes, and no liability for the school unless it acted in bad faith or recklessly. It would also make drop-off and pick-up truly allowed, not just a defense in court.`];
-function pAmend(s){ return pick("amend-"+s.fmt, s.fmt==="inperson"?AMEND_IP:AMEND_W); }
+function pAmend(s){
+  const body=pick("amend-"+s.fmt, s.fmt==="inperson"?AMEND_IP:AMEND_W);
+  if(s.stance!=="opp") return body;
+  return pick("amend-opp-lead",[
+    "If the committee does move this bill forward, there's one change that would make the biggest difference.",
+    "I'd rather see this bill stopped. But if it's going to move forward, it needs at least one change.",
+    "If SB 422 is going to pass, I'm asking you to fix this part of it first.",
+    "Even if the committee decides to move ahead with SB 422, this part of it shouldn't stay the way it is."])+" "+body;
+}
 const WHY=[
   `Nothing about this forces a school to do anything. A school can say no every time. It just means a principal who knows a family, and is willing to supervise a parent at a game or a graduation, would finally be allowed to say yes.`,
   `Schools already decide who comes into their buildings and under what conditions. This just trusts them with one more decision like that.`,
@@ -967,7 +1003,11 @@ const WHY=[
     `Principals make judgment calls about safety every day. This would let them make one more, for a kid\'s sake.`];
 function pWhy(s){ return s.fmt==="inperson"?"":pick("why",WHY); }
 function pClose(s){
-  const ask=pick("ask",["I'm asking the committee to add this change to SB 422.","Please add this change to SB 422.","I hope you'll add this to SB 422.","Please consider adding this change as SB 422 moves forward.",
+  const ask=s.stance==="opp" ? pick("ask-opp",[
+    "I'm asking you to vote no on SB 422 as it's written. If it moves forward anyway, please at least add this change.",
+    "Please don't pass SB 422 as it is. If the committee does move it forward, I ask you to add this change first.",
+    "I hope you'll oppose this bill in its current form, and if it goes forward, add this one change to it.",
+    "Please vote against SB 422 as written. And if it's going to pass, please make room in it for schools to say yes."]) : pick("ask",["I'm asking the committee to add this change to SB 422.","Please add this change to SB 422.","I hope you'll add this to SB 422.","Please consider adding this change as SB 422 moves forward.",
     "I hope you\'ll make this change before SB 422 moves forward.",
     "Please make room in SB 422 for schools to say yes.",
     "I\'m hoping you\'ll add this one change to SB 422."]);
@@ -982,7 +1022,7 @@ function pClose(s){
   return `${ask} ${thanks}${reach}`;
 }
 function genBody(s){
-  s=s||state();
+  s=s||state(); CUR_STANCE=s.stance;
   const order=pick("order",["role-first","role-first","gap-first"]);
   const mid = order==="gap-first" ? [pGap(s),pRole(s),pFamily(s)] : [pRole(s),pFamily(s),pGap(s)];
   const sal=salutationParts(s);
@@ -1018,7 +1058,7 @@ function makePdf(s,body){
     });
     y+=gapAfter||0;
   };
-  line("Interested Party Testimony",16,"bold","center",0);
+  line(STANCE[s.stance].label+" Testimony",16,"bold","center",0);
   line("Senate Bill 422",13,"bold","center",10);
   headLines(s).forEach(l=>line(l,11,"normal","left",0));
   y+=10; doc.setDrawColor(150); doc.setLineWidth(0.6); doc.line(M,y,PW-M,y); y+=12;
@@ -1028,7 +1068,7 @@ function makePdf(s,body){
   });
   const n=doc.getNumberOfPages();
   for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont("times","normal");doc.setFontSize(9);doc.setTextColor(110,110,110);
-    doc.text(`${s.name||""} · Interested party testimony, SB 422`,M,PH-36);
+    doc.text(`${s.name||""} · ${STANCE[s.stance].label} testimony, SB 422`,M,PH-36);
     doc.text(`Page ${i} of ${n}`,PW-M,PH-36,{align:"right"});}
   return doc.output("blob");
 }
@@ -1097,7 +1137,7 @@ function renderHearing(){
     const due=new Date(hd); due.setDate(due.getDate()-1);
     box.innerHTML=`<div class="hearing"><b>Hearing: ${hd.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}${HEARING_TIME?`, ${HEARING_TIME}`:""}${HEARING_ROOM?`, ${HEARING_ROOM}`:""}${COMMITTEE?` · House ${COMMITTEE} Committee`:""}</b>
       <span>Testimony is due at least 24 hours before the hearing starts${HEARING_TIME?`, by ${HEARING_TIME} on ${due.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}`:""}. Late testimony is often not accepted.</span>
-      ${TAKING_IP?"<span>The notice lists interested party testimony for SB 422 at this hearing.</span>":"<span>Check the hearing notice to confirm it lists interested party testimony for SB 422 that day.</span>"}</div>`;
+      ${(curStance()==="opp"?TAKING_OPP:TAKING_IP)?`<span>The notice lists ${STANCE[curStance()].lower} testimony for SB 422 at this hearing.</span>`:`<span>Check the hearing notice to confirm it lists ${STANCE[curStance()].lower} testimony for SB 422 that day.</span>`}</div>`;
   } else {
     box.innerHTML=`<div class="tipbox"><b>No hearing is scheduled yet.</b>SB 422 is expected to be assigned to a House committee around November 9 or 10. You can write your testimony now and save it. Hearing notices usually come out late in the week before the hearing, and testimony is due 24 hours before it starts, so having it ready matters.</div>`;
   }
@@ -1105,8 +1145,8 @@ function renderHearing(){
 function renderSteps(){
   const s=state(), hd=hearingDate(), ip=s.fmt==="inperson";
   const items=[];
-  items.push(`<li><b>Wait for the hearing notice${COMMITTEE?` from the ${COMMITTEE} Committee`:""}.</b><p>Committees often take proponents, opponents, and interested parties at different hearings, and the upload form only accepts the positions listed for that meeting. Submit when interested party testimony is on the agenda for SB 422 (it may appear as "IP" or "Prop/Opp/IP").${hd?"":` Track the bill on <a href="https://www.legislature.ohio.gov/legislation/136/sb422" target="_blank" rel="noopener">legislature.ohio.gov</a> to get an email when that happens.`}</p></li>`);
-  items.push(`<li><b>Upload it at least 24 hours before the hearing.</b><p>On ohiohouse.gov, open the committee's page, pick the meeting date, and choose <strong>Upload Testimony</strong>. Fill in your name and witness information, choose <strong>Interested Party</strong>, choose <strong>${ip?"In Person":"Written Only"}</strong>, and attach the PDF.${CHAIR_EMAIL?` You can also email the PDF to <a href="mailto:${CHAIR_EMAIL}?subject=${encodeURIComponent("SB 422 interested party testimony")}">${CHAIR_EMAIL}</a>.`:" If the hearing notice gives an email address for the chair's office instead, send it there."}</p>${MEETING_URL?`<div class="row" style="margin-top:6px"><a class="btn small" href="${MEETING_URL}" target="_blank" rel="noopener">Open the hearing page</a></div>`:""}</li>`);
+  items.push(`<li><b>Wait for the hearing notice${COMMITTEE?` from the ${COMMITTEE} Committee`:""}.</b><p>Committees often take proponents, opponents, and interested parties at different hearings, and the upload form only accepts the positions listed for that meeting. Submit when ${STANCE[s.stance].lower} testimony is on the agenda for SB 422 (it may appear as ${STANCE[s.stance].code}).${hd?"":` Track the bill on <a href="https://www.legislature.ohio.gov/legislation/136/sb422" target="_blank" rel="noopener">legislature.ohio.gov</a> to get an email when that happens.`}</p></li>`);
+  items.push(`<li><b>Upload it at least 24 hours before the hearing.</b><p>On ohiohouse.gov, open the committee's page, pick the meeting date, and choose <strong>Upload Testimony</strong>. Fill in your name and witness information, choose <strong>${STANCE[s.stance].label}</strong>, choose <strong>${ip?"In Person":"Written Only"}</strong>, and attach the PDF.${CHAIR_EMAIL?` You can also email the PDF to <a href="mailto:${CHAIR_EMAIL}?subject=${encodeURIComponent("SB 422 "+STANCE[s.stance].lower+" testimony")}">${CHAIR_EMAIL}</a>.`:" If the hearing notice gives an email address for the chair's office instead, send it there."}</p>${MEETING_URL?`<div class="row" style="margin-top:6px"><a class="btn small" href="${MEETING_URL}" target="_blank" rel="noopener">Open the hearing page</a></div>`:""}</li>`);
   if(ip) items.push(`<li><b>Go to the Statehouse on hearing day.</b><p>Bring a printed copy to read from. Members may ask a question or two. The tips below cover the rest.</p></li>`);
   else items.push(`<li><b>That's it.</b><p>Written testimony goes to every committee member and is posted with the hearing. You don't need to attend.</p></li>`);
   items.push(`<li><b>Let your own representative know.</b><p>A short email saying you submitted testimony, with the PDF attached, puts it in front of them again. The <a href="./">email page</a> has their address.</p></li>`);
@@ -1114,7 +1154,7 @@ function renderSteps(){
   $("inpersoncard").hidden=!ip;
 }
 function renderHead(s){
-  $("thead").innerHTML=`<div class="t1">Interested Party Testimony</div><div class="t2">Senate Bill 422</div>`+headLines(s).map(l=>`<div class="ln">${l.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}</div>`).join("");
+  $("thead").innerHTML=`<div class="t1">${STANCE[s.stance].label} Testimony</div><div class="t2">Senate Bill 422</div>`+headLines(s).map(l=>`<div class="ln">${l.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}</div>`).join("");
 }
 function renderCount(){
   const s=state(), t=$("tbody").value.trim(), w=t?t.split(/\s+/).length:0;
@@ -1125,8 +1165,17 @@ function renderCount(){
     ? `<span>About <b>${ss===60?mm+1+":00":time}</b> to read aloud</span>${long?`<span class="long">Consider trimming to about 3 minutes; the chair may limit time.</span>`:""}`
     : `<span>About <b>${Math.max(1,Math.ceil(w/350))}</b> page${w>350?"s":""}</span>`);
 }
+function renderStance(){
+  const st=curStance(), opp=st==="opp";
+  $("stancehdr").textContent=(opp?"Opponent":"Interested party")+" testimony";
+  $("stancewhy").textContent=opp?'Testifying as an "opponent"':'Why "interested party"?';
+  $("st-ip").className=opp?"":"me"; $("st-opp").className=opp?"me":"";
+  $("stanceexp").textContent=opp
+    ? "Opponent testimony tells the committee you want SB 422 voted down as written. Yours will also ask that, if the bill moves forward anyway, the committee at least add this change, so the fix stays in front of members either way. Committees sometimes hear opponents on a different day than interested parties, so check the hearing notice for opponent testimony."
+    : "Ohio House committees take testimony as a proponent (for the bill), an opponent (against it), or an interested party. Interested party fits this request: you want kids safe at school, and you're asking the committee to change one part of the bill, not to pass it as is or to defeat it. Most people asking for this change will choose this.";
+}
 function update(){
-  const s=state();
+  const s=state(); renderStance(); renderHearing();
   genCache=genBody(s);
   if(!edited) $("tbody").value=genCache;
   $("resetbody").hidden=!edited;
@@ -1191,6 +1240,11 @@ function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTim
 function onChange(e){
   const id=e.target.id;
   if(id==="tbody") return;
+  if(e.target.name==="stance"&&e.type==="input") return;
+  if(e.target.name==="stance"&&edited){
+    if(confirm("Switching your position will rewrite your testimony and replace the edits you made in the box. Continue?")) edited=false;
+    else { const other=e.target.value==="opp"?"stance-ip":"stance-opp"; $(other).checked=true; return; }
+  }
   if(e.target.name==="role") renderExtra(e.target.value);
   if(id==="kidcount") renderKids();
   applyRules(); update();
@@ -1216,7 +1270,7 @@ document.addEventListener("click",async e=>{
   if(el.id==="dl"){
     if(!window.jspdf){toast("The PDF tool didn't load. Check your connection and reload.");return;}
     const s=state(), last=(s.name.split(/\s+/).pop()||"Witness").replace(/[^A-Za-z0-9-]/g,"");
-    try{const r=await saveFile(`SB422-Interested-Party-Testimony-${last}.pdf`,makePdf(s,$("tbody").value));
+    try{const r=await saveFile(`SB422-${STANCE[s.stance].file}-Testimony-${last}.pdf`,makePdf(s,$("tbody").value));
       toast(r&&r.status==="shared"?"Done. If you chose Save to Files, it’s in your Files app.":"PDF saved.");}
     catch(err){toast(err&&err.code==="declined"?"Canceled. Tap the button again when you’re ready.":"The download didn't start. Try again, or open this page in Chrome or Safari.");}
     return;
@@ -1227,7 +1281,7 @@ document.addEventListener("click",async e=>{
     saved={}; edited=false; $("f").reset(); renderExtra(""); renderKids(); applyRules(); update(); go(1); return;
   }
   if(el.dataset.copy){
-    const s=state(), text=["Interested Party Testimony","Senate Bill 422",...headLines(s),"",$("tbody").value].join("\n");
+    const s=state(), text=[STANCE[s.stance].label+" Testimony","Senate Bill 422",...headLines(s),"",$("tbody").value].join("\n");
     try{await navigator.clipboard.writeText(text);toast("Copied.");}
     catch(_){const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
       let ok=false;try{ok=document.execCommand("copy");}catch(__){} ta.remove(); toast(ok?"Copied.":"Copying is blocked here. Select the text and copy it by hand.");}
